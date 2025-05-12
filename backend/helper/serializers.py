@@ -78,17 +78,15 @@ class Serializers:
 
         if isinstance(self.data, dict):
             sorted_json_requests = sorted(self.data.keys())
-            required_json_requests = sorted(['username', 'password', 'email', 'name'])
+            required_json_requests = sorted(['email', 'password'])
 
             if sorted_json_requests != required_json_requests:
                 message = f"Please Provide: {', '.join(list(set(required_json_requests).difference(sorted_json_requests)))}"
                 raise ValueError(message)
 
             return User(
-                username=str(self.data.get('username')),
                 password=str(self.data.get('password')),
                 email=self.CheckMail(self.data.get('email')),
-                name=str(self.data.get('name'))
             )
 
         raise TypeError("Not a valid json")

@@ -1,5 +1,5 @@
 import os
-
+import threading
 from flask import Flask, jsonify
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
@@ -11,6 +11,11 @@ from config import DevelopmentConfig, TestingConfig, ProductionConfig
 load_dotenv()
 app = Flask(__name__)
 CORS(app)
+
+# Shared mutable state
+state = {
+    "interval": 10  # default sleep interval in seconds
+}
 
 if os.getenv('APP_ENV').lower() == 'development':
     app_settings = DevelopmentConfig

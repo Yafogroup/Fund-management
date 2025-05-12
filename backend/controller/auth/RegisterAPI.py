@@ -6,10 +6,8 @@ from controller import db
 
 class RegisterRequest(RequestPost):
     fields_ = RequestPost.fields_
-    username = fields_.Str(required=True, description="Input Field for Username")
-    password = fields_.Str(required=True, description="Input Field for Password")
     email = fields_.Str(required=True, description="Input Field for Email")
-    name = fields_.Str(required=True, description="Input Field for Name")
+    password = fields_.Str(required=True, description="Input Field for Password")
 
 
 class RegisterAPI(MethodResource):
@@ -20,7 +18,7 @@ class RegisterAPI(MethodResource):
     @use_kwargs(RegisterRequest, location='json')
     @marshal_with(RequestResponse)
     def post(self, **kwargs):
-        user = User.query.filter_by(username=kwargs.get('username')).first()
+        user = User.query.filter_by(email=kwargs.get('email')).first()
         if not user:
             try:
                 user = Serializers(kwargs).ValidatingRegister()

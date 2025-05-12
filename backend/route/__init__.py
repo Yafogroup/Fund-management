@@ -22,6 +22,7 @@ from controller import (
     CheckReferralCode,
     RefreshJWTToken,
     TokenAPI,
+    UpdateParamAPI
 )
 
 app.config.update({
@@ -46,7 +47,6 @@ ENDPOINT = app.config.get('APP_PREFIX')
 
 api = Api(app)
 docs = FlaskApiSpec(app)
-
 
 @app.errorhandler(404)
 def resource_not_found(e):
@@ -90,4 +90,7 @@ api.add_resource(ValidateReferralCode, f'{ENDPOINT}/referral/validate', methods=
 docs.register(ValidateReferralCode)
 
 api.add_resource(TokenAPI, f'{ENDPOINT}/token/list', methods=['POST'])
+docs.register(TokenAPI)
+
+api.add_resource(UpdateParamAPI, f'{ENDPOINT}/token/update_param', methods=['POST'])
 docs.register(TokenAPI)

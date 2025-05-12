@@ -4,8 +4,10 @@ import os
 import secrets
 import argparse
 import dotenv
+import threading
 from route import app
 from model import db
+from service.PriceChangeTracker import PriceChangeTracker
 
 parser = argparse.ArgumentParser()
 dotenv_file = dotenv.find_dotenv()
@@ -20,6 +22,8 @@ if __name__ == '__main__':
     HOST = app.config.get('APP_HOST')
     PORT = app.config.get('APP_PORT')
     DEBUG = app.config.get('DEBUG')
+
+    app.tracker = PriceChangeTracker()
 
     if args.command:
         if args.command.lower() == 'migrate':
@@ -39,4 +43,5 @@ if __name__ == '__main__':
             parser.error('unknown staging status.')
 
     else:
+        app.tracker.start()
         app.run(host=HOST, port=PORT, debug=DEBUG)

@@ -7,7 +7,7 @@ from controller import bcrypt, db
 
 class LoginRequestPost(RequestPost):
     fields_ = RequestPost.fields_
-    username = fields_.Str(required=True, description="Input Field for Username")
+    email = fields_.Str(required=True, description="Input Field for email")
     password = fields_.Str(required=True, description="Input Field for Password")
 
 
@@ -20,10 +20,10 @@ class LoginAPI(MethodResource):
     @marshal_with(RequestResponse)
     def post(self, **kwargs):
         try:
-            user = User.query.filter_by(username=str(kwargs.get('username'))).first()
+            user = User.query.filter_by(email=str(kwargs.get('email'))).first()
             if user and bcrypt.check_password_hash(str(user.password), str(kwargs.get('password'))):
                 auth_token_data = {
-                    'username': str(user.username)
+                    'email': str(user.email)
                 }
                 auth_token = Auth(data=auth_token_data).EncodeAuthToken()
                 if auth_token:
@@ -36,6 +36,6 @@ class LoginAPI(MethodResource):
                     }
                     return response_message(200, 'success', 'Successfully logged in.', data)
             else:
-                return response_message(404, 'fail', 'User does not exist or username or password not match.')
+                return response_message(200, 'fail', 'User does not exist or email or password not match.')
         except Exception as e:
-            return response_message(401, 'fail', f'Username or password not match. {e}')
+            return response_message(200, 'fail', f'email or password not match. {e}')

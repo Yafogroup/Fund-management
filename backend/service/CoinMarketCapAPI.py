@@ -26,9 +26,9 @@ class CoinMarketCapAPI:
             response = self.session.get(url, params=params)
             response.raise_for_status()
             data = response.json()
-            
-            return {
-                item['symbol']: {
+            result = [
+                {
+                    'symbol': item['symbol'],
                     'price': item['quote']['USD']['price'],
                     'name': item['name'],
                     'id': item['id'],
@@ -40,7 +40,8 @@ class CoinMarketCapAPI:
                     'percent_change_90d': item['quote']['USD']['percent_change_90d'],
                 }
                 for item in data['data']
-            }
+            ]
+            return result
             
         except requests.exceptions.RequestException as e:
             print(f"Error fetching prices: {e}")

@@ -11,6 +11,7 @@ from .user import UpdateUsername
 from .user import GetCurrentUser
 
 from .cmc import TokenAPI
+from .cmc import UpdateParamAPI
 
 from .GetUserByName import GetUserByName
 from .GetHeroName import GetHeroName
