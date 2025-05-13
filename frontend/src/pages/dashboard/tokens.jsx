@@ -19,10 +19,10 @@ export function Tokens() {
   const [changeList, setChangeList] = useState([]);
   const [tokenList, setTokenList] = useState([]);
 
-  const [intervalTime, setIntervalTime] = useState(1);
+  const [intervalTime, setIntervalTime] = useState("30");
   const [min, setMin] = useState("0.1");
   const [max, setMax] = useState("20");
-  const [realTime, setRealTime] = useState(1);
+  const [realTime, setRealTime] = useState(30);
 
   const headers = [
       'no', 'symbol', 'name', 'old_price', 'price', 'percent_change', 'timestamp'
@@ -47,7 +47,7 @@ export function Tokens() {
       );
       if (response.status === 200) {
         showNotification(messages.param_updated, 'green');
-        setRealTime(intervalTime)
+        setRealTime(parseInt(intervalTime))
         fetchData();
       }
     } catch (error) {
@@ -82,7 +82,7 @@ export function Tokens() {
                   className: "before:content-none after:content-none",
                 }}
                 value={intervalTime}
-                onChange={(e) => {setIntervalTime(parseFloat(e.target.value))}}
+                onChange={(e) => {setIntervalTime(e.target.value)}}
             />
             <Typography variant="small" color="blue-gray" className="font-medium">
               Min
@@ -171,19 +171,19 @@ export function Tokens() {
                               </td>
                               <td className={className}>
                                 <Typography className="text-xs font-semibold text-blue-gray-600">
-                                  {old_price}
+                                  {old_price.toFixed(8)}
                                 </Typography>
                               </td>
                               <td className={className}>
                                 <Typography className="text-xs font-semibold text-blue-gray-600">
-                                  {price}
+                                  {price.toFixed(8)}
                                 </Typography>
                               </td>
                               <td className={className}>
                                 <Chip
                                     variant="gradient"
                                     color={percent_change > 0 ? "green" : "red"}
-                                    value={percent_change}
+                                    value={percent_change.toFixed(8)}
                                     className="py-0.5 px-2 text-[11px] font-medium w-fit"
                                 />
                               </td>
