@@ -17,6 +17,9 @@ class PriceChangeTracker:
         self.thread = threading.Thread(target=self.background_task, daemon=True)
         self._lock = threading.Lock()
         
+        with open("time.inf", "w") as f:
+            f.write(str(self.interval))
+        
     def get_tokens(self):
         """Fetch current prices and maintain history of interval"""     
 
@@ -79,7 +82,8 @@ class PriceChangeTracker:
                 print(f"Error in background updater: {e}")
 
             with self._lock:
-                current_interval = self.interval
+                with open("time.inf", "r") as f:
+                    current_interval = int(f.read())
 
             time.sleep(current_interval)
     
@@ -102,6 +106,8 @@ class PriceChangeTracker:
         if interval:
             with self._lock:
                 self.interval = interval * 60
+                with open("time.inf", "w") as f:
+                    f.write(str(self.interval))
         if min_change: 
             self.min_change = min_change
         if max_change:

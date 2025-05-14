@@ -6,7 +6,7 @@ import {
   Avatar,
   Chip,
   Tooltip,
-  Progress, Checkbox, Input, Button,
+  Progress, Checkbox, Input, Button, Select, Option
 } from "@material-tailwind/react";
 import React, {useEffect, useRef, useState} from 'react';
 import tokenService from "@/api/tokenService.jsx";
@@ -19,10 +19,12 @@ export function Tokens() {
   const [changeList, setChangeList] = useState([]);
   const [tokenList, setTokenList] = useState([]);
 
-  const [intervalTime, setIntervalTime] = useState("30");
-  const [min, setMin] = useState("0.1");
-  const [max, setMax] = useState("20");
-  const [realTime, setRealTime] = useState(30);
+  const [intervalTime, setIntervalTime] = useState(localStorage.getItem('time_interval') ?? "1");
+  const [min, setMin] = useState(localStorage.getItem('min_change') ?? "0.1");
+  const [max, setMax] = useState(localStorage.getItem('max_change') ?? "20");
+  const [realTime, setRealTime] = useState(parseInt(localStorage.getItem('time_interval') ?? "1"));
+
+  const timerRef = useRef(null);
 
   const headers = [
       'no', 'symbol', 'name', 'old_price', 'price', 'percent_change', 'timestamp'
@@ -48,7 +50,9 @@ export function Tokens() {
       if (response.status === 200) {
         showNotification(messages.param_updated, 'green');
         setRealTime(parseInt(intervalTime))
-        fetchData();
+        localStorage.setItem('time_interval', intervalTime);
+        localStorage.setItem('min_change', min);
+        localStorage.setItem('max_change', max);
       }
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -56,17 +60,23 @@ export function Tokens() {
   }
 
   useEffect(() => {
-    setTimeout(() => {
+    if (tokenList.length > 0) {
+      showNotification("The token have been updated.", 'green');
+    }
+  }, [tokenList]);
+
+  useEffect(() => {
+    timerRef.current = setInterval(() => {
       fetchData();
     }, realTime * 60 * 1000);
-    showNotification("The token have been updated.", 'green');
-  }, [tokenList]);
+    return () => clearInterval(timerRef.current);
+  }, [realTime]);
 
   return (
     <div className="mt-12 mb-8 flex flex-col gap-12">
 
       <Card>
-        <CardBody className="overflow-x-scroll px-0 pt-0 pb-2 m-8">
+        <CardBody className="px-0 pt-0 pb-2 m-8">
           <Typography variant="h6" color="black">
             Token Filter
           </Typography>
@@ -74,16 +84,22 @@ export function Tokens() {
             <Typography variant="small" color="blue-gray" className="font-medium">
               Time
             </Typography>
-            <Input
-                size="lg"
-                placeholder=""
-                className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
-                labelProps={{
-                  className: "before:content-none after:content-none",
-                }}
-                value={intervalTime}
-                onChange={(e) => {setIntervalTime(e.target.value)}}
-            />
+            <Select label="Select an option" value={intervalTime}
+                    onChange={(e) => setIntervalTime(e)}
+                    size="lg"
+            >
+              <Option value="1">1 min</Option>
+              <Option value="5">5 min</Option>
+              <Option value="15">15 min</Option>
+              <Option value="30">30 min</Option>
+              <Option value="60">1 hour</Option>
+              <Option value="240">4 hour</Option>
+              <Option value="1440">1 day</Option>
+              <Option value="2880">2 day</Option>
+              <Option value="7200">5 day</Option>
+              <Option value="10080">a week</Option>
+              <Option value="43200">a month</Option>
+            </Select>
             <Typography variant="small" color="blue-gray" className="font-medium">
               Min
             </Typography>
@@ -171,19 +187,19 @@ export function Tokens() {
                               </td>
                               <td className={className}>
                                 <Typography className="text-xs font-semibold text-blue-gray-600">
-                                  {old_price.toFixed(8)}
+                                  ${old_price.toFixed(8)}
                                 </Typography>
                               </td>
                               <td className={className}>
                                 <Typography className="text-xs font-semibold text-blue-gray-600">
-                                  {price.toFixed(8)}
+                                  ${price.toFixed(8)}
                                 </Typography>
                               </td>
                               <td className={className}>
                                 <Chip
                                     variant="gradient"
                                     color={percent_change > 0 ? "green" : "red"}
-                                    value={percent_change.toFixed(8)}
+                                    value={percent_change.toFixed(8) + "%"}
                                     className="py-0.5 px-2 text-[11px] font-medium w-fit"
                                 />
                               </td>
