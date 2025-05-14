@@ -60,6 +60,10 @@ export function Tokens() {
   }
 
   useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
     if (tokenList.length > 0) {
       showNotification("The token have been updated.", 'green');
     }
