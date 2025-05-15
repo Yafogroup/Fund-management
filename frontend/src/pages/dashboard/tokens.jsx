@@ -107,29 +107,40 @@ export function Tokens() {
             <Typography variant="small" color="blue-gray" className="font-medium">
               Min
             </Typography>
-            <Input
-                size="lg"
-                placeholder="name@mail.com"
-                className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
-                labelProps={{
-                  className: "before:content-none after:content-none",
-                }}
-                value={min}
-                onChange={(e) => {setMin((e.target.value))}}
-            />
+            <div className="relative">
+              <Input
+                  size="lg"
+                  placeholder="Min %"
+                  value={min}
+                  onChange={(e) => setMin(e.target.value)}
+                  className="pr-8 !border-t-blue-gray-200 focus:!border-t-gray-900"
+                  labelProps={{
+                    className: "before:content-none after:content-none",
+                  }}
+              />
+              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">%</span>
+            </div>
             <Typography variant="small" color="blue-gray" className="font-medium">
               Max
             </Typography>
-            <Input
-                size="lg"
-                placeholder="name@mail.com"
-                className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
-                labelProps={{
-                  className: "before:content-none after:content-none",
-                }}
-                value={max}
-                onChange={(e) => {setMax((e.target.value))}}
-            />
+            <div className="relative">
+              <Input
+                  size="lg"
+                  placeholder="Min %"
+                  value={max}
+                  onChange={(e) => setMax(e.target.value)}
+                  className="pr-8 !border-t-blue-gray-200 focus:!border-t-gray-900"
+                  labelProps={{
+                    className: "before:content-none after:content-none",
+                  }}
+              />
+              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">%</span>
+            </div>
+            <p className="text-sm text-gray-600 mt-2">
+              <strong>Min</strong> and <strong>Max</strong> represent the percentage change range you'd like to track.
+              For example, Min = <code>0.5%</code> and Max = <code>10%</code> will show tokens whose prices have changed
+              between <strong>0.5% and 10%</strong> over the selected time period.
+            </p>
             <Button className="" style={{width:'200px'}} onClick={applyFilter}>
               Apply
             </Button>
