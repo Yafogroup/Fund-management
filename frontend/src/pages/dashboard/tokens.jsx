@@ -136,11 +136,11 @@ export function Tokens() {
               />
               <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">%</span>
             </div>
-            <p className="text-sm text-gray-600 mt-2">
-              <strong>Min</strong> and <strong>Max</strong> represent the percentage change range you'd like to track.
-              For example, Min = <code>0.5%</code> and Max = <code>10%</code> will show tokens whose prices have changed
-              between <strong>0.5% and 10%</strong> over the selected time period.
-            </p>
+            {/*<p className="text-sm text-gray-600 mt-2">*/}
+            {/*  <strong>Min</strong> and <strong>Max</strong> represent the percentage change range you'd like to track.*/}
+            {/*  For example, Min = <code>0.5%</code> and Max = <code>10%</code> will show tokens whose prices have changed*/}
+            {/*  between <strong>0.5% and 10%</strong> over the selected time period.*/}
+            {/*</p>*/}
             <Button className="" style={{width:'200px'}} onClick={applyFilter}>
               Apply
             </Button>
