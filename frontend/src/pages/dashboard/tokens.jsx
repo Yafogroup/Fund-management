@@ -88,22 +88,24 @@ export function Tokens() {
             <Typography variant="small" color="blue-gray" className="font-medium">
               Time
             </Typography>
-            <Select label="Select an option" value={intervalTime}
-                    onChange={(e) => setIntervalTime(e)}
-                    size="lg"
-            >
-              <Option value="1">1 min</Option>
-              <Option value="5">5 min</Option>
-              <Option value="15">15 min</Option>
-              <Option value="30">30 min</Option>
-              <Option value="60">1 hour</Option>
-              <Option value="240">4 hour</Option>
-              <Option value="1440">1 day</Option>
-              <Option value="2880">2 day</Option>
-              <Option value="7200">5 day</Option>
-              <Option value="10080">a week</Option>
-              <Option value="43200">a month</Option>
-            </Select>
+            <div className="w-70">
+              <Select label="Select an option" value={intervalTime}
+                      onChange={(e) => setIntervalTime(e)}
+                      size="lg"
+              >
+                <Option value="1">1 min</Option>
+                <Option value="5">5 min</Option>
+                <Option value="15">15 min</Option>
+                <Option value="30">30 min</Option>
+                <Option value="60">1 hour</Option>
+                <Option value="240">4 hour</Option>
+                <Option value="1440">1 day</Option>
+                <Option value="2880">2 day</Option>
+                <Option value="7200">5 day</Option>
+                <Option value="10080">a week</Option>
+                <Option value="43200">a month</Option>
+              </Select>
+            </div>
             <Typography variant="small" color="blue-gray" className="font-medium">
               Min
             </Typography>
@@ -136,12 +138,7 @@ export function Tokens() {
               />
               <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">%</span>
             </div>
-            {/*<p className="text-sm text-gray-600 mt-2">*/}
-            {/*  <strong>Min</strong> and <strong>Max</strong> represent the percentage change range you'd like to track.*/}
-            {/*  For example, Min = <code>0.5%</code> and Max = <code>10%</code> will show tokens whose prices have changed*/}
-            {/*  between <strong>0.5% and 10%</strong> over the selected time period.*/}
-            {/*</p>*/}
-            <Button className="" style={{width:'200px'}} onClick={applyFilter}>
+            <Button className="" style={{width:'100px'}} onClick={applyFilter}>
               Apply
             </Button>
           </div>
