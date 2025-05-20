@@ -5,6 +5,8 @@ const messages = {
     mismatch_password: "Password must match",
     empty_content: "The data is empty",
     param_updated: "The parameters have been updated.",
+    memo_saved: "The memo has been saved.",
+    memo_deleted: "The memo has been deleted.",
 }
 
 export default messages;

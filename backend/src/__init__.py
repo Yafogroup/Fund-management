@@ -30,6 +30,10 @@ else:
     app_settings = DevelopmentConfig
     app.config.from_object(app_settings)
 
+UPLOAD_FOLDER = os.path.join(app.root_path, 'static', 'uploads')
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
 bcrypt = Bcrypt(app)
 db = SQLAlchemy(app)
 

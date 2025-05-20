@@ -23,6 +23,7 @@ class LoginAPI(MethodResource):
             user = User.query.filter_by(email=str(kwargs.get('email'))).first()
             if user and bcrypt.check_password_hash(str(user.password), str(kwargs.get('password'))):
                 auth_token_data = {
+                    'user_uid': str(user.uid),
                     'email': str(user.email)
                 }
                 auth_token = Auth(data=auth_token_data).EncodeAuthToken()

@@ -4,6 +4,7 @@ from apispec.ext.marshmallow import MarshmallowPlugin
 from flask_apispec import FlaskApiSpec
 from werkzeug.utils import redirect
 from flask_restful import Api
+from flask import send_from_directory
 
 from helper import response_message
 
@@ -22,7 +23,11 @@ from controller import (
     CheckReferralCode,
     RefreshJWTToken,
     TokenAPI,
-    UpdateParamAPI
+    UpdateParamAPI,
+    MemoListAPI,
+    AddMemoAPI,
+    UpdateMemoAPI,
+    DeleteMemoAPI,
 )
 
 app.config.update({
@@ -93,4 +98,16 @@ api.add_resource(TokenAPI, f'{ENDPOINT}/token/list', methods=['POST'])
 docs.register(TokenAPI)
 
 api.add_resource(UpdateParamAPI, f'{ENDPOINT}/token/update_param', methods=['POST'])
+docs.register(UpdateParamAPI)
+
+api.add_resource(MemoListAPI, f'{ENDPOINT}/memo/list', methods=['POST'])
 docs.register(TokenAPI)
+
+api.add_resource(AddMemoAPI, f'{ENDPOINT}/memo/add', methods=['POST'])
+docs.register(AddMemoAPI)
+
+api.add_resource(UpdateMemoAPI, f'{ENDPOINT}/memo/edit', methods=['POST'])
+docs.register(UpdateMemoAPI)
+
+api.add_resource(DeleteMemoAPI, f'{ENDPOINT}/memo/delete/<int:memo_uid>', methods=['DELETE'])
+docs.register(DeleteMemoAPI)

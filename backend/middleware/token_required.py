@@ -22,6 +22,7 @@ def TokenRequired(func):
                     'auth_token': auth_token,
                     'auth_header': auth_header,
                     'resp': resp,
+                    'user_uid': resp['sub']['data']['user_uid'],
                 }
                 return func(self, auth_data, **kwargs)
             else:

@@ -13,6 +13,8 @@ class BaseConfig:
     DB_NAME = os.getenv('DB_NAME')
     DB_NAME_TEST = os.getenv('DB_NAME_TEST')
     CONN = f'postgresql://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/'
+    UPLOAD_FOLDER = os.getenv('UPLOAD_FOLDER')
+    MAX_CONTENT_LENGTH = int(os.getenv('MAX_CONTENT_LENGTH', 10 * 1024 * 1024))
 
     SECRET_KEY = os.getenv('SECRET_KEY')
     DEBUG = False
