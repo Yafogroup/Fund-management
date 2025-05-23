@@ -90,7 +90,7 @@ docs.register(GetUserByName)
 api.add_resource(UserListAPI, f'{ENDPOINT}/user/list', methods=['POST'])
 docs.register(UserListAPI)
 
-api.add_resource(DeleteUserAPI, f'{ENDPOINT}/user/delete/<int:user_uid>', methods=['DELETE'])
+api.add_resource(DeleteUserAPI, f'{ENDPOINT}/user/delete/<string:user_uid>', methods=['DELETE'])
 docs.register(DeleteUserAPI)
 
 api.add_resource(GetHeroName, f'{ENDPOINT}/hero', methods=['GET'])
