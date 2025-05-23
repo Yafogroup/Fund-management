@@ -26,5 +26,5 @@ class UserListAPI(MethodResource):
                 User.email.ilike(f"%{search}%") & (User.is_delete == 0)
             )
        
-        users = query.order_by(User.registered_on.desc()).offset(offset).limit(limit).all()
+        users = query.order_by(User.is_admin.desc(), User.registered_on.desc()).offset(offset).limit(limit).all()
         return response_message(200, 'success', '', {"user_list": [user.to_dict() for user in users]})
