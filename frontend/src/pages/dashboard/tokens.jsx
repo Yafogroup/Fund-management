@@ -141,6 +141,9 @@ export function Tokens() {
             <Button className="" style={{width:'100px'}} onClick={applyFilter}>
               Apply
             </Button>
+            <div className="ml-auto md:mr-4 md:w-56">
+              <Input label="Search" />
+            </div>
           </div>
         </CardBody>
       </Card>

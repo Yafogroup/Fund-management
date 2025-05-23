@@ -38,6 +38,7 @@ export function SignIn() {
     if (response.data.status === "success") {
       login({
         auth_token: response.data.data.auth_token,
+        role: response.data.data.role,
       });
       navigate("/dashboard/home");
     } else {

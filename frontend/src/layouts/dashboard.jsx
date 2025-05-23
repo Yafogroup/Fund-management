@@ -41,7 +41,12 @@ export function Dashboard() {
           {routes.map(
             ({ layout, pages }) =>
               layout === "dashboard" &&
-              pages.map(({ path, element }) => (
+              pages
+                  .filter(page => {
+                    if (!page.allowedRoles) return true; // if no restriction, show it
+                    return user && page.allowedRoles.includes(user.role); // check role
+                  })
+                  .map(({ path, element }) => (
                 <Route exact path={path} element={element} />
               ))
           )}

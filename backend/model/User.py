@@ -15,6 +15,8 @@ class User(db.Model):
     redeemed_referral_code = db.Column(db.String, nullable=True)
     last_logged_in = db.Column(db.DateTime, nullable=True)
     last_logged_out = db.Column(db.DateTime, nullable=True)
+    is_admin = db.Column(db.Integer, nullable=False)
+    is_delete = db.Column(db.Integer, nullable=False)
 
     def __init__(self, password, email):
         self.uid = uuid.uuid4()
@@ -24,3 +26,14 @@ class User(db.Model):
         ).decode('utf-8')
         self.referral_code = uuid.uuid4()
         self.registered_on = datetime.datetime.now()
+        self.is_admin = 0
+        self.is_delete = 0
+
+    def to_dict(self):
+        return {
+            "uid": self.uid,
+            "email": self.email,
+            "registered_on": self.registered_on,
+            "last_logged_in": self.last_logged_in,
+            "is_admin": self.is_admin,
+        }

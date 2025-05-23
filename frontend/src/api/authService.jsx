@@ -13,6 +13,10 @@ const AuthService = {
             email: email,
             password: password,
         })
+    },
+
+    checkAdmin: () => {
+        return axiosClient.post('/referral')
     }
 }
 

@@ -1,16 +1,9 @@
 from flask_apispec import MethodResource, use_kwargs, marshal_with, doc
 from helper import response_message, RequestResponse, RequestPost
 from middleware import TokenRequired
-from model import User
+from model import User, app
 from controller import db, bcrypt
-
-
-class UpdateUserInformationRequestPost(RequestPost):
-    fields_ = RequestPost.fields_
-    name = fields_.Str(required=True, description="Input Field for Name, this is required")
-    email = fields_.Str(required=True, description="Input Field for Email, this is required and must be unique")
-    username = fields_.Str(required=True, description="Input Field for Username, this is required and must be unique")
-    password = fields_.Str(required=True, description="Input Field for Password, this is required")
+from flask import request
 
 
 class UpdateUserInformation(MethodResource):
@@ -26,23 +19,20 @@ class UpdateUserInformation(MethodResource):
             }
         }
     )
-    @use_kwargs(UpdateUserInformationRequestPost, location='json')
     @marshal_with(RequestResponse)
     @TokenRequired
-    def patch(self, auth, **kwargs):
+    def post(self, auth, **kwargs):
+        user_uid = request.form.get('user_uid')
+        email = request.form.get('email')
+        pwd = request.form.get('pwd')
         try:
-            user = User.query.filter_by(username=str(kwargs.get('username'))).first()
-            if user and user.username == auth['resp']['sub']['username']:
-                if bcrypt.check_password_hash(user.password, str(kwargs.get('password'))):
-                    try:
-                        user.name = str(kwargs.get('name'))
-                        user.email = str(kwargs.get('email'))
-                        db.session.commit()
-                        return response_message(200, 'success', 'Successfully updated data.')
-                    except:
-                        return response_message(500, 'fail', 'Email already exists.')
-                else:
-                    return response_message(401, 'fail', 'You have no permission to update data.')
+            user = User.query.filter_by(uid=user_uid).first()
+            if user:
+                user.email = email
+                if pwd != "":
+                    user.password = bcrypt.generate_password_hash(pwd, app.config.get('BCRYPT_LOG_ROUNDS')).decode('utf-8')
+                db.session.commit()
+                return response_message(200, 'success', 'Successfully updated data.')
             else:
                 return response_message(404, 'fail', "User doesn't exist.")
         except Exception as e:

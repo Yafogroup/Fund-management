@@ -31,9 +31,13 @@ class LoginAPI(MethodResource):
                     user.last_logged_in = datetime.datetime.now()
                     user.last_logged_out = None
                     db.session.commit()
+                    if user.is_admin == 1:
+                        role = "admin"
+                    else:
+                        role = "user"
                     data = {
                         'auth_token': auth_token,
-                        'referral_code': user.referral_code
+                        'role': role,
                     }
                     return response_message(200, 'success', 'Successfully logged in.', data)
             else:

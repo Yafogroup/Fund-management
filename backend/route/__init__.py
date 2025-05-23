@@ -16,6 +16,8 @@ from controller import (
     UpdateUserInformation,
     UpdatePassword,
     UpdateUsername,
+    UserListAPI,
+    DeleteUserAPI,
     GetHeroName,
     ValidateReferralCode,
     GetCurrentUser,
@@ -73,7 +75,7 @@ docs.register(GetCurrentUser)
 api.add_resource(RefreshJWTToken, f'{ENDPOINT}/auth/refresh', methods=['GET'])
 docs.register(RefreshJWTToken)
 
-api.add_resource(UpdateUserInformation, f'{ENDPOINT}/auth/user', methods=['PATCH'])
+api.add_resource(UpdateUserInformation, f'{ENDPOINT}/auth/user/update', methods=['POST'])
 docs.register(UpdateUserInformation)
 
 api.add_resource(UpdatePassword, f'{ENDPOINT}/auth/user/password', methods=['PATCH'])
@@ -84,6 +86,12 @@ docs.register(UpdateUsername)
 
 api.add_resource(GetUserByName, f'{ENDPOINT}/user', methods=['GET'])
 docs.register(GetUserByName)
+
+api.add_resource(UserListAPI, f'{ENDPOINT}/user/list', methods=['POST'])
+docs.register(UserListAPI)
+
+api.add_resource(DeleteUserAPI, f'{ENDPOINT}/user/delete/<int:user_uid>', methods=['DELETE'])
+docs.register(DeleteUserAPI)
 
 api.add_resource(GetHeroName, f'{ENDPOINT}/hero', methods=['GET'])
 docs.register(GetHeroName)
