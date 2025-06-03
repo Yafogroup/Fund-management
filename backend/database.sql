@@ -23,3 +23,13 @@ CREATE TABLE "public"."blacklist_tokens" (
 ALTER TABLE "public"."users" 
   ADD COLUMN "is_admin" int2 NOT NULL DEFAULT 0,
   ADD COLUMN "is_delete" int2 NOT NULL DEFAULT 0;
+  
+-- 6/2
+
+CREATE TABLE "public"."user_token" (
+  "uid" serial,
+  "user_uid" varchar(255) NOT NULL,
+  "token_uid" varchar(255),
+  PRIMARY KEY ("uid")
+)
+;

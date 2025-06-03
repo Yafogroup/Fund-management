@@ -52,7 +52,7 @@ export function Users() {
 
 
   const headers = [
-      'no', 'email', 'register time', 'last login time', '', ''
+      'No', 'Email', 'Register time', 'Last login time', 'User Type', ''
   ]
 
   const fetchData = async (reset = false) => {
@@ -171,20 +171,15 @@ export function Users() {
         <div className="mr-6 ml-auto">
           <Button
               variant="filled"
-              color="Black"
+              color="blue"
               onClick={() => handleNew()}
           >
             Add New
           </Button>
         </div>
       </div>
-      <Card>
-        <CardHeader variant="gradient" color="gray" className="mb-8 p-6">
-          <Typography variant="h6" color="white">
-            User List
-          </Typography>
-        </CardHeader>
-        <CardBody className="overflow-x-scroll px-0 pt-0 pb-2">
+      <Card className="bg-dark">
+        <CardBody className="px-0 pt-0 pb-2">
           <table className="w-full min-w-[640px] table-auto">
             <thead>
               <tr>
@@ -195,7 +190,7 @@ export function Users() {
                   >
                     <Typography
                       variant="small"
-                      className="text-xm font-bold uppercase text-blue-gray-400"
+                      className="text-[18px] font-medium text-lBLue"
                     >
                       {el}
                     </Typography>
@@ -216,22 +211,22 @@ export function Users() {
                         return (
                             <tr key={idx}>
                               <td className={className}>
-                                <Typography className="text-sm font-semibold text-blue-gray-600">
+                                <Typography className="font-semibold text-lBLue">
                                   {idx + 1}
                                 </Typography>
                               </td>
                               <td className={className}>
-                                <Typography className="text-sm font-semibold text-blue-gray-600">
+                                <Typography className="font-semibold text-lBLue">
                                   {email}
                                 </Typography>
                               </td>
                               <td className={className}>
-                                <Typography className="text-sm font-semibold text-blue-gray-600">
+                                <Typography className="font-semibold text-lBLue">
                                   {registered_on}
                                 </Typography>
                               </td>
                               <td className={className}>
-                                <Typography className="text-sm font-semibold text-blue-gray-600">
+                                <Typography className="font-semibold text-lBLue">
                                   {last_logged_in}
                                 </Typography>
                               </td>

@@ -35,22 +35,46 @@ class PriceChangeTracker:
                 change = self.calculate_interval_change(old_price, new_price)
 
                 self.change_log.append({
+                        'id': data['id'],
                         'symbol': data['symbol'],
                         'name': data['name'],
                         'old_price': old_price,
                         'price': new_price,
                         'percent_change': change,
-                        'timestamp': timestamp.strftime("%m/%d/%Y, %H:%M:%S")
+                        'percent_change_24h': data['percent_change_24h'],
+                        'percent_change_7d': data['percent_change_7d'],
+                        'percent_change_30d': data['percent_change_30d'],
+                        'timestamp': timestamp.strftime("%m/%d/%Y, %H:%M:%S"),
+                        'logo': f"https://s2.coinmarketcap.com/static/img/coins/64x64/{data['id']}.png"
                     })
                 
                 if self.min_change <= abs(change) <= self.max_change:
                     self.token_list.append({
+                        'id': data['id'],
                         'symbol': data['symbol'],
                         'name': data['name'],
                         'old_price': old_price,
                         'price': new_price,
                         'percent_change': change,
-                        'timestamp': timestamp.strftime("%m/%d/%Y, %H:%M:%S")
+                        'percent_change_24h': data['percent_change_24h'],
+                        'percent_change_7d': data['percent_change_7d'],
+                        'percent_change_30d': data['percent_change_30d'],
+                        'timestamp': timestamp.strftime("%m/%d/%Y, %H:%M:%S"),
+                        'logo': f"https://s2.coinmarketcap.com/static/img/coins/64x64/{data['id']}.png"
+                    })
+        else:
+            for idx, data in enumerate(current_prices):
+                self.change_log.append({
+                        'id': data['id'],
+                        'symbol': data['symbol'],
+                        'name': data['name'],
+                        'price': data['price'],
+                        'percent_change': 0,
+                        'percent_change_24h': data['percent_change_24h'],
+                        'percent_change_7d': data['percent_change_7d'],
+                        'percent_change_30d': data['percent_change_30d'],
+                        'timestamp': timestamp.strftime("%m/%d/%Y, %H:%M:%S"),
+                        'logo': f"https://s2.coinmarketcap.com/static/img/coins/64x64/{data['id']}.png"
                     })
         self.last_prices = current_prices
 

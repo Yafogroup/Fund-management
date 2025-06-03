@@ -30,6 +30,7 @@ from controller import (
     AddMemoAPI,
     UpdateMemoAPI,
     DeleteMemoAPI,
+    UpdateUserToken
 )
 
 app.config.update({
@@ -107,6 +108,9 @@ docs.register(TokenAPI)
 
 api.add_resource(UpdateParamAPI, f'{ENDPOINT}/token/update_param', methods=['POST'])
 docs.register(UpdateParamAPI)
+
+api.add_resource(UpdateUserToken, f'{ENDPOINT}/token/update_user_token', methods=['POST'])
+docs.register(UpdateUserToken)
 
 api.add_resource(MemoListAPI, f'{ENDPOINT}/memo/list', methods=['POST'])
 docs.register(TokenAPI)

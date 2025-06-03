@@ -11,6 +11,12 @@ const TokenService = {
             min_change: min,
             max_change: max,
         });
+    },
+
+    updateUserToken: (token) => {
+        return axiosClient.post('/token/update_user_token', {
+            token_ids: token,
+        })
     }
 };
 

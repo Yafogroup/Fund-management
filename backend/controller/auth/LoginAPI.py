@@ -1,7 +1,7 @@
 import datetime
 from flask_apispec import MethodResource, marshal_with, doc, use_kwargs
 from helper import response_message, Auth, RequestResponse, RequestPost
-from model import User
+from model import User, UserToken
 from controller import bcrypt, db
 
 
@@ -35,9 +35,12 @@ class LoginAPI(MethodResource):
                         role = "admin"
                     else:
                         role = "user"
+
+                    user_token = UserToken.query.filter_by(user_uid=str(user.uid)).first()
                     data = {
                         'auth_token': auth_token,
                         'role': role,
+                        'user_token': user_token.token_uid if user_token else "",
                     }
                     return response_message(200, 'success', 'Successfully logged in.', data)
             else:

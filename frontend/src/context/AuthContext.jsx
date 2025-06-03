@@ -18,6 +18,7 @@ export function AuthProvider({ children }) {
     const login = (userData) => {
         setIsLoggedIn(true);
         localStorage.setItem('authToken', userData.auth_token);
+        localStorage.setItem('userToken', userData.user_token);
         setUser(userData);
     };
 
@@ -25,6 +26,7 @@ export function AuthProvider({ children }) {
         setIsLoggedIn(false);
         setUser(null);
         localStorage.removeItem('authToken');
+        localStorage.removeItem('userToken');
         navigate("/auth/sign-in");
     };
 

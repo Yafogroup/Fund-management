@@ -136,7 +136,7 @@ export function Memo() {
   };
 
   return (
-      <div className="p-6 bg-gray-50 min-h-screen">
+      <div className="p-6 bg-dark min-h-screen">
         <div className="flex flex-col md:flex-row md:items-end gap-4 mb-6 ml-6">
           <div className="w-full md:w-1/4">
             <Input
@@ -165,17 +165,17 @@ export function Memo() {
                 className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
             />
           </div>
-          <div className="w-full md:w-1/4 text-right">
+          <div className="w-full md:w-1/4 text-right flex-1 mr-7">
             <Button
                 variant="filled"
-                color="Black"
+                color="blue"
                 onClick={() => handleNew()}
             >
               Add New
             </Button>
           </div>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 p-6 bg-gray-50">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 p-6 bg-dark">
           {
             memoList.map((memo, index) => (
                 <ItemMemo
@@ -242,7 +242,7 @@ export function Memo() {
             <Textarea
                 label="Content"
                 name="content"
-                className="w-full h-40 p-2 border border-gray-300 rounded-md resize-none"
+                className="w-full h-60 p-2 border border-gray-300 rounded-md resize-none"
                 value={form.content}
                 onChange={handleFormChange}
             />

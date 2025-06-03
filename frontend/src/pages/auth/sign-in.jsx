@@ -39,6 +39,7 @@ export function SignIn() {
       login({
         auth_token: response.data.data.auth_token,
         role: response.data.data.role,
+        user_token: response.data.data.user_token,
       });
       navigate("/dashboard/home");
     } else {
