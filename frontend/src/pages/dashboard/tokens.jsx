@@ -35,7 +35,7 @@ export function Tokens() {
   const [searchModal, setSearchModal] = useState("");
 
   const headers = [
-      'No', 'Token', 'Price', 'Change', '24h', '7d', '30d', 'Timestamp'
+      'No', 'Token', 'Price', 'Old Price', 'Change', '24h', '7d', '30d', 'Timestamp'
   ]
 
   const fetchData = async () => {
@@ -246,6 +246,11 @@ export function Tokens() {
                               <td className={className}>
                                 <Typography className="font-bold text-lBLue text-[18px]">
                                   $ {token.price.toFixed(4)}
+                                </Typography>
+                              </td>
+                              <td className={className}>
+                                <Typography className="font-bold text-lBLue text-[18px]">
+                                  $ {token.old_price.toFixed(4)}
                                 </Typography>
                               </td>
                               <td className={className}>
