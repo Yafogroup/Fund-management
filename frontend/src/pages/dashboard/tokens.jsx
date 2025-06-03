@@ -13,6 +13,7 @@ import tokenService from "@/api/tokenService.jsx";
 import messages from "@/const/msg.jsx";
 import {useNotification} from "@/context/notificationProvider.jsx";
 import {XMarkIcon} from "@heroicons/react/24/solid/index.js";
+import {MagnifyingGlassIcon} from "@heroicons/react/24/outline/index.js";
 
 export function Tokens() {
 
@@ -177,9 +178,11 @@ export function Tokens() {
               Token Select
             </Button>
             <div className="ml-auto md:mr-4 md:w-56">
-              <Input label="Search"
-                     value={searchTerm}
-                     onChange={(e) => setSearchTerm(e.target.value)}
+              <Input
+                  label="Search..."
+                  icon={<MagnifyingGlassIcon className="h-5 w-5" />}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
           </div>
@@ -305,6 +308,7 @@ export function Tokens() {
           <div className="ml-auto md:mr-4 md:w-56">
             <Input label="Search"
                    value={searchModal}
+                   icon={<MagnifyingGlassIcon className="h-5 w-5" />}
                    onChange={(e) => setSearchModal(e.target.value)}
             />
           </div>
