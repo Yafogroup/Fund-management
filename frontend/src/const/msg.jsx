@@ -5,6 +5,7 @@ const messages = {
     mismatch_password: "Password must match",
     empty_content: "The data is empty",
     param_updated: "The parameters have been updated.",
+    param_incorrect: "The parameters should not be empty.",
     memo_saved: "The memo has been saved.",
     user_saved: "The user has been saved.",
     memo_deleted: "The memo has been deleted.",

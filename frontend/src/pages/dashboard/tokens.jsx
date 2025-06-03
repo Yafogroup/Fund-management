@@ -60,6 +60,10 @@ export function Tokens() {
 
   const applyFilter = async () => {
     try {
+      if (min === '' || max === '') {
+        showNotification(messages.param_incorrect, "red");
+        return;
+      }
       const response = await tokenService.updateParam(
           intervalTime,
           min,
