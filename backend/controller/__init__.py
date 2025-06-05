@@ -15,6 +15,13 @@ from .user import DeleteUserAPI
 from .cmc import TokenAPI
 from .cmc import UpdateParamAPI
 from .cmc import UpdateUserToken
+from .cmc import AddPortfolioAPI
+from .cmc import ClosePortfolioAPI
+from .cmc import TokenTypeAdd
+from .cmc import TokenTypeDelete
+from .cmc import TokenTypeList
+from .cmc import PortfolioListAPI
+from .cmc import PortfolioDelete
 
 from .GetUserByName import GetUserByName
 from .GetHeroName import GetHeroName

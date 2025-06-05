@@ -12,7 +12,7 @@ class CoinMarketCapAPI:
         self.session = requests.Session()
         self.session.headers.update(self.headers)
     
-    def get_current_prices(self, limit=500):
+    def get_current_prices(self, limit=2000):
         """Get current prices for top cryptocurrencies"""
         try:
             url = f"{self.base_url}/cryptocurrency/listings/latest"
@@ -26,8 +26,9 @@ class CoinMarketCapAPI:
             response = self.session.get(url, params=params)
             response.raise_for_status()
             data = response.json()
-            result = [
-                {
+            result = {}
+            for item in data['data']:
+                result[item['symbol']] = {
                     'symbol': item['symbol'],
                     'price': item['quote']['USD']['price'],
                     'name': item['name'],
@@ -39,8 +40,6 @@ class CoinMarketCapAPI:
                     'percent_change_60d': item['quote']['USD']['percent_change_60d'],
                     'percent_change_90d': item['quote']['USD']['percent_change_90d'],
                 }
-                for item in data['data']
-            ]
             return result
             
         except requests.exceptions.RequestException as e:

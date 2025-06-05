@@ -17,6 +17,18 @@ const TokenService = {
         return axiosClient.post('/token/update_user_token', {
             token_ids: token,
         })
+    },
+
+    getTokenType: (params) => {
+        return axiosClient.post('/toke_type/list', params);
+    },
+
+    saveTokenType: (formData) => {
+        return axiosClient.post('/toke_type/save', formData)
+    },
+
+    deleteTokenType: (uid) => {
+        return axiosClient.delete(`/toke_type/delete/${uid}`, )
     }
 };
 

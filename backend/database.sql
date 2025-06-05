@@ -26,10 +26,36 @@ ALTER TABLE "public"."users"
   
 -- 6/2
 
-CREATE TABLE "public"."user_token" (
+CREATE TABLE "public"."tbl_user_token" (
   "uid" serial,
   "user_uid" varchar(255) NOT NULL,
   "token_uid" varchar(255),
+  PRIMARY KEY ("uid")
+)
+;
+
+CREATE TABLE "public"."tbl_portfolio" (
+  "uid" serial,
+  "date" date NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "token_id" int4,
+  "token_name" varchar(255),
+  "position_type" int2,
+  "token_type" int2,
+  "leverage" float4,
+  "entry_price" float4,
+  "quantity" float4,
+  "trade_type" int2,
+  "status" int2,
+  "oracle" float4,
+  "real_result" float4,
+  "user_uid" varchar(255),
+  PRIMARY KEY ("uid")
+)
+;
+
+CREATE TABLE "public"."tbl_token_type" (
+  "uid" serial,
+  "name" varchar(255),
   PRIMARY KEY ("uid")
 )
 ;

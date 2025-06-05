@@ -30,7 +30,14 @@ from controller import (
     AddMemoAPI,
     UpdateMemoAPI,
     DeleteMemoAPI,
-    UpdateUserToken
+    UpdateUserToken,
+    AddPortfolioAPI,
+    ClosePortfolioAPI,
+    TokenTypeAdd,
+    TokenTypeDelete,
+    TokenTypeList,
+    PortfolioListAPI,
+    PortfolioDelete
 )
 
 app.config.update({
@@ -123,3 +130,25 @@ docs.register(UpdateMemoAPI)
 
 api.add_resource(DeleteMemoAPI, f'{ENDPOINT}/memo/delete/<int:memo_uid>', methods=['DELETE'])
 docs.register(DeleteMemoAPI)
+
+api.add_resource(AddPortfolioAPI, f'{ENDPOINT}/portfolio/add', methods=['POST'])
+docs.register(AddPortfolioAPI)
+
+api.add_resource(ClosePortfolioAPI, f'{ENDPOINT}/portfolio/close', methods=['POST'])
+docs.register(ClosePortfolioAPI)
+
+api.add_resource(PortfolioListAPI, f'{ENDPOINT}/portfolio/list', methods=['POST'])
+docs.register(PortfolioListAPI)
+
+api.add_resource(TokenTypeAdd, f'{ENDPOINT}/toke_type/save', methods=['POST'])
+docs.register(TokenTypeAdd)
+
+api.add_resource(TokenTypeDelete, f'{ENDPOINT}/toke_type/delete/<int:uid>', methods=['DELETE'])
+docs.register(TokenTypeAdd)
+
+api.add_resource(TokenTypeList, f'{ENDPOINT}/toke_type/list', methods=['POST'])
+docs.register(TokenTypeList)
+
+api.add_resource(PortfolioDelete, f'{ENDPOINT}/portfolio/delete/<int:uid>', methods=['DELETE'])
+docs.register(PortfolioDelete)
+

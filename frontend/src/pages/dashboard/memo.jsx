@@ -11,6 +11,7 @@ import {XMarkIcon} from "@heroicons/react/24/solid/index.js";
 import memoService from "@/api/memoService.jsx";
 import {useNotification} from "@/context/notificationProvider.jsx";
 import messages from "@/const/msg.jsx";
+import {MagnifyingGlassIcon} from "@heroicons/react/24/outline/index.js";
 
 export function Memo() {
 
@@ -142,6 +143,7 @@ export function Memo() {
             <Input
                 label="Search"
                 value={search}
+                icon={<MagnifyingGlassIcon className="h-5 w-5" />}
                 onChange={(e) => setSearch(e.target.value)}
             />
           </div>
@@ -242,7 +244,7 @@ export function Memo() {
             <Textarea
                 label="Content"
                 name="content"
-                className="w-full h-60 p-2 border border-gray-300 rounded-md resize-none"
+                className="w-full h-80 p-2 border border-gray-300 rounded-md resize-none"
                 value={form.content}
                 onChange={handleFormChange}
             />

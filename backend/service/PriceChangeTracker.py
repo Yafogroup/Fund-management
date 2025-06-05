@@ -29,9 +29,9 @@ class PriceChangeTracker:
         self.change_log = []
         
         if self.last_prices:
-            for idx, data in enumerate(current_prices):
-                old_price = self.last_prices[idx]['price']
+            for symbol, data in current_prices.items():
                 new_price = data['price']
+                old_price = self.last_prices[symbol]['price'] if symbol in self.last_prices.keys() else new_price
                 change = self.calculate_interval_change(old_price, new_price)
 
                 self.change_log.append({
@@ -63,7 +63,7 @@ class PriceChangeTracker:
                         'logo': f"https://s2.coinmarketcap.com/static/img/coins/64x64/{data['id']}.png"
                     })
         else:
-            for idx, data in enumerate(current_prices):
+            for symbol, data in current_prices.items():
                 self.change_log.append({
                         'id': data['id'],
                         'symbol': data['symbol'],

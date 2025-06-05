@@ -5,7 +5,8 @@ import {
   InformationCircleIcon,
   ServerStackIcon,
   RectangleStackIcon,
-  ClipboardDocumentIcon
+  ClipboardDocumentIcon,
+  ShoppingCartIcon
 } from "@heroicons/react/24/solid";
 import { Home, Profile, Tokens, Notifications } from "@/pages/dashboard";
 import { SignIn, SignUp } from "@/pages/auth";
@@ -14,6 +15,7 @@ import Users from "@/pages/dashboard/users.jsx";
 import ProtectedRoute from "@/context/ProtectedRoute.jsx";
 import Unauthorized from "@/pages/dashboard/unauthorized.jsx";
 import Orders from "@/pages/dashboard/orders.jsx";
+import Toke_type from "@/pages/dashboard/toke_type.jsx";
 
 const icon = {
   className: "w-5 h-5 text-inherit",
@@ -43,8 +45,8 @@ export const routes = [
         element: <Tokens />,
       },
       {
-        icon: <TableCellsIcon {...icon} />,
-        name: "orders",
+        icon: <ShoppingCartIcon {...icon} />,
+        name: "Portfolio",
         path: "/orders",
         element: <Orders />,
       },
@@ -56,9 +58,9 @@ export const routes = [
       },
       {
         icon: <InformationCircleIcon {...icon} />,
-        name: "notifications",
-        path: "/notifications",
-        element: <Notifications />,
+        name: "Token Type",
+        path: "/token_type",
+        element: <Toke_type />,
       },
       {
         icon: <InformationCircleIcon {...icon} />,
