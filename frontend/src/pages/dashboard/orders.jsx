@@ -646,7 +646,7 @@ const Orders = () => {
                     </div>
                 </DialogBody>
                 <DialogFooter>
-                    <Button variant="outlined" color="gray" onClick={() => setEditModalOpen(false)}>
+                    <Button variant="outlined" color="gray" onClick={() => setCloseModalOpen(false)}>
                         Cancel
                     </Button>
                     <Button color="blue" onClick={handleCloseSubmit} className="ml-2">
