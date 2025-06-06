@@ -370,6 +370,9 @@ const Orders = () => {
                             } else {
                                 est_val = order.position_type === 0 ? (oracle - order.entry_price) * order.quantity : (oracle - order.entry_price) * order.quantity * order.leverage;
                             }
+
+                            let real_result = order.real_result === null ? "" : order.real_result.toLocaleString("en-US", {style:"currency", currency:"USD"});
+
                             return (
                                 <tr key={index}>
                                     <td className="p-4 text-lBLue">{order.date}</td>
@@ -421,8 +424,8 @@ const Orders = () => {
                                         />
                                     </td>
                                     <td className="p-4">
-                                        {order.real_result > 0  ? (
-                                            <Typography variant="small" className="text-[18px] font-medium text-lBLue">{order.real_result.toLocaleString("en-US", {style:"currency", currency:"USD"})}</Typography>
+                                        {real_result !== ""  ? (
+                                            <Typography variant="small" className={`text-[18px] font-medium ${order.real_result > 0 ? "text-lBLue" : "text-red-500"}`}>{real_result}</Typography>
                                         ) : (
                                             <span className="text-red-500 ml-4">---</span>
                                         )}
