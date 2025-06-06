@@ -388,7 +388,7 @@ const Orders = () => {
                                         <Typography variant="small" className="text-[18px] font-medium text-lBLue mt-1">{order.token_name}</Typography>
                                     </td>
                                     <td className="p-4">
-                                        <Typography variant="small" className="text-[18px] font-medium text-lGreen mb-1">{typeList.filter(t => t.uid === order.token_type)[0].name}</Typography>
+                                        <Typography variant="small" className="text-[18px] font-medium text-lGreen mb-1">{token_type_name}</Typography>
                                     </td>
                                     <td className="p-4">
                                         <Typography variant="small" className={`text-[16px] font-medium mb-1 ${order.trade_type === 0 ? "text-lBLue" : "text-red-500"}`}>
