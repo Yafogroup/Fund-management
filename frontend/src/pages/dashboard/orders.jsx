@@ -411,9 +411,16 @@ const Orders = () => {
                                         <Typography variant="small" className="text-[18px] font-medium text-lBLue">{oracle.toLocaleString("en-US", {style:"currency", currency:"USD"})}</Typography>
                                     </td>
                                     <td className="p-4">
-                                        <Typography variant="small" className={`text-[18px] font-medium ${est_val < 0 ? "text-red-500" : "text-lBLue"}`}>
-                                            {est_val.toLocaleString("en-US", {style:"currency", currency:"USD"})}
-                                        </Typography>
+                                        {
+                                            order.status === 0 &&
+                                            <Typography variant="small" className={`text-[18px] font-medium ${est_val < 0 ? "text-red-500" : "text-lBLue"}`}>
+                                                {est_val.toLocaleString("en-US", {style:"currency", currency:"USD"})}
+                                            </Typography>
+                                        }
+                                        {
+                                            order.status === 1 &&
+                                            <span className="text-red-500 ml-4">---</span>
+                                        }
                                     </td>
                                     <td className="p-4">
                                         <Chip
