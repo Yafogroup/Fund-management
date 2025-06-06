@@ -8,3 +8,4 @@ from .TokenTypeDelete import TokenTypeDelete
 from .TokenTypeList import TokenTypeList
 from .PortfolioListAPI import PortfolioListAPI
 from .PortfolioDelete import PortfolioDelete
+from .TokenCurrentAPI import TokenCurrentAPI

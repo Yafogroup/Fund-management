@@ -46,6 +46,7 @@ const Orders = () => {
     const [loading, setLoading] = useState(false);
 
     const [tokenList, setTokenList] = useState([]);
+    const [allTokenList, setAllTokenList] = useState([]);
     const [selectedTokenIds, setSelectedTokenIds] = useState(localStorage.getItem("userToken") === "" ? [] :
         localStorage.getItem("userToken").split(","));
 
@@ -135,8 +136,9 @@ const Orders = () => {
             let tt = [{"uid": 0, name: "ALL"}].concat(fetched);
             setFilterTypeList(tt);
 
-            response = await tokenService.getTokenList();
-            let temp = response.data.data.data[0];
+            response = await tokenService.getCurrentTokenList();
+            let temp = response.data.data.data;
+            setAllTokenList(temp);
             temp = temp.filter(item => selectedTokenIds.includes(item.id.toString()));
             setTokenList(temp);
             fetchPortfolioList(true);
@@ -357,12 +359,13 @@ const Orders = () => {
                         </thead>
                         <tbody>
                         {portfolioList.map((order, index) => {
-                            const logo = tokenList.length === 0 ? "" : tokenList.filter(t => t.id === order.token_id)[0].logo;
-                            const token_symbol = tokenList.length === 0 ? "" : tokenList.filter(t => t.id === order.token_id)[0].symbol;
-                            const token_type_name = tokenList.length === 0 ? "" : typeList.filter(t => t.uid === order.token_type)[0].name;
-                            const oracle = tokenList.length === 0 ? "" : tokenList.filter(t => t.id === order.token_id)[0].price;
-                            const order_value = tokenList.length === 0 ? "" : order.entry_price * order.quantity;
-                            const est_val = tokenList.length === 0 ? "" : order.position_type === 0 ? (order.entry_price - oracle) * order.quantity : (order.entry_price - oracle) * order.quantity * order.leverage;
+                            const logo = allTokenList.length === 0 ? "" : allTokenList.filter(t => t.id === order.token_id)[0].logo;
+                            const token_symbol = allTokenList.length === 0 ? "" : allTokenList.filter(t => t.id === order.token_id)[0].symbol;
+                            const token_type_name = allTokenList.length === 0 ? "" : typeList.filter(t => t.uid === order.token_type)[0].name;
+                            const oracle = allTokenList.length === 0 ? "" : allTokenList.filter(t => t.id === order.token_id)[0].price;
+                            const order_value = allTokenList.length === 0 ? "" : order.entry_price * order.quantity;
+                            let est_val = allTokenList.length === 0 ? "" : order.position_type === 0 ? (order.entry_price - oracle) * order.quantity : (order.entry_price - oracle) * order.quantity * order.leverage;
+                            if (order.trade_type === 1) est_val = -est_val;
                             return (
                                 <tr key={index}>
                                     <td className="p-4 text-lBLue">{order.date}</td>

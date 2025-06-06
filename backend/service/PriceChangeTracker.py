@@ -124,6 +124,24 @@ class PriceChangeTracker:
         t_list = self.token_list
         result = [item for item in t_list if self.min_change <= abs(item['percent_change']) <= self.max_change]
         return [self.change_log, result]
+    
+    def get_current_token_list(self):
+        current_prices = self.cmc.get_current_prices()
+        timestamp = datetime.now()
+        result = []
+        for symbol, data in current_prices.items():
+            result.append({
+                    'id': data['id'],
+                    'symbol': data['symbol'],
+                    'name': data['name'],
+                    'price': data['price'],
+                    'percent_change_24h': data['percent_change_24h'],
+                    'percent_change_7d': data['percent_change_7d'],
+                    'percent_change_30d': data['percent_change_30d'],
+                    'timestamp': timestamp.strftime("%m/%d/%Y, %H:%M:%S"),
+                    'logo': f"https://s2.coinmarketcap.com/static/img/coins/64x64/{data['id']}.png"
+                })
+        return result
 
     def update_param(self, interval=None, min_change=None, max_change=None):
         """Update the parameters for tracking"""

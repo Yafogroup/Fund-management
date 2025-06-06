@@ -5,6 +5,11 @@ from middleware import TokenRequired
 from model import User, UserToken
 from controller import db
 
+class UpdateUserTokenPost(RequestPost):
+    fields_ = RequestPost.fields_
+    token_ids = fields_.String(required=False, description="Input Field for Time Interval")
+
+
 class UpdateUserToken(MethodResource):
     @doc(
         description='Update user selected tokens',
@@ -18,6 +23,7 @@ class UpdateUserToken(MethodResource):
         }
     )
     @marshal_with(RequestResponse)
+    @use_kwargs(UpdateUserTokenPost, location='json')
     @TokenRequired
     def post(self, auth, **kwargs):
         try:

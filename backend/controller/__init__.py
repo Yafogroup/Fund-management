@@ -22,6 +22,7 @@ from .cmc import TokenTypeDelete
 from .cmc import TokenTypeList
 from .cmc import PortfolioListAPI
 from .cmc import PortfolioDelete
+from .cmc import TokenCurrentAPI
 
 from .GetUserByName import GetUserByName
 from .GetHeroName import GetHeroName

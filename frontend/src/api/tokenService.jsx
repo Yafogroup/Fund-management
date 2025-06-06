@@ -5,6 +5,10 @@ const TokenService = {
         return axiosClient.post('/token/list');
     },
 
+    getCurrentTokenList: () => {
+        return axiosClient.post('/token/current_list');
+    },
+
     updateParam: (interval, min, max) => {
         return axiosClient.post('/token/update_param', {
             interval: interval,

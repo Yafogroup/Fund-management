@@ -37,7 +37,8 @@ from controller import (
     TokenTypeDelete,
     TokenTypeList,
     PortfolioListAPI,
-    PortfolioDelete
+    PortfolioDelete,
+    TokenCurrentAPI
 )
 
 app.config.update({
@@ -112,6 +113,9 @@ docs.register(ValidateReferralCode)
 
 api.add_resource(TokenAPI, f'{ENDPOINT}/token/list', methods=['POST'])
 docs.register(TokenAPI)
+
+api.add_resource(TokenCurrentAPI, f'{ENDPOINT}/token/current_list', methods=['POST'])
+docs.register(TokenCurrentAPI)
 
 api.add_resource(UpdateParamAPI, f'{ENDPOINT}/token/update_param', methods=['POST'])
 docs.register(UpdateParamAPI)
