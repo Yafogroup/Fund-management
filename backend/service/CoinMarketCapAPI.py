@@ -12,7 +12,7 @@ class CoinMarketCapAPI:
         self.session = requests.Session()
         self.session.headers.update(self.headers)
     
-    def get_current_prices(self, limit=2000):
+    def get_current_prices(self, limit=5000):
         """Get current prices for top cryptocurrencies"""
         try:
             url = f"{self.base_url}/cryptocurrency/listings/latest"
