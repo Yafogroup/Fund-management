@@ -364,8 +364,12 @@ const Orders = () => {
                             const token_type_name = allTokenList.length === 0 ? "" : typeList.filter(t => t.uid === order.token_type)[0].name;
                             const oracle = allTokenList.length === 0 ? "" : allTokenList.filter(t => t.id === order.token_id)[0].price;
                             const order_value = allTokenList.length === 0 ? "" : order.entry_price * order.quantity;
-                            let est_val = allTokenList.length === 0 ? "" : order.position_type === 0 ? (order.entry_price - oracle) * order.quantity : (order.entry_price - oracle) * order.quantity * order.leverage;
-                            if (order.trade_type === 1) est_val = -est_val;
+                            let est_val = 0;
+                            if (order.trade_type === 1) {
+                                est_val = order.position_type === 0 ? (order.entry_price - oracle) * order.quantity : (order.entry_price - oracle) * order.quantity * order.leverage;
+                            } else {
+                                est_val = order.position_type === 0 ? (oracle - order.entry_price) * order.quantity : (oracle - order.entry_price) * order.quantity * order.leverage;
+                            }
                             return (
                                 <tr key={index}>
                                     <td className="p-4 text-lBLue">{order.date}</td>
