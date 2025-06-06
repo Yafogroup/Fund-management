@@ -154,9 +154,9 @@ const Orders = () => {
             token_id: 0,
             position_type: 0,
             token_type: 0,
-            leverage: 0,
-            entry_price: 0,
-            quantity: 0,
+            leverage: "",
+            entry_price: "",
+            quantity: "",
             trade_type: 0,
             status: 0,
             oracle: 0,
@@ -197,6 +197,7 @@ const Orders = () => {
 
     const handleClose = (pf) => {
         setSelectedPf(pf);
+        setRealResult("");
         setCloseModalOpen(true);
     }
 
@@ -229,9 +230,9 @@ const Orders = () => {
         formData.append("token_id", form.token_id);
         formData.append("position_type", form.position_type);
         formData.append("token_type", form.token_type);
-        formData.append("leverage", form.leverage);
-        formData.append("entry_price", form.entry_price);
-        formData.append("quantity", form.quantity);
+        formData.append("leverage", form.leverage === "" ? 0 : form.leverage);
+        formData.append("entry_price", form.entry_price === "" ? 0 : form.entry_price);
+        formData.append("quantity", form.quantity === "" ? 0 : form.quantity);
         formData.append("trade_type", form.trade_type);
         formData.append("status", form.status);
         formData.append("token_name", form.token_name);
@@ -537,7 +538,7 @@ const Orders = () => {
                                     </Option>
                                 ))}
                             </Select>
-                            <div className="absolute top-2.5 left-5 flex">
+                            <div className="absolute top-2.5 left-3 flex">
                                 {
                                     form.token_logo !== "" &&
                                     <Avatar
