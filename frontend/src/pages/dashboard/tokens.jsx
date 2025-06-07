@@ -14,6 +14,7 @@ import messages from "@/const/msg.jsx";
 import {useNotification} from "@/context/notificationProvider.jsx";
 import {XMarkIcon} from "@heroicons/react/24/solid/index.js";
 import {MagnifyingGlassIcon} from "@heroicons/react/24/outline/index.js";
+import CompactPrice from "@/widgets/components/compact_price.jsx";
 
 export function Tokens() {
 
@@ -262,7 +263,16 @@ export function Tokens() {
                               </td>
                               <td className={className}>
                                 <Typography className="font-bold text-lBLue text-[18px]">
-                                  $ {token.price.toFixed(4)}
+                                  {
+                                    token.price >= 0.09 ?
+                                        <Typography variant="small" className="text-[18px] font-medium text-lBLue">{
+                                          token.price.toLocaleString("en-US", {style:"currency", currency:"USD"})
+                                        }</Typography>
+                                        :
+                                        <CompactPrice
+                                            price={token.price}
+                                        />
+                                  }
                                 </Typography>
                               </td>
                               <td className={className}>
@@ -421,12 +431,6 @@ export function Tokens() {
                   }
                   </tbody>
                 </table>
-                {
-                    filteredTokensModal.length === 0 &&
-                    <Typography className="mt-10 text-center text-[15px] font-semibold text-blue-gray-600">
-                      {messages.empty_content}
-                    </Typography>
-                }
               </CardBody>
             </Card>
             <Card className="">

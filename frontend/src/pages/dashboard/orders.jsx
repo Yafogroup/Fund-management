@@ -32,6 +32,7 @@ import memoService from "@/api/memoService.jsx";
 import portfolioService from "@/api/portfolioService.jsx";
 import {PencilIcon, TrashIcon} from "@heroicons/react/24/solid";
 import * as sea from "node:sea";
+import CompactPrice from "@/widgets/components/compact_price.jsx";
 
 const Orders = () => {
 
@@ -62,6 +63,8 @@ const Orders = () => {
 
     const [realResult, setRealResult] = useState("");
     const [showLoading, setShowLoading] = useState(false);
+
+    const [filterPosition, setFilterPosition] = useState("-1");
 
 
     const [form, setForm] = useState({
@@ -114,6 +117,7 @@ const Orders = () => {
                 end_date: endDate,
                 toke_type: Number(tokenType),
                 status: status,
+                position_type: Number(filterPosition),
             };
             const response = await portfolioService.getList(params);
             let fetched = response.data.data.portfolio_list;
@@ -256,7 +260,7 @@ const Orders = () => {
 
     useEffect(() => {
         fetchPortfolioList(true);
-    }, [searchTerm, startDate, endDate, status, tokenType]);
+    }, [searchTerm, startDate, endDate, status, tokenType, filterPosition]);
 
     return (
         <div className="p-4">
@@ -278,6 +282,7 @@ const Orders = () => {
                             <input
                                 type="date"
                                 value={startDate}
+                                onClick={(e) => e.currentTarget.showPicker()}
                                 onChange={(e) => setStartDate(e.target.value)}
                                 className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-dark text-lBLue"
                             />
@@ -288,11 +293,12 @@ const Orders = () => {
                             <input
                                 type="date"
                                 value={endDate}
+                                onClick={(e) => e.currentTarget.showPicker()}
                                 onChange={(e) => setEndDate(e.target.value)}
                                 className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-dark text-lBLue"
                             />
                         </div>
-                        <div className="w-80">
+                        <div className="w-60">
                             <Select label="Select Token Type" className="text-lBLue text-xs"
                                     onChange={(value) => setTokenType(value)}
                                     selected={(element) =>
@@ -312,20 +318,28 @@ const Orders = () => {
                                 ))}
                             </Select>
                         </div>
-
-                        <div className="w-80">
+                        <div className="w-40 ml-1">
+                            <Select label="Select Position type" className="text-lBLue"
+                                    value={filterPosition}
+                                    onChange={(value) => setFilterPosition(value)}>
+                                <Option value="-1">All</Option>
+                                <Option value="0">Spot</Option>
+                                <Option value="1">Margin</Option>
+                            </Select>
+                        </div>
+                        <div className="w-60 ml-10">
                             <Tabs value="app">
                                 <TabsHeader>
                                     <Tab value="app" onClick={() => setStatus(-1)}>
-                                        <HomeIcon className="-mt-1 mr-2 inline-block h-5 w-5" />
+                                        {/*<HomeIcon className="-mt-1 mr-2 inline-block h-5 w-5" />*/}
                                         All
                                     </Tab>
                                     <Tab value="message" onClick={() => setStatus(0)}>
-                                        <BookOpenIcon className="-mt-0.5 mr-2 inline-block h-5 w-5" />
+                                        {/*<BookOpenIcon className="-mt-0.5 mr-2 inline-block h-5 w-5" />*/}
                                         Open
                                     </Tab>
                                     <Tab value="settings" onClick={() => setStatus(1)}>
-                                        <LockClosedIcon className="-mt-1 mr-2 inline-block h-5 w-5" />
+                                        {/*<LockClosedIcon className="-mt-1 mr-2 inline-block h-5 w-5" />*/}
                                         Close
                                     </Tab>
                                 </TabsHeader>
@@ -406,7 +420,16 @@ const Orders = () => {
                                         <Typography variant="small" className="text-[18px] font-medium text-lBLue">{order.entry_price.toLocaleString("en-US", {style:"currency", currency:"USD"})}</Typography>
                                     </td>
                                     <td className="p-4">
-                                        <Typography variant="small" className="text-[18px] font-medium text-lBLue">{order.oracle.toLocaleString("en-US", {style:"currency", currency:"USD"})}</Typography>
+                                        {
+                                            order.oracle >= 1 ?
+                                                <Typography variant="small" className="text-[18px] font-medium text-lBLue">{
+                                                    order.oracle.toLocaleString("en-US", {style:"currency", currency:"USD"})
+                                                }</Typography>
+                                                :
+                                                <CompactPrice
+                                                    price={order.oracle}
+                                                />
+                                        }
                                     </td>
                                     <td className="p-4">
                                         {
@@ -574,7 +597,7 @@ const Orders = () => {
                             <Select label="Select Position type" className="text-black"
                                     value={form.position_type}
                                     onChange={(value) => setForm(prev => ({...prev, ['position_type']: value}))}>
-                                <Option value="0">Spot</Option>
+                                <Option value="0" hidden={form.trade_type === 1}>Spot</Option>
                                 <Option value="1">Margin</Option>
                             </Select>
                         </div>

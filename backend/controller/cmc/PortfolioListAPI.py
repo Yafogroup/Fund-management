@@ -22,6 +22,7 @@ class PortfolioListAPI(MethodResource):
         end_date = request.json["end_date"]
         toke_type = request.json["toke_type"]
         status = request.json["status"]
+        position_type = request.json["position_type"]
 
         query = Portfolio.query.join(TokenType, Portfolio.token_type == TokenType.uid).with_entities(
             Portfolio.uid,
@@ -49,6 +50,9 @@ class PortfolioListAPI(MethodResource):
 
         if status > -1:
             query = query.filter(Portfolio.status == status)
+
+        if position_type > -1:
+            query = query.filter(Portfolio.position_type == position_type)
 
         if start_date:
             query = query.filter(Portfolio.date >= start_date)
