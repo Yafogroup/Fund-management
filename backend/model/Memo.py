@@ -14,12 +14,12 @@ class Memo(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.now())
     user_uid = db.Column(db.Integer, nullable=False)
 
-    def __init__(self, title, content, image, user_uid):
+    def __init__(self, title, content, image, user_uid, created_at=datetime.now()):
         self.title = title
         self.content = content
         self.image = image
         self.user_uid = user_uid
-        self.created_at = datetime.now()
+        self.created_at = created_at
 
     def to_dict(self):
         return {

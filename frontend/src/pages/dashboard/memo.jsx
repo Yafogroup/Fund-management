@@ -4,10 +4,21 @@ import {
   Alert,
   Card,
   CardHeader,
-  CardBody, Input, IconButton, Typography, DialogHeader, DialogBody, Dialog, Textarea, DialogFooter, Select, Option,
+  CardBody,
+  Input,
+  IconButton,
+  Typography,
+  DialogHeader,
+  DialogBody,
+  Dialog,
+  Textarea,
+  DialogFooter,
+  Select,
+  Option,
+  Tooltip,
 } from "@material-tailwind/react";
 import ItemMemo from "@/widgets/components/item_memo.jsx";
-import {XMarkIcon} from "@heroicons/react/24/solid/index.js";
+import {EyeIcon, XMarkIcon} from "@heroicons/react/24/solid/index.js";
 import memoService from "@/api/memoService.jsx";
 import {useNotification} from "@/context/notificationProvider.jsx";
 import messages from "@/const/msg.jsx";
@@ -31,6 +42,10 @@ export function Memo() {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedMemo, setSelectedMemo] = useState(null);
+
+  const [importFile, setImportFile] = useState(null);
+
+  const fileInput = React.useRef();
 
   const fetchMemos = async () => {
     try {
@@ -57,7 +72,9 @@ export function Memo() {
     fetchMemos();
   }, [search, startDate, endDate, page, pageCount]);
 
-
+  useEffect(() => {
+    handleImport();
+  }, [importFile]);
 
   const [form, setForm] = useState({
     title: "",
@@ -133,10 +150,51 @@ export function Memo() {
     }
   };
 
+  const onExport = async () => {
+    const result = await memoService.export();
+    const filePath = result.data.data.file_path;
+    const fileName = result.data.data.file_name;
+
+    try {
+      const response = await fetch(filePath); // Replace with your API endpoint
+      if (!response.ok) {
+        throw new Error('Network response was not ok.');
+      }
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName
+      document.body.appendChild(link);
+      link.click();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error downloading the file:', error);
+    }
+  }
+
+  const onImport = () => {
+    fileInput.current.click()
+  }
+
+  const handleImport = async () => {
+    try {
+      if (importFile) {
+        const data = new FormData();
+        data.append("import_file", importFile);
+        const result = await memoService.import(data);
+        showNotification("Memos are imported successfully.", "green");
+        setPage(1);
+      }
+    } catch (e) {
+      console.error('Import failed', e);
+    }
+  }
+
   return (
       <div className="p-6 bg-dark min-h-screen">
         <div className="flex flex-col md:flex-row md:items-end gap-4 mb-6 ml-6">
-          <div className="w-full md:w-1/4">
+          <div className="w-60">
             <Input
                 label="Search"
                 value={search}
@@ -168,7 +226,10 @@ export function Memo() {
           </div>
           <div className="w-40">
             <Select label="Select Page Count" value={pageCount}
-                    onChange={(e) => setPageCount(e)}
+                    onChange={(e) => {
+                      setPage(1);
+                      setPageCount(e);
+                    }}
                     size="lg" className="text-lBLue text-sm"
             >
               <Option value="8">8</Option>
@@ -184,6 +245,22 @@ export function Memo() {
                 onClick={() => handleNew()}
             >
               Add New
+            </Button>
+            <Button
+                variant="filled"
+                className="ml-2"
+                color="green"
+                onClick={() => onExport()}
+            >
+              Export
+            </Button>
+            <Button
+                variant="filled"
+                color="pink"
+                className="ml-2"
+                onClick={() => onImport()}
+            >
+              Import
             </Button>
           </div>
         </div>
@@ -204,6 +281,7 @@ export function Memo() {
         <div className="mt-8 flex justify-center">
           <Pagination
             page={pageTotal}
+            active={page}
             onPageChange={(p) => {
               setPage(p);
             }}
@@ -282,6 +360,14 @@ export function Memo() {
             <Button color="red" onClick={() => handleDelete()}>Delete</Button>
           </DialogFooter>
         </Dialog>
+        <input
+            ref={fileInput}
+            type="file"
+            style={{ display: 'none' }}
+            onChange={(e) => {
+              setImportFile(e.target.files[0]);
+            }}
+        />
       </div>
   );
 }

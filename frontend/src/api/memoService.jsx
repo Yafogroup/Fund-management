@@ -16,7 +16,15 @@ const MemoService = {
 
     deleteMemo: (uid) => {
         return axiosClient.delete(`/memo/delete/${uid}`);
-    }
+    },
+
+    export: () => {
+        return axiosClient.post('/memo/export');
+    },
+
+    import: (data) => {
+        return axiosClient.post('/memo/import', data);
+    },
 };
 
 export default MemoService;

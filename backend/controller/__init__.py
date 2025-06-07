@@ -33,3 +33,5 @@ from .memo import AddMemoAPI
 from .memo import DeleteMemoAPI
 from .memo import MemoListAPI
 from .memo import UpdateMemoAPI
+from .memo import ExportMemoAPI
+from .memo import ImportMemoAPI

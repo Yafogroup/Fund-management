@@ -3,15 +3,13 @@ import { Button, IconButton } from "@material-tailwind/react";
 import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
 import {any} from "prop-types";
 
-export function Pagination({page, onPageChange}) {
-    const [active, setActive] = React.useState(1);
+export function Pagination({page, active, onPageChange}) {
 
     const getItemProps = (index) =>
         ({
             variant: active === index ? "filled" : "text",
             color: "blue",
             onClick: () => {
-                setActive(index);
                 onPageChange(index);
             },
             className: "rounded-full",
@@ -20,14 +18,12 @@ export function Pagination({page, onPageChange}) {
     const next = () => {
         if (active === page) return;
 
-        setActive(active + 1);
         onPageChange(active + 1);
     };
 
     const prev = () => {
         if (active === 1) return;
 
-        setActive(active - 1);
         onPageChange(active - 1);
     };
 

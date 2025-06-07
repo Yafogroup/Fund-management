@@ -38,7 +38,9 @@ from controller import (
     TokenTypeList,
     PortfolioListAPI,
     PortfolioDelete,
-    TokenCurrentAPI
+    TokenCurrentAPI,
+    ExportMemoAPI,
+    ImportMemoAPI
 )
 
 app.config.update({
@@ -134,6 +136,12 @@ docs.register(UpdateMemoAPI)
 
 api.add_resource(DeleteMemoAPI, f'{ENDPOINT}/memo/delete/<int:memo_uid>', methods=['DELETE'])
 docs.register(DeleteMemoAPI)
+
+api.add_resource(ExportMemoAPI, f'{ENDPOINT}/memo/export', methods=['POST'])
+docs.register(ExportMemoAPI)
+
+api.add_resource(ImportMemoAPI, f'{ENDPOINT}/memo/import', methods=['POST'])
+docs.register(ImportMemoAPI)
 
 api.add_resource(AddPortfolioAPI, f'{ENDPOINT}/portfolio/add', methods=['POST'])
 docs.register(AddPortfolioAPI)
