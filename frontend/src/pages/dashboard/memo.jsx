@@ -4,7 +4,7 @@ import {
   Alert,
   Card,
   CardHeader,
-  CardBody, Input, IconButton, Typography, DialogHeader, DialogBody, Dialog, Textarea, DialogFooter,
+  CardBody, Input, IconButton, Typography, DialogHeader, DialogBody, Dialog, Textarea, DialogFooter, Select, Option,
 } from "@material-tailwind/react";
 import ItemMemo from "@/widgets/components/item_memo.jsx";
 import {XMarkIcon} from "@heroicons/react/24/solid/index.js";
@@ -12,6 +12,7 @@ import memoService from "@/api/memoService.jsx";
 import {useNotification} from "@/context/notificationProvider.jsx";
 import messages from "@/const/msg.jsx";
 import {MagnifyingGlassIcon} from "@heroicons/react/24/outline/index.js";
+import {Pagination} from "@/widgets/components/pagination.jsx";
 
 export function Memo() {
 
@@ -22,22 +23,20 @@ export function Memo() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
-  const [offset, setOffset] = useState(0);
-  const limit = 6;
-  const [hasMore, setHasMore] = useState(true);
-  const [loading, setLoading] = useState(false);
+  const [pageCount, setPageCount] = useState("8");
+  const [pageTotal, setPageTotal] = useState(1);
+  const [page, setPage] = useState(1);
 
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedMemo, setSelectedMemo] = useState(null);
 
-  const fetchMemos = async (reset = false) => {
-    setLoading(true);
+  const fetchMemos = async () => {
     try {
       const params = {
-        offset: reset ? 0 : offset,
-        limit,
+        offset: (page - 1) * pageCount,
+        limit: pageCount,
         search,
         start_date: startDate,
         end_date: endDate,
@@ -45,20 +44,18 @@ export function Memo() {
 
       const response = await memoService.getMemoList(params);
       const fetched = response.data.data.memo_list;
-
-      setMemoList((prev) => (reset ? fetched : [...prev, ...fetched]));
-      setOffset((prev) => (reset ? limit : prev + limit));
-      setHasMore(fetched.length === limit);
+      const tt = response.data.data.page_count;
+      setPageTotal(Math.floor(tt) + 1);
+      setMemoList((prev) => (fetched));
     } catch (err) {
       console.error("Failed to fetch memos", err);
     } finally {
-      setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchMemos(true);
-  }, [search, startDate, endDate]);
+    fetchMemos();
+  }, [search, startDate, endDate, page, pageCount]);
 
 
 
@@ -96,7 +93,7 @@ export function Memo() {
   const handleDelete = async () => {
     {
       await memoService.deleteMemo(selectedMemo.uid);
-      fetchMemos(true);
+      fetchMemos();
       showNotification(messages.memo_deleted, 'green');
       setDeleteModalOpen(false);
     }
@@ -129,7 +126,7 @@ export function Memo() {
         await memoService.addMemo(formData);
       }
       setEditModalOpen(false);
-      fetchMemos(true);
+      fetchMemos();
       showNotification(messages.memo_saved, 'green');
     } catch (err) {
       console.error("Save failed", err);
@@ -169,6 +166,17 @@ export function Memo() {
                 className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
             />
           </div>
+          <div className="w-40">
+            <Select label="Select Page Count" value={pageCount}
+                    onChange={(e) => setPageCount(e)}
+                    size="lg" className="text-lBLue text-sm"
+            >
+              <Option value="8">8</Option>
+              <Option value="10">10</Option>
+              <Option value="12">12</Option>
+              <Option value="20">30</Option>
+            </Select>
+          </div>
           <div className="w-full md:w-1/4 text-right flex-1 mr-7">
             <Button
                 variant="filled"
@@ -193,18 +201,15 @@ export function Memo() {
           }
         </div>
 
-        {hasMore && (
-            <div className="mt-8 flex justify-center">
-              <Button
-                  variant="outlined"
-                  color="blue"
-                  onClick={() => fetchMemos()}
-                  disabled={loading}
-              >
-                {loading ? "Loading..." : "Load More"}
-              </Button>
-            </div>
-        )}
+        <div className="mt-8 flex justify-center">
+          <Pagination
+            page={pageTotal}
+            onPageChange={(p) => {
+              setPage(p);
+            }}
+          />
+        </div>
+
 
         <Dialog open={viewModalOpen} handler={() => setViewModalOpen(false)} size="lg">
           <div className="flex justify-between items-center px-4 pt-4">
@@ -246,7 +251,7 @@ export function Memo() {
             <Textarea
                 label="Content"
                 name="content"
-                className="w-full h-80 p-2 border border-gray-300 rounded-md resize-none"
+                className="w-full h-60 p-2 border border-gray-300 rounded-md resize-none"
                 value={form.content}
                 onChange={handleFormChange}
             />

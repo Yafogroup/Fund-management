@@ -21,6 +21,7 @@ class MemoListAPI(MethodResource):
         start_date = request.json["start_date"]
         end_date = request.json["end_date"]
 
+        
         query = Memo.query
 
         if search:
@@ -32,5 +33,7 @@ class MemoListAPI(MethodResource):
         if end_date:
             query = query.filter(Memo.created_at <= end_date)
 
+        total_count = query.count()
+
         memos = query.order_by(Memo.created_at.desc()).offset(offset).limit(limit).all()
-        return response_message(200, 'success', '', {"memo_list": [memo.to_dict() for memo in memos]})
+        return response_message(200, 'success', '', {"memo_list": [memo.to_dict() for memo in memos], "page_count": total_count / limit})
