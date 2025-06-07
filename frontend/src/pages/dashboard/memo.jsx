@@ -152,7 +152,7 @@ export function Memo() {
                 value={startDate}
                 onClick={(e) => e.currentTarget.showPicker()}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-dark text-lBLue"
             />
           </div>
 
@@ -163,7 +163,7 @@ export function Memo() {
                 value={endDate}
                 onClick={(e) => e.currentTarget.showPicker()}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-dark text-lBLue"
             />
           </div>
           <div className="w-40">
