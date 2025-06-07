@@ -277,7 +277,16 @@ export function Tokens() {
                               </td>
                               <td className={className}>
                                 <Typography className="font-bold text-lBLue text-[18px]">
-                                  $ {token.old_price.toFixed(4)}
+                                  {
+                                    token.old_price >= 0.09 ?
+                                        <Typography variant="small" className="text-[18px] font-medium text-lBLue">{
+                                          token.old_price.toLocaleString("en-US", {style:"currency", currency:"USD", minimumFractionDigits: 4 })
+                                        }</Typography>
+                                        :
+                                        <CompactPrice
+                                            price={token.old_price}
+                                        />
+                                  }
                                 </Typography>
                               </td>
                               <td className={className}>
