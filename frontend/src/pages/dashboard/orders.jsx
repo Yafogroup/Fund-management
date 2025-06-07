@@ -14,7 +14,7 @@ import {
     Tooltip,
     Typography,
     CardHeader,
-    CardBody, Button, DialogHeader, DialogBody, Textarea, DialogFooter, Dialog, Avatar,
+    CardBody, Button, DialogHeader, DialogBody, Textarea, DialogFooter, Dialog, Avatar, Spinner,
 } from "@material-tailwind/react";
 import {
     MagnifyingGlassIcon,
@@ -61,6 +61,7 @@ const Orders = () => {
     const [selectedPf, setSelectedPf] = useState(null);
 
     const [realResult, setRealResult] = useState("");
+    const [showLoading, setShowLoading] = useState(false);
 
 
     const [form, setForm] = useState({
@@ -114,7 +115,6 @@ const Orders = () => {
                 toke_type: Number(tokenType),
                 status: status,
             };
-
             const response = await portfolioService.getList(params);
             let fetched = response.data.data.portfolio_list;
             setPortfolioList((prev) => (reset ? fetched : [...prev, ...fetched]));
@@ -236,6 +236,7 @@ const Orders = () => {
         formData.append("trade_type", form.trade_type);
         formData.append("status", form.status);
         formData.append("token_name", form.token_name);
+        formData.append("token_symbol", form.token_symbol);
 
         try {
             const response = await PortfolioService.save(formData);
@@ -360,16 +361,12 @@ const Orders = () => {
                         </thead>
                         <tbody>
                         {portfolioList.map((order, index) => {
-                            const logo = allTokenList.length === 0 ? "" : allTokenList.filter(t => t.id === order.token_id)[0].logo;
-                            const token_symbol = allTokenList.length === 0 ? "" : allTokenList.filter(t => t.id === order.token_id)[0].symbol;
-                            const token_type_name = allTokenList.length === 0 ? "" : typeList.filter(t => t.uid === order.token_type)[0].name;
-                            const oracle = allTokenList.length === 0 ? "" : allTokenList.filter(t => t.id === order.token_id)[0].price;
-                            const order_value = allTokenList.length === 0 ? "" : order.entry_price * order.quantity;
+                            const order_value = order.entry_price * order.quantity;
                             let est_val = 0;
                             if (order.trade_type === 1) {
-                                est_val = order.position_type === 0 ? (order.entry_price - oracle) * order.quantity : (order.entry_price - oracle) * order.quantity * order.leverage;
+                                est_val = order.position_type === 0 ? (order.entry_price - order.oracle) * order.quantity : (order.entry_price - order.oracle) * order.quantity * order.leverage;
                             } else {
-                                est_val = order.position_type === 0 ? (oracle - order.entry_price) * order.quantity : (oracle - order.entry_price) * order.quantity * order.leverage;
+                                est_val = order.position_type === 0 ? (order.oracle - order.entry_price) * order.quantity : (order.oracle - order.entry_price) * order.quantity * order.leverage;
                             }
 
                             let real_result = order.real_result === null ? "" : order.real_result.toLocaleString("en-US", {style:"currency", currency:"USD"});
@@ -379,7 +376,7 @@ const Orders = () => {
                                     <td className="p-4 text-lBLue">{order.date}</td>
                                     <td className="p-4 flex items-center">
                                         <Avatar
-                                            src={logo}
+                                            src={order.logo}
                                             alt={order.token_name}
                                             size="xs"
                                             variant="circular"
@@ -388,7 +385,7 @@ const Orders = () => {
                                         <Typography variant="small" className="text-[18px] font-medium text-lBLue mt-1">{order.token_name}</Typography>
                                     </td>
                                     <td className="p-4">
-                                        <Typography variant="small" className="text-[18px] font-medium text-lGreen mb-1">{token_type_name}</Typography>
+                                        <Typography variant="small" className="text-[18px] font-medium text-lGreen mb-1">{order.token_type_name}</Typography>
                                     </td>
                                     <td className="p-4">
                                         <Typography variant="small" className={`text-[16px] font-medium mb-1 ${order.trade_type === 0 ? "text-lBLue" : "text-red-500"}`}>
@@ -400,7 +397,7 @@ const Orders = () => {
                                         </Typography>
                                     </td>
                                     <td className="p-4">
-                                        <Typography variant="small" className="text-[18px] font-medium text-lBLue">{order.quantity.toString() + " " + token_symbol}</Typography>
+                                        <Typography variant="small" className="text-[18px] font-medium text-lBLue">{order.quantity.toString() + " " + order.token_symbol}</Typography>
                                     </td>
                                     <td className="p-4">
                                         <Typography variant="small" className="text-[18px] font-medium text-lBLue">{order_value.toLocaleString("en-US", {style:"currency", currency:"USD"})}</Typography>
@@ -409,7 +406,7 @@ const Orders = () => {
                                         <Typography variant="small" className="text-[18px] font-medium text-lBLue">{order.entry_price.toLocaleString("en-US", {style:"currency", currency:"USD"})}</Typography>
                                     </td>
                                     <td className="p-4">
-                                        <Typography variant="small" className="text-[18px] font-medium text-lBLue">{oracle.toLocaleString("en-US", {style:"currency", currency:"USD"})}</Typography>
+                                        <Typography variant="small" className="text-[18px] font-medium text-lBLue">{order.oracle.toLocaleString("en-US", {style:"currency", currency:"USD"})}</Typography>
                                     </td>
                                     <td className="p-4">
                                         {
@@ -464,7 +461,7 @@ const Orders = () => {
                         </tbody>
                     </table>
                     {
-                        portfolioList.length === 0 &&
+                        portfolioList.length === 0 && !loading &&
                         <Typography className="mt-10 text-center text-xl font-semibold text-blue-gray-600">
                             {messages.empty_content}
                         </Typography>

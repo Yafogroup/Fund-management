@@ -12,14 +12,14 @@ class CoinMarketCapAPI:
         self.session = requests.Session()
         self.session.headers.update(self.headers)
     
-    def get_current_prices(self, limit=5000):
+    def get_current_prices(self, limit=3000):
         """Get current prices for top cryptocurrencies"""
         try:
             url = f"{self.base_url}/cryptocurrency/listings/latest"
             params = {
                 'start': '1',
                 'limit': str(limit),
-                'sort': 'market_cap',
+                'sort': 'volume_24h',
                 'convert': 'USD'
             }
             
@@ -40,6 +40,57 @@ class CoinMarketCapAPI:
                     'percent_change_60d': item['quote']['USD']['percent_change_60d'],
                     'percent_change_90d': item['quote']['USD']['percent_change_90d'],
                 }
+            return result
+            
+        except requests.exceptions.RequestException as e:
+            print(f"Error fetching prices: {e}")
+            return {}
+        
+    def get_all_tokens(self):
+        """Get current prices for top cryptocurrencies"""
+        try:
+            url = f"{self.base_url}/cryptocurrency/map"
+            params = {
+                'sort': 'cmc_rank',
+            }
+            
+            response = self.session.get(url, params=params)
+            response.raise_for_status()
+            data = response.json()
+            result = []
+            for item in data['data']:
+                result.append({
+                    'symbol': item['symbol'],
+                    'name': item['name'],
+                    'id': item['id'],
+                    'logo': f"https://s2.coinmarketcap.com/static/img/coins/64x64/{item['id']}.png"
+                }); 
+            return result
+            
+        except requests.exceptions.RequestException as e:
+            print(f"Error fetching prices: {e}")
+            return {}
+        
+    def get_latest_price(self, symbols):
+        """Get current prices for top cryptocurrencies"""
+        try:
+            url = f"{self.base_url}/cryptocurrency/quotes/latest"
+            params = {
+                'symbol': symbols,
+            }
+            
+            response = self.session.get(url, params=params)
+            response.raise_for_status()
+            data = response.json()
+            result = {}
+            for symbol, item in data['data'].items():
+                result[symbol] = {
+                    'symbol': item['symbol'],
+                    'name': item['name'],
+                    'id': item['id'],
+                    'price': item['quote']['USD']['price'],
+                    'logo': f"https://s2.coinmarketcap.com/static/img/coins/64x64/{item['id']}.png"
+                }; 
             return result
             
         except requests.exceptions.RequestException as e:

@@ -13,13 +13,30 @@ class PriceChangeTracker:
         self.last_prices = []
         self.change_log = []
         self.token_list = []
+        self.token_all_list = []
         self.stop_event = threading.Event()
         self.thread = threading.Thread(target=self.background_task, daemon=True)
         self._lock = threading.Lock()
         
         with open("time.inf", "w") as f:
             f.write(str(self.interval))
+
+        self.get_all_tokens()
         
+    def get_all_tokens(self):
+        self.token_all_list = self.cmc.get_all_tokens()
+
+    def get_filtered_tokens(self, search = ""):
+        if search == "":
+            return self.token_all_list
+        else:
+            return [token for token in self.token_all_list if search.lower() in token['name'].lower() or search.lower() in token['symbol'].lower()]
+    
+    def get_latest_price(self, symbols):
+        """Fetch latest price for a list of symbols"""
+        result = self.cmc.get_latest_price(','.join(symbols))
+        return result
+
     def get_tokens(self):
         """Fetch current prices and maintain history of interval"""     
 

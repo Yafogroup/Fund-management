@@ -11,6 +11,7 @@ class Portfolio(db.Model):
     date = db.Column(db.DateTime, default=datetime.now())
     token_id = db.Column(db.Integer, nullable=False)
     token_name = db.Column(db.String, nullable=True)
+    token_symbol = db.Column(db.String, nullable=True)
     position_type = db.Column(db.Integer, nullable=False)
     token_type = db.Column(db.Integer, nullable=True)
     leverage = db.Column(db.Float, nullable=True)
@@ -22,10 +23,11 @@ class Portfolio(db.Model):
     real_result = db.Column(db.Float, nullable=True)
     user_uid = db.Column(db.String, nullable=False)
 
-    def __init__(self, token_id, token_name, position_type, token_type, leverage, entry_price, quantity, trade_type, status,user_uid):
+    def __init__(self, token_id, token_name, token_symbol, position_type, token_type, leverage, entry_price, quantity, trade_type, status,user_uid):
         self.date = datetime.now()
         self.token_id = token_id
         self.token_name = token_name
+        self.token_symbol = token_symbol
         self.position_type = position_type
         self.token_type = token_type
         self.leverage = leverage
@@ -41,6 +43,7 @@ class Portfolio(db.Model):
             "date": self.date.strftime("%m/%d/%Y"),
             "token_id": self.token_id,
             "token_name": self.token_name,
+            "token_symbol": self.token_symbol,
             "position_type": self.position_type,
             "token_type": self.token_type,
             "leverage": self.leverage,

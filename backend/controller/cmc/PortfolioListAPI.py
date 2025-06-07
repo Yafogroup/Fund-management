@@ -1,6 +1,6 @@
 from flask_apispec import MethodResource, marshal_with, doc, use_kwargs
 from helper import response_message, Serializers, RequestResponse, RequestPost, Auth
-from model import Portfolio
+from model import Portfolio, TokenType
 from controller import db
 from flask import request, current_app
 from werkzeug.utils import secure_filename
@@ -23,7 +23,23 @@ class PortfolioListAPI(MethodResource):
         toke_type = request.json["toke_type"]
         status = request.json["status"]
 
-        query = Portfolio.query
+        query = Portfolio.query.join(TokenType, Portfolio.token_type == TokenType.uid).with_entities(
+            Portfolio.uid,
+            Portfolio.date,
+            Portfolio.token_id,
+            Portfolio.position_type,
+            Portfolio.token_type,
+            Portfolio.leverage,
+            Portfolio.entry_price,
+            Portfolio.quantity,
+            Portfolio.trade_type,
+            Portfolio.status,
+            Portfolio.oracle,
+            Portfolio.real_result,
+            Portfolio.token_name,
+            Portfolio.token_symbol,
+            TokenType.name.label('token_type_name')
+        )        
 
         if search:
             query = query.filter(Portfolio.token_name.ilike(f"%{search}%"))
@@ -41,4 +57,31 @@ class PortfolioListAPI(MethodResource):
             query = query.filter(Portfolio.date <= end_date)
 
         portfolios = query.order_by(Portfolio.date.desc()).offset(offset).limit(limit).all()
-        return response_message(200, 'success', '', {"portfolio_list": [portfolio.to_dict() for portfolio in portfolios]})
+        
+        temp = [{
+            "uid": portfolio[0],
+            "date": portfolio[1].strftime("%m/%d/%Y"),
+            "token_id": portfolio[2],
+            "position_type": portfolio[3],
+            "token_type": portfolio[4],
+            "leverage": portfolio[5],
+            "entry_price": portfolio[6],
+            "quantity": portfolio[7],
+            "trade_type": portfolio[8],
+            "status": portfolio[9],
+            "oracle": portfolio[10],
+            "real_result": portfolio[11],
+            "token_name": portfolio[12],
+            "token_symbol": portfolio[13],
+            "token_type_name": portfolio[14],
+        } for portfolio in portfolios]
+
+        symbols = [portfolio['token_symbol'] for portfolio in temp]
+
+        latest_prices = current_app.tracker.get_latest_price(list(set(symbols)))
+        
+        for portfolio in temp:
+            portfolio['oracle'] = latest_prices[portfolio['token_symbol']]['price']
+            portfolio['logo'] = latest_prices[portfolio['token_symbol']]['logo']
+
+        return response_message(200, 'success', '', {"portfolio_list": temp})

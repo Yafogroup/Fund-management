@@ -20,6 +20,7 @@ export function Tokens() {
   const { showNotification } = useNotification();
   const [changeList, setChangeList] = useState([]);
   const [tokenList, setTokenList] = useState([]);
+  const [tokenAllList, setTokenAllList] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 
   const [intervalTime, setIntervalTime] = useState(localStorage.getItem('time_interval') ?? "1");
@@ -48,15 +49,26 @@ export function Tokens() {
     }
   };
 
+  const getAllTokens = async () => {
+    try {
+      const response = await tokenService.getCurrentTokenList();
+      setTokenAllList(response.data.data.data);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  }
+
   const filteredTokens = tokenList.filter(token =>
       token.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       token.symbol.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const filteredTokensModal = changeList.filter(token =>
-      token.name.toLowerCase().includes(searchModal.toLowerCase()) ||
-      token.symbol.toLowerCase().includes(searchModal.toLowerCase())
-  );
+  const filteredTokensModal = searchModal === ""
+  ? tokenAllList.slice(0, 20)
+      : tokenAllList.filter(token =>
+          token.name.toLowerCase().includes(searchModal.toLowerCase()) ||
+          token.symbol.toLowerCase().includes(searchModal.toLowerCase())
+      );
 
   const applyFilter = async () => {
     try {
@@ -83,6 +95,7 @@ export function Tokens() {
 
   useEffect(() => {
     fetchData();
+    getAllTokens();
   }, []);
 
   useEffect(() => {
@@ -354,7 +367,7 @@ export function Tokens() {
 
                             return (
                                 <tr key={idx}>
-                                  <td className={className}>
+                                  <td className="py-3 px-5 w-20">
                                     <Typography className="font-semibold text-blue-gray-600">
                                       {idx + 1}
                                     </Typography>
@@ -405,7 +418,7 @@ export function Tokens() {
             <Card className="">
               <CardBody>
                 {
-                  changeList.map((token, idx) => {
+                  tokenAllList.map((token, idx) => {
                     return (
                         selectedIds.includes(String(token.id)) &&
                         <CardHeader key={idx} className="mt-4">

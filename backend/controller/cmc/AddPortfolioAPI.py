@@ -18,6 +18,7 @@ class AddPortfolioAPI(MethodResource):
         uid = int(request.form.get('uid'))
         token_id = int(request.form.get('token_id'))
         token_name = request.form.get('token_name')
+        token_symbol = request.form.get('token_symbol')
         position_type = int(request.form.get('position_type'))
         token_type = int(request.form.get('token_type'))
         leverage = request.form.get('leverage')
@@ -34,6 +35,7 @@ class AddPortfolioAPI(MethodResource):
             pt = Portfolio(
                 token_id=token_id,
                 token_name=token_name,
+                token_symbol=token_symbol,
                 position_type=position_type,
                 token_type=token_type,
                 leverage=leverage,
@@ -51,6 +53,7 @@ class AddPortfolioAPI(MethodResource):
 
             pt.token_id = token_id
             pt.token_name = token_name
+            pt.token_symbol = token_symbol
             pt.position_type = position_type
             pt.token_type = token_type
             pt.leverage = leverage

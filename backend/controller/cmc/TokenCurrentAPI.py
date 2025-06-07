@@ -15,7 +15,7 @@ class TokenCurrentAPI(MethodResource):
     def post(self, **kwargs):
         try:
             data = {}
-            tokens = current_app.tracker.get_current_token_list()
+            tokens = current_app.tracker.get_filtered_tokens()
             data = {
                 'status': 'success',
                 'data': tokens,
