@@ -6,7 +6,7 @@ import {
   Avatar,
   Chip,
   Tooltip,
-  Progress, Checkbox, Input, Button, Select, Option, DialogHeader, IconButton, DialogBody, Dialog, Switch
+  Progress, Checkbox, Input, Button, Select, Option, DialogHeader, IconButton, DialogBody, Dialog, Switch, Spinner
 } from "@material-tailwind/react";
 import React, {useEffect, useRef, useState} from 'react';
 import tokenService from "@/api/tokenService.jsx";
@@ -35,15 +35,19 @@ export function Tokens() {
       localStorage.getItem("userToken").split(","));
   const [searchModal, setSearchModal] = useState("");
 
+  const [loading, setLoading] = useState(false);
+
   const headers = [
       'No', 'Token', 'Price', 'Old Price', 'Change', '24h', '7d', '30d', 'Timestamp'
   ]
 
   const fetchData = async () => {
     try {
+      setLoading(true);
       const response = await tokenService.getTokenList();
       setChangeList(response.data.data.data[0]);
       setTokenList(response.data.data.data[1]);
+      setLoading(false);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -311,14 +315,24 @@ export function Tokens() {
             </tbody>
           </table>
           {
-            tokenList.length === 0 &&
+            tokenList.length === 0 && !loading &&
               <Typography className="mt-10 text-center text-xl font-semibold text-blue-gray-600">
                 {messages.empty_content}
               </Typography>
           }
         </CardBody>
       </Card>
-
+      {loading && (
+          <div className="mt-8 flex justify-center">
+            <Button
+                variant="outlined"
+                color="blue"
+                disabled={loading}
+            >
+              <Spinner className="h-10 w-10" />
+            </Button>
+          </div>
+      )}
       <Dialog open={viewSelectModal} handler={() => setViewSelectModal(false)} size="lg" className="overflow-y-auto z-10">
         <div className="flex justify-between items-center px-4 pt-4">
           <DialogHeader>Select Tokens for position</DialogHeader>
