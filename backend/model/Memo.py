@@ -21,6 +21,9 @@ class Memo(db.Model):
         self.user_uid = user_uid
         self.created_at = created_at
 
+    def __eq__(self, other):
+        return isinstance(other, Memo) and self.title == other.title and self.content == other.content
+
     def to_dict(self):
         return {
             "uid": self.uid,

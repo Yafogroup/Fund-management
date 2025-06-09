@@ -26,6 +26,8 @@ class ImportMemoAPI(MethodResource):
 
         user_uid = auth['user_uid']
 
+        memo_list = Memo.query.all()
+
         for item in list:
             memo = Memo(
                 title=item.get('title'),
@@ -34,6 +36,8 @@ class ImportMemoAPI(MethodResource):
                 user_uid=item.get('user_uid'),
                 created_at=datetime.strptime(item.get('created_at'), "%m/%d/%Y, %H:%M:%S") if item.get('created_at') else datetime.now()
             )
+            if (memo in memo_list):
+                continue
             db.session.add(memo)
         
         db.session.commit()
