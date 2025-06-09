@@ -71,7 +71,7 @@ const Orders = () => {
 
     const [form, setForm] = useState({
         token_id: 0,
-        position_type: 0,
+        position_type: 1,
         token_type: 0,
         leverage: 0,
         entry_price: 0,
@@ -524,7 +524,7 @@ const Orders = () => {
                 </div>
                 <DialogBody className="px-6 pb-4 space-y-4">
                     <div className="flex items-center px-4 pt-4 gap-6">
-                        <div className="w-80">
+                        <div className="w-80" hidden={form.position_type === "0"}>
                             <Tabs value={String(form.trade_type)}>
                                 <TabsHeader>
                                     <Tab value="0" onClick={() => setForm(prev => ({...prev, ['trade_type']: 0}))}>
@@ -566,7 +566,7 @@ const Orders = () => {
                                             variant="circular"
                                             className={`cursor-pointer border-2 border-white mr-2`}
                                         />
-                                        {token.name}
+                                        {token.name.length > 8 ? token.symbol : token.name}
                                     </Option>
                                 ))}
                             </Select>
@@ -609,7 +609,7 @@ const Orders = () => {
                             <Select label="Select Position type" className="text-black"
                                     value={form.position_type}
                                     onChange={(value) => setForm(prev => ({...prev, ['position_type']: value}))}>
-                                <Option value="0" hidden={form.trade_type === 1}>Spot</Option>
+                                <Option value="0">Spot</Option>
                                 <Option value="1">Margin</Option>
                             </Select>
                         </div>

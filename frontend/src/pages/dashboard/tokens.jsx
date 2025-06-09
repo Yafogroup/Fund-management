@@ -360,7 +360,10 @@ export function Tokens() {
           </IconButton>
         </div>
         <DialogBody className="px-6 pb-4 space-y-4 max-h-[70vh] overflow-y-auto">
-          <div className="ml-auto md:mr-4 md:w-56">
+          <div className="flex w-1/2 ml-auto justify-center items-center px-6">
+            <Typography className="font-semibold text-blue-gray-600 w-80">
+              Selected Tokens: {selectedIds.length}
+            </Typography>
             <Input label="Search"
                    value={searchModal}
                    icon={<MagnifyingGlassIcon className="h-5 w-5" />}
