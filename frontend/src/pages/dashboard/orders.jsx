@@ -92,6 +92,7 @@ const Orders = () => {
     };
 
     const headers = [
+        "No",
         "Date",
         "Name",
         "Type",
@@ -387,6 +388,7 @@ const Orders = () => {
 
                             return (
                                 <tr key={index}>
+                                    <td className="p-4 text-lBLue">{index+1}</td>
                                     <td className="p-4 text-lBLue">{order.date}</td>
                                     <td className="p-4 flex items-center">
                                         <Avatar
@@ -421,9 +423,9 @@ const Orders = () => {
                                     </td>
                                     <td className="p-4">
                                         {
-                                            order.oracle >= 1 ?
+                                            order.oracle >= 0.09 ?
                                                 <Typography variant="small" className="text-[18px] font-medium text-lBLue">{
-                                                    order.oracle.toLocaleString("en-US", {style:"currency", currency:"USD"})
+                                                    order.oracle.toLocaleString("en-US", {style:"currency", currency:"USD", minimumFractionDigits: 6})
                                                 }</Typography>
                                                 :
                                                 <CompactPrice
