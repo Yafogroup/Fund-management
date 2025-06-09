@@ -326,6 +326,8 @@ const Orders = () => {
                                 <Option value="-1">All</Option>
                                 <Option value="0">Spot</Option>
                                 <Option value="1">Margin</Option>
+                                <Option value="2">Long</Option>
+                                <Option value="3">Short</Option>
                             </Select>
                         </div>
                         <div className="w-60 ml-10">

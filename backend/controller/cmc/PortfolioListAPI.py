@@ -52,7 +52,10 @@ class PortfolioListAPI(MethodResource):
             query = query.filter(Portfolio.status == status)
 
         if position_type > -1:
-            query = query.filter(Portfolio.position_type == position_type)
+            if position_type < 2:
+                query = query.filter(Portfolio.position_type == position_type)
+            else:
+                query = query.filter(Portfolio.trade_type == position_type - 2)
 
         if start_date:
             query = query.filter(Portfolio.date >= start_date)
