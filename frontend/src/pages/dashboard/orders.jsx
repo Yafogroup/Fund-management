@@ -18,7 +18,7 @@ import {
 } from "@material-tailwind/react";
 import {
     MagnifyingGlassIcon,
-    FunnelIcon,
+    ArrowsUpDownIcon,
     ArrowPathIcon,
     EllipsisVerticalIcon,
     ChevronUpDownIcon, BookOpenIcon, LockClosedIcon, EllipsisHorizontalCircleIcon, CurrencyDollarIcon,
@@ -65,6 +65,8 @@ const Orders = () => {
     const [showLoading, setShowLoading] = useState(false);
 
     const [filterPosition, setFilterPosition] = useState("-1");
+    const [sortColumn, setSortColumn] = useState("Date");
+    const [sortDirection, setSortDirection] = useState(0);
 
 
     const [form, setForm] = useState({
@@ -119,6 +121,8 @@ const Orders = () => {
                 toke_type: Number(tokenType),
                 status: status,
                 position_type: Number(filterPosition),
+                sort_column: sortColumn,
+                sort_direction: sortDirection,
             };
             const response = await portfolioService.getList(params);
             let fetched = response.data.data.portfolio_list;
@@ -261,7 +265,7 @@ const Orders = () => {
 
     useEffect(() => {
         fetchPortfolioList(true);
-    }, [searchTerm, startDate, endDate, status, tokenType, filterPosition]);
+    }, [searchTerm, startDate, endDate, status, tokenType, filterPosition, sortColumn, sortDirection]);
 
     return (
         <div className="p-4">
@@ -361,16 +365,20 @@ const Orders = () => {
                     <table className="w-full min-w-max table-auto text-left">
                         <thead>
                         <tr>
-                            {headers.map((el) => (
+                            {headers.map((el, index) => (
                                 <th
                                     key={el}
-                                    className="py-5 px-5 text-left"
+                                    className="py-5 px-5 text-left cursor-pointer"
+                                    onClick={() => {
+                                        setSortColumn(el)
+                                        setSortDirection((prev) => 1 - prev)
+                                    }}
                                 >
                                     <Typography
                                         variant="small"
-                                        className="text-[16px] font-medium text-lBLue"
+                                        className="text-[16px] font-medium text-lBLue flex"
                                     >
-                                        {el}
+                                        {el} {(index === 1 || index === 6 || index === 9 || index === 11) ? <ArrowsUpDownIcon className="h-5 w-5" /> : ""}
                                     </Typography>
                                 </th>
                             ))}
@@ -415,18 +423,18 @@ const Orders = () => {
                                         </Typography>
                                     </td>
                                     <td className="p-4">
-                                        <Typography variant="small" className="text-[18px] font-medium text-lBLue">{order.quantity.toString() + " " + order.token_symbol}</Typography>
+                                        <Typography variant="small" className="text-[16px] font-medium text-lBLue">{order.quantity.toString() + " " + order.token_symbol}</Typography>
                                     </td>
                                     <td className="p-4">
-                                        <Typography variant="small" className="text-[18px] font-medium text-lBLue">{order_value.toLocaleString("en-US", {style:"currency", currency:"USD"})}</Typography>
+                                        <Typography variant="small" className="text-[16px] font-medium text-lBLue">{order_value.toLocaleString("en-US", {style:"currency", currency:"USD"})}</Typography>
                                     </td>
                                     <td className="p-4">
-                                        <Typography variant="small" className="text-[18px] font-medium text-lBLue">{order.entry_price.toLocaleString("en-US", {style:"currency", currency:"USD"})}</Typography>
+                                        <Typography variant="small" className="text-[16px] font-medium text-lBLue">{order.entry_price.toLocaleString("en-US", {style:"currency", currency:"USD"})}</Typography>
                                     </td>
                                     <td className="p-4">
                                         {
                                             order.oracle >= 0.09 ?
-                                                <Typography variant="small" className="text-[18px] font-medium text-lBLue">{
+                                                <Typography variant="small" className="text-[16px] font-medium text-lBLue">{
                                                     order.oracle.toLocaleString("en-US", {style:"currency", currency:"USD", minimumFractionDigits: 6})
                                                 }</Typography>
                                                 :
@@ -438,7 +446,7 @@ const Orders = () => {
                                     <td className="p-4">
                                         {
                                             order.status === 0 &&
-                                            <Typography variant="small" className={`text-[18px] font-medium ${est_val < 0 ? "text-red-500" : "text-lBLue"}`}>
+                                            <Typography variant="small" className={`text-[16px] font-medium ${est_val < 0 ? "text-red-500" : "text-lBLue"}`}>
                                                 {est_val.toLocaleString("en-US", {style:"currency", currency:"USD"})}
                                             </Typography>
                                         }
@@ -457,7 +465,7 @@ const Orders = () => {
                                     </td>
                                     <td className="p-4">
                                         {real_result !== ""  ? (
-                                            <Typography variant="small" className={`text-[18px] font-medium ${order.real_result > 0 ? "text-lBLue" : "text-red-500"}`}>{real_result}</Typography>
+                                            <Typography variant="small" className={`text-[16px] font-medium ${order.real_result > 0 ? "text-lBLue" : "text-red-500"}`}>{real_result}</Typography>
                                         ) : (
                                             <span className="text-red-500 ml-4">---</span>
                                         )}

@@ -23,6 +23,8 @@ class PortfolioListAPI(MethodResource):
         toke_type = request.json["toke_type"]
         status = request.json["status"]
         position_type = request.json["position_type"]
+        sort_column = request.json["sort_column"]
+        sort_direction = request.json["sort_direction"]
 
         query = Portfolio.query.join(TokenType, Portfolio.token_type == TokenType.uid).with_entities(
             Portfolio.uid,
@@ -63,8 +65,19 @@ class PortfolioListAPI(MethodResource):
         if end_date:
             query = query.filter(Portfolio.date <= end_date)
 
-        portfolios = query.order_by(Portfolio.date.desc()).offset(offset).limit(limit).all()
-        
+        if sort_column == "Date":
+            if sort_direction == 0:
+                portfolios = query.order_by(Portfolio.date.desc()).offset(offset).limit(limit).all()
+            else:
+                portfolios = query.order_by(Portfolio.date.asc()).offset(offset).limit(limit).all()
+        elif sort_column == "Result":
+            if sort_direction == 0:
+                portfolios = query.order_by(Portfolio.real_result.desc()).offset(offset).limit(limit).all()
+            else:
+                portfolios = query.order_by(Portfolio.real_result.asc()).offset(offset).limit(limit).all()
+        else:
+            portfolios = query.all()
+
         temp = [{
             "uid": portfolio[0],
             "date": portfolio[1].strftime("%m/%d/%Y"),
@@ -90,5 +103,29 @@ class PortfolioListAPI(MethodResource):
         for portfolio in temp:
             portfolio['oracle'] = latest_prices[portfolio['token_symbol']]['price']
             portfolio['logo'] = latest_prices[portfolio['token_symbol']]['logo']
+            portfolio['order_value'] = portfolio['entry_price'] * portfolio['quantity']
+            if (portfolio['trade_type']) == 0:
+                if portfolio['position_type'] == 0:
+                    portfolio['est_val'] = (portfolio['oracle'] - portfolio['entry_price']) * portfolio['quantity'] 
+                else:
+                    portfolio['est_val'] = (portfolio['oracle'] - portfolio['entry_price']) * portfolio['quantity'] * portfolio['leverage'] 
+            else:
+                if portfolio['position_type'] == 0:
+                    portfolio['est_val'] = (portfolio['entry_price'] - portfolio['oracle']) * portfolio['quantity'] 
+                else:
+                    portfolio['est_val'] = (portfolio['entry_price'] - portfolio['oracle']) * portfolio['quantity'] * portfolio['leverage']     
 
+        if sort_column == "Est.P&L":
+            if sort_direction == 0:
+                temp.sort(key=lambda x: x['est_val'], reverse=True)
+            else:
+                temp.sort(key=lambda x: x['est_val'])
+            temp = temp[offset:offset+limit]
+        if sort_column == "Order Value":
+            if sort_direction == 0:
+                temp.sort(key=lambda x: x['order_value'], reverse=True)
+            else:
+                temp.sort(key=lambda x: x['order_value'])
+            temp = temp[offset:offset+limit]
+        
         return response_message(200, 'success', '', {"portfolio_list": temp})
