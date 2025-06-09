@@ -581,7 +581,7 @@ const Orders = () => {
                                         className={`cursor-pointer border-2 border-white mr-2`}
                                     />
                                 }
-                                <Typography variant="small" className="text-[13px] font-medium text-black mt-0.5">{form.token_name}</Typography>
+                                <Typography variant="small" className="text-[13px] font-medium text-black mt-0.5">{form.token_name.length > 8 ? form.token_symbol : form.token_name}</Typography>
                             </div>
                         </div>
                         <Typography variant="small" className="text-[15px] font-bold text-black ml-24">Token Type:</Typography>
