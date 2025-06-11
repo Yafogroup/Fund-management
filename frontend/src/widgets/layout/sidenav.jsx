@@ -65,7 +65,8 @@ export function Sidenav({ brandImg, brandName, routes }) {
             {pages
                 .filter(page => {
                   if (!page.allowedRoles) return true; // if no restriction, show it
-                  return user && page.allowedRoles.includes(user.role); // check role
+                  const role = localStorage.getItem("userRole")
+                  return page.allowedRoles.includes(role); // check role
                 })
                 .map(({ icon, name, path }) => (
               <li key={name}>

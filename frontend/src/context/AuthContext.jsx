@@ -19,6 +19,7 @@ export function AuthProvider({ children }) {
         setIsLoggedIn(true);
         localStorage.setItem('authToken', userData.auth_token);
         localStorage.setItem('userToken', userData.user_token);
+        localStorage.setItem('userRole', userData.role);
         setUser(userData);
     };
 
@@ -27,6 +28,7 @@ export function AuthProvider({ children }) {
         setUser(null);
         localStorage.removeItem('authToken');
         localStorage.removeItem('userToken');
+        localStorage.removeItem('userRole');
         navigate("/auth/sign-in");
     };
 
