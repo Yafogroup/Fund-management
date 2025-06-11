@@ -408,7 +408,7 @@ const Orders = () => {
                                             variant="circular"
                                             className={`cursor-pointer border-2 border-white mr-2`}
                                         />
-                                        <Typography variant="small" className="text-[18px] font-medium text-lBLue mt-1">{order.token_name}</Typography>
+                                        <Typography variant="small" className="text-[18px] font-medium text-lBLue mt-1">{order.token_name.length > 8 ? order.token_symbol : order.token_name}</Typography>
                                     </td>
                                     <td className="p-4">
                                         <Typography variant="small" className="text-[18px] font-medium text-lGreen mb-1">{order.token_type_name}</Typography>
@@ -426,10 +426,19 @@ const Orders = () => {
                                         <Typography variant="small" className="text-[16px] font-medium text-lBLue">{order.quantity.toString() + " " + order.token_symbol}</Typography>
                                     </td>
                                     <td className="p-4">
-                                        <Typography variant="small" className="text-[16px] font-medium text-lBLue">{order_value.toLocaleString("en-US", {style:"currency", currency:"USD"})}</Typography>
+                                        <Typography variant="small" className="text-[16px] font-medium text-lBLue">{order_value.toLocaleString("en-US", {style:"currency", currency:"USD", minimumFractionDigits: 4})}</Typography>
                                     </td>
                                     <td className="p-4">
-                                        <Typography variant="small" className="text-[16px] font-medium text-lBLue">{order.entry_price.toLocaleString("en-US", {style:"currency", currency:"USD"})}</Typography>
+                                        {
+                                            order.entry_price >= 0.09 ?
+                                                <Typography variant="small" className="text-[16px] font-medium text-lBLue">{
+                                                    order.entry_price.toLocaleString("en-US", {style:"currency", currency:"USD", minimumFractionDigits: 4})
+                                                }</Typography>
+                                                :
+                                                <CompactPrice
+                                                    price={order.entry_price}
+                                                />
+                                        }
                                     </td>
                                     <td className="p-4">
                                         {
