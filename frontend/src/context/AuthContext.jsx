@@ -10,9 +10,14 @@ export function AuthProvider({ children }) {
 
     useEffect(() => {
         const token = localStorage.getItem('authToken');
+        const userToken = localStorage.getItem('userToken');
+        const role = localStorage.getItem('userRole');
         if (token) {
             setIsLoggedIn(true);
         }
+        setUser({
+            ...user, role: role, auth_token: token, user_token: userToken,
+        });
     }, []);
 
     const login = (userData) => {
