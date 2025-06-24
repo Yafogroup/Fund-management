@@ -6,7 +6,7 @@ import {
     Menu,
     MenuHandler,
     MenuList,
-    MenuItem, Button,
+    MenuItem, Button, Spinner,
 } from "@material-tailwind/react";
 import Chart from "react-apexcharts";
 import {
@@ -24,11 +24,25 @@ import {subDays, subMonths, subWeeks, format, subYears} from 'date-fns';
 // import dynamic from "next/dynamic";
 // const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
+function LoadingScreen() {
+    return (
+        <div className="fixed inset-0 grid h-screen w-screen place-items-center bg-gray-900 bg-opacity-75 transition-opacity">
+            <div className="flex flex-col items-center gap-4">
+                <Spinner color="amber" className="h-16 w-16" />
+                <Typography color="white" className="text-xl font-normal">
+                    Loading data...
+                </Typography>
+            </div>
+        </div>
+    );
+}
 
 
 export default function Dashboard() {
 
     const [openMenu, setOpenMenu] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [periodConfig, setPeriodConfig] = useState(0)
 
     const [barChartInfo, setBarChartInfo] = useState({
         'chart_categories': [],
@@ -277,6 +291,7 @@ export default function Dashboard() {
     ];
 
     const init = async () => {
+        setIsLoading(true);
         const result = await dashboardService.get_info({
             "start_date": startDate,
             "end_date": endDate,
@@ -286,10 +301,11 @@ export default function Dashboard() {
 
         setBarChartInfo(result.data.data.bar_chart_info)
         setPieChartInfo(result.data.data.pie_chart_info)
-
+        setIsLoading(false);
     }
 
     const setPieTitle = (type, value) => {
+        setPeriodConfig(type)
         setPieType(type);
         setPieName(value);
     }
@@ -312,6 +328,10 @@ export default function Dashboard() {
     useEffect(() => {
         init();
     }, [startDate, endDate]);
+
+    if (isLoading) {
+        return <LoadingScreen />;
+    }
 
     return (
         <div>
@@ -342,6 +362,7 @@ export default function Dashboard() {
                                 <Select label="Select an option"
                                         size="lg" className="text-lBLue"
                                         onChange={(value) => setPeriodType(value)}
+                                        value={periodConfig}
                                 >
                                     <Option value="0">Monthly</Option>
                                     <Option value="1">Weekly</Option>
