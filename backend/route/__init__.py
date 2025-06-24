@@ -40,7 +40,8 @@ from controller import (
     PortfolioDelete,
     TokenCurrentAPI,
     ExportMemoAPI,
-    ImportMemoAPI
+    ImportMemoAPI,
+    DashboardDataAPI
 )
 
 app.config.update({
@@ -163,4 +164,7 @@ docs.register(TokenTypeList)
 
 api.add_resource(PortfolioDelete, f'{ENDPOINT}/portfolio/delete/<int:uid>', methods=['DELETE'])
 docs.register(PortfolioDelete)
+
+api.add_resource(DashboardDataAPI, f'{ENDPOINT}/dashboard/info', methods=['POST'])
+docs.register(DashboardDataAPI)
 

@@ -35,3 +35,5 @@ from .memo import MemoListAPI
 from .memo import UpdateMemoAPI
 from .memo import ExportMemoAPI
 from .memo import ImportMemoAPI
+
+from .dashboard import DashboardDataAPI
