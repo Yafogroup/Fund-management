@@ -21,7 +21,7 @@ const StatCard = ({ title, value, change, isPositive }) => {
                     <InformationCircleIcon className="w-8 h-8 text-gray-500" />
                 </div>
                 <Typography variant="h4" className="text-white">
-                    {value}
+                    {value.toLocaleString("en-US", {style:"currency", currency:"USD"})}
                 </Typography>
                 <div className="flex items-center mt-2">
                     {isPositive ? (

@@ -18,7 +18,7 @@ import {
 import StatCard from "@/widgets/components/stat_card.jsx";
 import React, {useEffect, useState} from "react";
 import dashboardService from "@/api/dashboardService.jsx";
-import {data} from "autoprefixer";
+import {subDays, subMonths, subWeeks, format, subYears} from 'date-fns';
 
 // If you're using Next.js please use the dynamic import for react-apexcharts and remove the import from the top for the react-apexcharts
 // import dynamic from "next/dynamic";
@@ -46,6 +46,10 @@ export default function Dashboard() {
         'list_spot': [],
         'total_margin': 0,
         'total_spot': 0,
+        'real_profit': 0,
+        'real_profit_total': 0,
+        'unreal_profit': 0,
+        'unreal_profit_total': 0,
     });
 
     const [startDate, setStartDate] = useState("2025-02-01");
@@ -290,17 +294,32 @@ export default function Dashboard() {
         setPieName(value);
     }
 
+    const setPeriodType = (type) => {
+        const end = new Date();
+        let start = new Date();
+        if (type === "0") {
+            start = subMonths(end, 1);
+        } else if (type === "1") {
+            start = subWeeks(end, 1);
+        } else {
+            start = subYears(start, 1);
+        }
+
+        setEndDate(format(end, 'yyyy-MM-dd'));
+        setStartDate(format(start, 'yyyy-MM-dd'));
+    }
+
     useEffect(() => {
         init();
-    }, []);
+    }, [startDate, endDate]);
 
     return (
         <div>
             <div className="grid grid-cols-4 gap-8">
-                <StatCard title="Realized Profit" value="$10,770.84" change="13.46%" isPositive={true} />
-                <StatCard title="Total Profit" value="$5,946.32" change="2.44%" isPositive={true} />
-                <StatCard title="Unrealized P&L" value="$4,823.00" change="13.46%" isPositive={false} />
-                <StatCard title="Outstanding premium" value="$274.00" change="6.82%" isPositive={true} />
+                <StatCard title="Realized Profit" value={pieChartInfo.real_profit} change="13.46%" isPositive={true} />
+                <StatCard title="Total Profit" value={pieChartInfo.real_profit_total} change="2.44%" isPositive={true} />
+                <StatCard title="Unrealized P&L" value={pieChartInfo.unreal_profit} change="13.46%" isPositive={false} />
+                <StatCard title="Outstanding premium" value={pieChartInfo.unreal_profit_total} change="6.82%" isPositive={true} />
             </div>
             <div className="flex mt-4 gap-4">
                 <Card className="w-2/3 bg-white/5 backdrop-blur-sm shadow-lg rounded-xl">
@@ -322,10 +341,11 @@ export default function Dashboard() {
                                 </Typography>
                                 <Select label="Select an option"
                                         size="lg" className="text-lBLue"
+                                        onChange={(value) => setPeriodType(value)}
                                 >
-                                    <Option value="1">Monthly</Option>
-                                    <Option value="5">Weekly</Option>
-                                    <Option value="15">Daily</Option>
+                                    <Option value="0">Monthly</Option>
+                                    <Option value="1">Weekly</Option>
+                                    <Option value="2">Yearly</Option>
                                 </Select>
                             </div>
                             <div>

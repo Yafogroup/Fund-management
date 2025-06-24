@@ -201,6 +201,12 @@ class DashboardDataAPI(MethodResource):
         if len(symbols) > 0:
             latest_prices = current_app.tracker.get_latest_price(list(set(symbols)))
 
+
+        real_profit = 0
+        real_profit_total = 0
+        unreal_profit = 0
+        unreal_profit_total = 0        
+
         for portfolio in temp:
             portfolio['oracle'] = latest_prices[portfolio['token_symbol']]['price']
             portfolio['logo'] = latest_prices[portfolio['token_symbol']]['logo']
@@ -241,6 +247,15 @@ class DashboardDataAPI(MethodResource):
                     else:
                         list_margin_short[portfolio['token_type_name']] += portfolio['real_result']
             
+            if portfolio['status'] == 1:
+                real_profit_total += portfolio['real_result']
+                if portfolio['real_result'] > 0:
+                    real_profit += portfolio['real_result']
+            else:
+                unreal_profit_total += portfolio['est_val']
+                if portfolio['est_val'] > 0:
+                    unreal_profit += portfolio['est_val']
+            
 
         pie_info = {
             'total_spot': total_spot,
@@ -248,7 +263,11 @@ class DashboardDataAPI(MethodResource):
             'list_spot': list_spot,
             'list_margin': list_margin,
             'list_margin_short': list_margin_short,
-            'list_margin_long': list_margin_long
+            'list_margin_long': list_margin_long,
+            'real_profit': real_profit,
+            'real_profit_total': real_profit_total,
+            'unreal_profit': unreal_profit,
+            'unreal_profit_total': unreal_profit_total
         }
 
         return pie_info
