@@ -43,6 +43,8 @@ export default function Dashboard() {
     const [openMenu, setOpenMenu] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [periodConfig, setPeriodConfig] = useState(0)
+    const [plType, setPlType] = useState("-1");
+    const [status, setStatus] = useState("-1");
 
     const [barChartInfo, setBarChartInfo] = useState({
         'chart_categories': [],
@@ -66,33 +68,94 @@ export default function Dashboard() {
         'unreal_profit_total': 0,
     });
 
-    const [startDate, setStartDate] = useState("2025-02-01");
-    const [endDate, setEndDate] = useState("2025-07-01");
+    const [startDate, setStartDate] = useState(format(subMonths(new Date(), 1), 'yyyy-MM-dd'));
+    const [endDate, setEndDate] = useState(format(new Date(), 'yyyy-MM-dd'));
 
     const [pieType, setPieType] = useState(-1);
     const [pieName, setPieName] = useState("All");
 
+    const [yearData, setYearData] = useState([]);
+    const [todayInfo, setTodayInfo] = useState({})
+
     const chartConfig = {
         type: "bar",
         height: 480,
-        series: [
-            {
-                name: "Closed Profit",
-                data: barChartInfo.closed_profit,
-            },
-            {
-                name: "Closed Loss",
-                data: barChartInfo.closed_loss,
-            },
-            {
-                name: "Opened Profit",
-                data: barChartInfo.open_profit,
-            },
-            {
-                name: "Opened Loss",
-                data: barChartInfo.open_loss,
-            },
-        ],
+        series:
+            plType === "-1" ?
+                (status === "-1" ? [
+                    {
+                        name: "Closed Profit",
+                        data: barChartInfo.closed_profit,
+                    },
+                    {
+                        name: "Closed Loss",
+                        data: barChartInfo.closed_loss,
+                    },
+                    {
+                        name: "Opened Profit",
+                        data: barChartInfo.open_profit,
+                    },
+                    {
+                        name: "Opened Loss",
+                        data: barChartInfo.open_loss,
+                    },
+                ] : status === "0" ? [
+                    {
+                        name: "Opened Profit",
+                        data: barChartInfo.open_profit,
+                    },
+                    {
+                        name: "Opened Loss",
+                        data: barChartInfo.open_loss,
+                    },
+                ] : [
+                    {
+                        name: "Closed Profit",
+                        data: barChartInfo.closed_profit,
+                    },
+                    {
+                        name: "Closed Loss",
+                        data: barChartInfo.closed_loss,
+                    }
+                ]) : plType === "0" ? (status === "-1" ? [
+                        {
+                            name: "Closed Profit",
+                            data: barChartInfo.closed_profit,
+                        },
+                        {
+                            name: "Opened Profit",
+                            data: barChartInfo.open_profit,
+                        }
+                    ] : status === "0" ? [
+                        {
+                            name: "Opened Profit",
+                            data: barChartInfo.open_profit,
+                        }
+                    ] : [
+                        {
+                            name: "Closed Profit",
+                            data: barChartInfo.closed_profit,
+                        }
+                    ]) : (status === "-1" ? [
+                    {
+                        name: "Closed Loss",
+                        data: barChartInfo.closed_loss,
+                    },
+                    {
+                        name: "Opened Loss",
+                        data: barChartInfo.open_loss,
+                    },
+                ] : status === "0" ? [
+                    {
+                        name: "Opened Loss",
+                        data: barChartInfo.open_loss,
+                    },
+                ] : [
+                    {
+                        name: "Closed Loss",
+                        data: barChartInfo.closed_loss,
+                    },
+                ]),
         options: {
             chart: {
                 toolbar: {
@@ -241,66 +304,77 @@ export default function Dashboard() {
         },
     };
     const pchartConfig = {
-        type: "pie",
-        width: 320,
+        type: "bar",
+        width: 450,
         height: 320,
+        series: [
+            {
+                name: "Profit",
+                data: pieType === -1 ? [pieChartInfo.total_margin, pieChartInfo.total_spot]
+                    : pieType === 0 ? Object.values(pieChartInfo.list_spot)
+                        : pieType === 1 ? Object.values(pieChartInfo.list_margin)
+                            : pieType === 2 ? Object.values(pieChartInfo.list_margin_long)
+                                : Object.values(pieChartInfo.list_margin_short)
+            }
+        ],
         options: {
             chart: {
                 toolbar: {
                     show: false,
                 },
             },
-            labels: pieType === -1 ? ["margin", "spot"]
-                : pieType === 0 ? Object.keys(pieChartInfo.list_spot)
-                    : pieType === 1 ? Object.keys(pieChartInfo.list_margin)
-                        : pieType === 2 ? Object.keys(pieChartInfo.list_margin_long)
-                            : Object.keys(pieChartInfo.list_margin_short),
-            title: {
-                show: "",
+            plotOptions: {
+                bar: {
+                    horizontal: true,
+                }
             },
             dataLabels: {
-                enabled: false,
+                enabled: false
             },
-            colors: ["#020617", "#ff8f00", "#00897b", "#1e88e5", "#d81b60"],
-            legend: {
-                show: false,
+            xaxis: {
+                categories: pieType === -1 ? ["margin", "spot"]
+                    : pieType === 0 ? Object.keys(pieChartInfo.list_spot)
+                        : pieType === 1 ? Object.keys(pieChartInfo.list_margin)
+                            : pieType === 2 ? Object.keys(pieChartInfo.list_margin_long)
+                                : Object.keys(pieChartInfo.list_margin_short),
             },
+            grid: {
+                xaxis: {
+                    lines: {
+                        show: false
+                    }
+                },
+                yaxis: {
+                    lines: {
+                        show: true,
+                    }
+                },
+                borderColor: "#988e8e",
+            },
+            yaxis: {
+                reversed: true,
+                axisTicks: {
+                    show: true
+                }
+            }
         },
     };
-
-    const returnData = [
-        { month: "Mar 2022", percent: "0.00%", amount: "$0.00", isPositive: false },
-        { month: "Feb 2022", percent: "0.75%", amount: "$598.00", isPositive: false },
-        { month: "Jan 2022", percent: "1.32%", amount: "$1,058.00", isPositive: true },
-        { month: "Jan 2022", percent: "1.32%", amount: "$1,058.00", isPositive: true },
-        { month: "Jan 2022", percent: "1.32%", amount: "$1,058.00", isPositive: true },
-        { month: "Jan 2022", percent: "1.32%", amount: "$1,058.00", isPositive: true },
-        { month: "Jan 2022", percent: "1.32%", amount: "$1,058.00", isPositive: true },
-        { month: "Jan 2022", percent: "1.32%", amount: "$1,058.00", isPositive: true },
-        { month: "Jan 2022", percent: "1.32%", amount: "$1,058.00", isPositive: true },
-        { month: "Jan 2022", percent: "1.32%", amount: "$1,058.00", isPositive: true },
-        { month: "Jan 2022", percent: "1.32%", amount: "$1,058.00", isPositive: true },
-        { month: "Jan 2022", percent: "1.32%", amount: "$1,058.00", isPositive: true },
-        { month: "Jan 2022", percent: "1.32%", amount: "$1,058.00", isPositive: true },
-        { month: "Dec 2022", percent: "1.23%", amount: "$987.00", isPositive: false },
-        { month: "Dec 2022", percent: "1.23%", amount: "$987.00", isPositive: false },
-        { month: "Dec 2022", percent: "1.23%", amount: "$987.00", isPositive: false },
-        { month: "Dec 2022", percent: "1.23%", amount: "$987.00", isPositive: false },
-        { month: "Dec 2022", percent: "1.23%", amount: "$987.00", isPositive: false },
-        { month: "Dec 2022", percent: "1.23%", amount: "$987.00", isPositive: false },
-    ];
 
     const init = async () => {
         setIsLoading(true);
         const result = await dashboardService.get_info({
             "start_date": startDate,
             "end_date": endDate,
+            "pl": plType,
+            "status": status,
         });
         console.log(result.data.data.bar_chart_info);
         console.log(result.data.data.pie_chart_info);
 
         setBarChartInfo(result.data.data.bar_chart_info)
         setPieChartInfo(result.data.data.pie_chart_info)
+        setYearData(result.data.data.year_info)
+        setTodayInfo(result.data.data.today_info)
         setIsLoading(false);
     }
 
@@ -321,13 +395,15 @@ export default function Dashboard() {
             start = subYears(start, 1);
         }
 
+        setPeriodConfig(type);
+
         setEndDate(format(end, 'yyyy-MM-dd'));
         setStartDate(format(start, 'yyyy-MM-dd'));
     }
 
     useEffect(() => {
         init();
-    }, [startDate, endDate]);
+    }, [startDate, endDate, plType, status]);
 
     if (isLoading) {
         return <LoadingScreen />;
@@ -336,62 +412,86 @@ export default function Dashboard() {
     return (
         <div>
             <div className="grid grid-cols-4 gap-8">
-                <StatCard title="Realized Profit" value={pieChartInfo.real_profit} change="13.46%" isPositive={true} />
-                <StatCard title="Total Profit" value={pieChartInfo.real_profit_total} change="2.44%" isPositive={true} />
-                <StatCard title="Unrealized P&L" value={pieChartInfo.unreal_profit} change="13.46%" isPositive={false} />
-                <StatCard title="Outstanding premium" value={pieChartInfo.unreal_profit_total} change="6.82%" isPositive={true} />
+                <StatCard title="Realized Profit" value={todayInfo.real_profit} change={todayInfo.percent_real_profit} isPositive={todayInfo.percent_real_profit > 0} />
+                <StatCard title="Total Profit" value={todayInfo.real_total_profit} change={todayInfo.percent_real_total_profit} isPositive={todayInfo.percent_real_total_profit > 0} />
+                <StatCard title="Unrealized P&L" value={todayInfo.unreal_profit} change={todayInfo.percent_unreal_profit} isPositive={todayInfo.percent_unreal_profit > 0} />
+                <StatCard title="Outstanding premium" value={todayInfo.unreal_total_profit} change={todayInfo.percent_unreal_total_profit} isPositive={todayInfo.percent_unreal_total_profit > 0} />
             </div>
             <div className="flex mt-4 gap-4">
                 <Card className="w-2/3 bg-white/5 backdrop-blur-sm shadow-lg rounded-xl">
                     <CardBody className="px-2 pb-0">
-                        <div className="grid grid-cols-4 gap-4 rounded-none md:flex-row md:items-center px-8">
-                            <div>
+                        <div className="flex">
+                            <div className="w-1/3">
                                 <Typography variant="small" color="dark" className="font-medium text-[16px]">
                                     Period
                                 </Typography>
-                                <Select label="Select an option" size="lg" className="text-lBLue">
-                                    <Option value="1">1 year</Option>
-                                    <Option value="5">1 month</Option>
-                                    <Option value="15">1 week</Option>
-                                </Select>
+                                <div className="flex">
+                                    <div className="w-full">
+                                        <input
+                                            type="date"
+                                            value={startDate}
+                                            onClick={(e) => e.currentTarget.showPicker()}
+                                            onChange={(e) => setStartDate(e.target.value)}
+                                            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-transparent text-lBLue"
+                                        />
+                                    </div>
+                                    <Typography variant="small" color="white" className="font-medium text-[16px] pt-2 pl-4">
+                                        to
+                                    </Typography>
+                                    <div className="w-full ml-4">
+                                        <input
+                                            type="date"
+                                            value={endDate}
+                                            onClick={(e) => e.currentTarget.showPicker()}
+                                            onChange={(e) => setEndDate(e.target.value)}
+                                            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-transparent text-lBLue"
+                                        />
+                                    </div>
+                                </div>
                             </div>
-                            <div>
-                                <Typography variant="small" color="dark" className="font-medium text-[16px]">
-                                    Granularity
-                                </Typography>
-                                <Select label="Select an option"
-                                        size="lg" className="text-lBLue"
-                                        onChange={(value) => setPeriodType(value)}
-                                        value={periodConfig}
-                                >
-                                    <Option value="0">Monthly</Option>
-                                    <Option value="1">Weekly</Option>
-                                    <Option value="2">Yearly</Option>
-                                </Select>
-                            </div>
-                            <div>
-                                <Typography variant="small" color="dark" className="font-medium text-[16px]">
-                                    P&L
-                                </Typography>
-                                <Select label="Select an option"
-                                        size="lg" className="text-lBLue"
-                                >
-                                    <Option value="1">All</Option>
-                                    <Option value="5">Profit</Option>
-                                    <Option value="15">Loss</Option>
-                                </Select>
-                            </div>
-                            <div>
-                                <Typography variant="small" color="dark" className="font-medium text-[16px]">
-                                    Status
-                                </Typography>
-                                <Select label="Select an option"
-                                        size="lg" className="text-lBLue"
-                                >
-                                    <Option value="1">All</Option>
-                                    <Option value="5">Open</Option>
-                                    <Option value="15">Close</Option>
-                                </Select>
+                            <div className="grid grid-cols-3 gap-4 rounded-none md:flex-row md:items-center px-8">
+                                <div>
+                                    <Typography variant="small" color="dark" className="font-medium text-[16px]">
+                                        Granularity
+                                    </Typography>
+                                    <Select label="Select an option"
+                                            size="lg" className="text-lBLue"
+                                            onChange={(value) => setPeriodType(value)}
+                                            value={periodConfig}
+                                    >
+                                        <Option value="0">Monthly</Option>
+                                        <Option value="1">Weekly</Option>
+                                        <Option value="2">Yearly</Option>
+                                    </Select>
+                                </div>
+                                <div>
+                                    <Typography variant="small" color="dark" className="font-medium text-[16px]">
+                                        P&L
+                                    </Typography>
+                                    <Select label="Select an option"
+                                            size="lg" className="text-lBLue"
+                                            value={plType}
+                                            onChange={(value) => setPlType(value)}
+                                    >
+                                        <Option value="-1">All</Option>
+                                        <Option value="0">Profit</Option>
+                                        <Option value="1">Loss</Option>
+                                    </Select>
+                                </div>
+                                <div>
+                                    <Typography variant="small" color="dark" className="font-medium text-[16px]">
+                                        Status
+                                    </Typography>
+                                    <Select label="Select an option"
+                                            size="lg" className="text-lBLue"
+                                            value={status}
+                                            onChange={(value) => setStatus(value)}
+                                    >
+                                        <Option value="-1">All</Option>
+                                        <Option value="0">Open</Option>
+                                        <Option value="1">Close</Option>
+                                    </Select>
+                                </div>
                             </div>
                         </div>
                         <Chart {...chartConfig} />
@@ -419,7 +519,7 @@ export default function Dashboard() {
                                 <span className="text-right">$ Returned</span>
                             </div>
 
-                            {returnData.map((item, index) => (
+                            {yearData.map((item, index) => (
                                 <div
                                     key={index}
                                     className="grid grid-cols-3 items-center text-sm py-1 text-white"
@@ -427,13 +527,13 @@ export default function Dashboard() {
                                     <span>{item.month}</span>
                                     <div className="flex items-center gap-1">
                                         <span>{item.percent}</span>
-                                        {item.isPositive ? (
+                                        {item.is_positive ? (
                                             <CheckCircleIcon className="w-4 h-4 text-green-500" />
                                         ) : (
                                             <ExclamationCircleIcon className="w-4 h-4 text-red-500" />
                                         )}
                                     </div>
-                                    <span className="text-right">{item.amount}</span>
+                                    <span className="text-right">{item.profit}</span>
                                 </div>
                             ))}
                         </CardBody>
@@ -443,10 +543,7 @@ export default function Dashboard() {
                             <div className="flex items-center justify-between mb-2">
                                 <div>
                                     <Typography variant="small" className="text-gray-300 font-medium">
-                                        Return % per token type
-                                    </Typography>
-                                    <Typography variant="small" className="text-sm text-gray-500">
-                                        (Calculated from closed trades)
+                                        Return profit per token type
                                     </Typography>
                                 </div>
                                 <Menu>
@@ -484,15 +581,8 @@ export default function Dashboard() {
                                 </Menu>
                                 <InformationCircleIcon className="w-4 h-4 text-gray-500" />
                             </div>
-                            <div className="mt-8 grid place-items-center px-2">
-                                <Chart {...pchartConfig}
-                                       series={
-                                    pieType === -1 ? [pieChartInfo.total_margin, pieChartInfo.total_spot]
-                                        : pieType === 0 ? Object.values(pieChartInfo.list_spot)
-                                            : pieType === 1 ? Object.values(pieChartInfo.list_margin)
-                                                : pieType === 2 ? Object.values(pieChartInfo.list_margin_long)
-                                                    : Object.values(pieChartInfo.list_margin_short)
-                                } />
+                            <div className="mt-8">
+                                <Chart {...pchartConfig} />
                             </div>
                         </CardBody>
                     </Card>
