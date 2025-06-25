@@ -29,7 +29,7 @@ export const routes = [
         icon: <HomeIcon {...icon} />,
         name: "dashboard",
         path: "/home",
-        element: <Home />,
+        element: <Dashboard />,
       },
       {
         icon: <UserCircleIcon {...icon} />,
@@ -66,7 +66,7 @@ export const routes = [
         icon: <InformationCircleIcon {...icon} />,
         name: "profile",
         path: "/profile",
-        element: <Dashboard />,
+        element: <Home />,
       },
     ],
   },
