@@ -354,7 +354,7 @@ class DashboardDataAPI(MethodResource):
             year_info.append({
                 'month' : period[0].strftime('%Y-%m'),
                 'percent': round((round(info[0] + info[1] + info[2] + info[3], 2) - past_val) / past_val * 100 if past_val != 0 else 100, 2),
-                'profit': round(info[0] + info[1] + info[2] + info[3], 2),
+                'profit': round(info[0] + info[1], 2),
                 'is_positive': (round(info[0] + info[1] + info[2] + info[3], 2) - past_val) >= 0
             })
             past_val = round(info[0] + info[1] + info[2] + info[3], 2)

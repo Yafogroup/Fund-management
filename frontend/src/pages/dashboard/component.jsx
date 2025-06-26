@@ -331,6 +331,16 @@ export default function Dashboard() {
             dataLabels: {
                 enabled: false
             },
+            annotations: {
+                xaxis: [ // Note: use 'yaxis' for a VERTICAL line
+                    {
+                        y: 0, // THIS IS THE MAGIC: Position the vertical line at the x-value of 0
+                        borderColor: '#999',
+                        strokeDashArray: 0, // 0 means a solid line
+                        borderWidth: 1,
+                    },
+                ],
+            },
             xaxis: {
                 categories: pieType === -1 ? ["margin", "spot"]
                     : pieType === 0 ? Object.keys(pieChartInfo.list_spot)
@@ -346,15 +356,16 @@ export default function Dashboard() {
                 },
                 yaxis: {
                     lines: {
-                        show: true,
+                        show: false,
                     }
                 },
-                borderColor: "#988e8e",
             },
             yaxis: {
-                reversed: true,
+                axisBorder: {
+                    show: false
+                },
                 axisTicks: {
-                    show: true
+                    show: false
                 }
             }
         },
