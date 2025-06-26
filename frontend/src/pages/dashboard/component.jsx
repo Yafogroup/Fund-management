@@ -42,7 +42,7 @@ export default function Dashboard() {
 
     const [openMenu, setOpenMenu] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
-    const [periodConfig, setPeriodConfig] = useState(0)
+    const [periodConfig, setPeriodConfig] = useState("-1")
     const [plType, setPlType] = useState("-1");
     const [status, setStatus] = useState("-1");
 
@@ -385,6 +385,7 @@ export default function Dashboard() {
             "end_date": endDate,
             "pl": plType,
             "status": status,
+            "period_type": periodConfig,
         });
         console.log(result.data.data.bar_chart_info);
         console.log(result.data.data.pie_chart_info);
@@ -421,7 +422,7 @@ export default function Dashboard() {
 
     useEffect(() => {
         init();
-    }, [startDate, endDate, plType, status]);
+    }, [startDate, endDate, plType, status, periodConfig]);
 
     if (isLoading) {
         return <LoadingScreen />;
@@ -480,6 +481,7 @@ export default function Dashboard() {
                                         <Option value="0">Monthly</Option>
                                         <Option value="1">Weekly</Option>
                                         <Option value="2">Yearly</Option>
+                                        <Option value="3">Daily</Option>
                                     </Select>
                                 </div>
                                 <div>

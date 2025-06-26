@@ -18,10 +18,14 @@ class DashboardDataAPI(MethodResource):
     def post(self, **kwargs):
         start_date = request.json["start_date"]
         end_date = request.json["end_date"]
+        period_type = request.json["period_type"]
         pl = request.json["pl"]
         status = request.json["status"]
 
-        period_list = self.split_period(start_date, end_date)
+        if period_type == "-1":
+            period_list = self.split_period(start_date, end_date)
+        else:
+            period_list = self.make_period(period_type)
 
         bar_chart_info = {}
 
@@ -32,6 +36,8 @@ class DashboardDataAPI(MethodResource):
         total_profit_list = []
         
         chart_categories = []
+
+        count = 1
 
         for period in period_list:
             query = Portfolio.query
@@ -66,7 +72,16 @@ class DashboardDataAPI(MethodResource):
                 else:
                     total_profit_list.append(round(info[1], 2))
 
-            chart_categories.append(period[0].strftime('%Y-%m-%d'))
+            if period_type == "0":
+                chart_categories.append(period[0].strftime('%Y-%m'))
+            elif period_type == "1":
+                chart_categories.append(str(count) + "week")
+            elif period_type == "2":
+                chart_categories.append(period[0].strftime('%Y'))
+            else:
+                chart_categories.append(period[0].strftime('%Y-%m-%d'))
+
+            count = count + 1
 
         bar_chart_info['closed_profit'] = closed_profit_list
         bar_chart_info['closed_loss'] = closed_loss_list
@@ -141,6 +156,50 @@ class DashboardDataAPI(MethodResource):
                     result.append((current, current))
                     current += timedelta(days=1)
 
+        return result
+    
+    def make_period(self, type):
+        today = datetime.now()
+        result = []
+
+        if type == "0":
+            start_date = datetime(today.year, 1, 1)
+            end_date = datetime(today.year, 12, 31)
+            current = start_date
+            while current <= end_date:
+                # calculate first day of next month
+                if current.month == 12:
+                    next_month = datetime(current.year + 1, 1, 1)
+                else:
+                    next_month = datetime(current.year, current.month + 1, 1)
+
+                period_end = min(next_month - timedelta(days=1), end_date)
+                result.append((current, period_end))
+                current = next_month
+        elif type == "1":
+            start_date = datetime(today.year, today.month, 1)
+            end_date = datetime(today.year, today.month + 1, 1)
+            current = start_date
+            while current < end_date:
+                period_end = min(current + timedelta(days=6), end_date)
+                result.append((current, period_end))
+                current += timedelta(days=7)
+        elif type == "2":
+            start_date = datetime(2025, 1, 1)
+            end_date = datetime(today.year, 12, 31)
+            current = start_date
+            while current < end_date:
+                period_end = min(current + timedelta(days=365), end_date)
+                result.append((current, period_end))
+                current += timedelta(days=365)
+        else:
+            start_date = datetime(today.year, today.month, 1)
+            end_date = today
+            current = start_date
+            while current <= end_date:
+                result.append((current, current))
+                current += timedelta(days=1)
+        
         return result
     
     def get_detail_info(self, p_list):
