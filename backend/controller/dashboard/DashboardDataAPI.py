@@ -90,7 +90,7 @@ class DashboardDataAPI(MethodResource):
         
         return response_message(200, 'success', '', response_data)
     
-    def split_period(self, start, end):
+    def split_period(self, start, end, isMonth=False):
 
         start_date = datetime.strptime(start, '%Y-%m-%d')
         end_date = datetime.strptime(end, '%Y-%m-%d')
@@ -98,8 +98,8 @@ class DashboardDataAPI(MethodResource):
         result = []
         delta = (end_date - start_date).days
 
-        if delta >= 60:
-            # Split by month manually
+        if isMonth == True:
+            # Split by month
             current = start_date
             while current <= end_date:
                 # calculate first day of next month
@@ -111,21 +111,35 @@ class DashboardDataAPI(MethodResource):
                 period_end = min(next_month - timedelta(days=1), end_date)
                 result.append((current, period_end))
                 current = next_month
-
-        elif delta > 14:
-            # Split by week (7 days)
-            current = start_date
-            while current <= end_date:
-                period_end = min(current + timedelta(days=6), end_date)
-                result.append((current, period_end))
-                current += timedelta(days=7)
-
         else:
-            # Split by day
-            current = start_date
-            while current <= end_date:
-                result.append((current, current))
-                current += timedelta(days=1)
+            if delta >= 60:
+                # Split by month manually
+                current = start_date
+                while current <= end_date:
+                    # calculate first day of next month
+                    if current.month == 12:
+                        next_month = datetime(current.year + 1, 1, 1)
+                    else:
+                        next_month = datetime(current.year, current.month + 1, 1)
+
+                    period_end = min(next_month - timedelta(days=1), end_date)
+                    result.append((current, period_end))
+                    current = next_month
+
+            elif delta > 14:
+                # Split by week (7 days)
+                current = start_date
+                while current <= end_date:
+                    period_end = min(current + timedelta(days=6), end_date)
+                    result.append((current, period_end))
+                    current += timedelta(days=7)
+
+            else:
+                # Split by day
+                current = start_date
+                while current <= end_date:
+                    result.append((current, current))
+                    current += timedelta(days=1)
 
         return result
     
@@ -242,14 +256,14 @@ class DashboardDataAPI(MethodResource):
             
             if portfolio['trade_type'] == 0:
                 if portfolio['position_type'] == 0:
-                    portfolio['est_val'] = (portfolio['oracle'] - portfolio['entry_price']) * portfolio['quantity'] 
+                    portfolio['est_val'] = round((portfolio['oracle'] - portfolio['entry_price']) * portfolio['quantity'], 2)
                 else:
-                    portfolio['est_val'] = (portfolio['oracle'] - portfolio['entry_price']) * portfolio['quantity'] * portfolio['leverage'] 
+                    portfolio['est_val'] = round((portfolio['oracle'] - portfolio['entry_price']) * portfolio['quantity'] * portfolio['leverage'], 2) 
             else:
                 if portfolio['position_type'] == 0:
-                    portfolio['est_val'] = (portfolio['entry_price'] - portfolio['oracle']) * portfolio['quantity'] 
+                    portfolio['est_val'] = round((portfolio['entry_price'] - portfolio['oracle']) * portfolio['quantity'], 2)
                 else:
-                    portfolio['est_val'] = (portfolio['entry_price'] - portfolio['oracle']) * portfolio['quantity'] * portfolio['leverage']
+                    portfolio['est_val'] = round((portfolio['entry_price'] - portfolio['oracle']) * portfolio['quantity'] * portfolio['leverage'], 2)
 
 
             if portfolio['position_type'] == 0:
@@ -286,8 +300,8 @@ class DashboardDataAPI(MethodResource):
             
 
         pie_info = {
-            'total_spot': total_spot,
-            'total_margin': total_margin,
+            'total_spot': round(total_spot, 2),
+            'total_margin': round(total_margin, 2),
             'list_spot': list_spot,
             'list_margin': list_margin,
             'list_margin_short': list_margin_short,
@@ -334,9 +348,9 @@ class DashboardDataAPI(MethodResource):
     def get_year_info(self):
 
         today = datetime.now()
-        past = today + timedelta(days=-365)
+        past = datetime.strptime('2025-06-01', '%Y-%m-%d')
 
-        period_list = self.split_period(past.strftime('%Y-%m-%d'), today.strftime('%Y-%m-%d'))
+        period_list = self.split_period(past.strftime('%Y-%m-%d'), today.strftime('%Y-%m-%d'), isMonth=True)
 
         year_info = []
         past_val = None

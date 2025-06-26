@@ -367,7 +367,14 @@ export default function Dashboard() {
                 axisTicks: {
                     show: false
                 }
-            }
+            },
+            tooltip: {
+                y: {
+                    formatter: function (val) {
+                        return val.toFixed(2);
+                    }
+                }
+            },
         },
     };
 
