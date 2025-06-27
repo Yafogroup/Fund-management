@@ -42,7 +42,7 @@ export default function Dashboard() {
 
     const [openMenu, setOpenMenu] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
-    const [periodConfig, setPeriodConfig] = useState("-1")
+    const [periodConfig, setPeriodConfig] = useState("3")
     const [plType, setPlType] = useState("-1");
     const [status, setStatus] = useState("-1");
 
