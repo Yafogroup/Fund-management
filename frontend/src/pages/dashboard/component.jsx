@@ -75,11 +75,11 @@ export default function Dashboard() {
     const [yearData, setYearData] = useState([]);
     const [todayInfo, setTodayInfo] = useState({})
 
-    const [pieData, setPieData] = useState({
-        initData: [],
-        Series: [],
-        Labels: []
-    })
+    const [pieData1, setPieData1] = useState({})
+    const [pieData2, setPieData2] = useState({})
+    const [pieData3, setPieData3] = useState({})
+    const [pieData4, setPieData4] = useState({})
+    const [pieData5, setPieData5] = useState({})
     const [pieFirst, setPieFirst] = useState(false);
 
     const chartConfig = {
@@ -308,47 +308,6 @@ export default function Dashboard() {
             },
         },
     };
-    const pchartConfig = {
-        type: "pie",
-        width: 280,
-        height: 280,
-        labels: pieData.Labels,
-        series: pieData.Series,
-        options: {
-            chart: {
-                toolbar: {
-                    show: false,
-                },
-            },
-            title: {
-                show: "",
-            },
-            legend: {
-                show: false,
-            },
-            // dataLabels: {
-            //     enabled: true,
-            //     formatter: function (val, opts) {
-            //         // return pieData.initData[opts.seriesIndex].toString();
-            //         return val.toString();
-            //     },
-            // },
-            tooltip: {
-                y: {
-                    formatter: function (val, opts) {
-                        // const originalValue = pieData.initData[opts.seriesIndex];
-                        return val.toFixed(2).toString();
-                    },
-                    title: {
-                        formatter: function(seriesName) {
-                            // This removes the "series-1" title completely
-                            return pieData.Labels[Number(seriesName.substring(seriesName.length - 1))];
-                        }
-                    }
-                }
-            },
-        },
-    };
 
     const init = async () => {
         setIsLoading(true);
@@ -362,19 +321,13 @@ export default function Dashboard() {
         console.log(result.data.data.bar_chart_info);
         console.log(result.data.data.pie_chart_info);
 
-        setBarChartInfo(result.data.data.bar_chart_info)
-        setPieChartInfo(result.data.data.pie_chart_info)
-        setYearData(result.data.data.year_info)
-        setTodayInfo(result.data.data.today_info)
+        setBarChartInfo(result.data.data.bar_chart_info);
+        setPieChartInfo(result.data.data.pie_chart_info);
+        setYearData(result.data.data.year_info);
+        setTodayInfo(result.data.data.today_info);
 
-        if (!pieFirst) {
-            setPieData({
-                initData: [result.data.data.pie_chart_info.total_margin, result.data.data.pie_chart_info.total_spot],
-                Series: [result.data.data.pie_chart_info.total_margin, result.data.data.pie_chart_info.total_spot].map(value => Math.abs(value)),
-                Labels: ["Margin", "Spot"]
-            })
-            setPieFirst(false)
-        }
+        makePieData(result.data.data.pie_chart_info);
+        setPieTitle(-1, "All");
 
         setIsLoading(false);
     }
@@ -386,24 +339,181 @@ export default function Dashboard() {
 
     }
 
-    const makePieData = () => {
-
-        setPieData({
-            initData: pieType === -1 ? [pieChartInfo.total_margin, pieChartInfo.total_spot]
-                : pieType === 0 ? Object.values(pieChartInfo.list_spot)
-                    : pieType === 1 ? Object.values(pieChartInfo.list_margin)
-                        : pieType === 2 ? Object.values(pieChartInfo.list_margin_long)
-                            : Object.values(pieChartInfo.list_margin_short),
-            Series: pieType === -1 ? [pieChartInfo.total_margin, pieChartInfo.total_spot].map(value => Math.abs(value))
-                : pieType === 0 ? Object.values(pieChartInfo.list_spot).map(value => Math.abs(value))
-                    : pieType === 1 ? Object.values(pieChartInfo.list_margin).map(value => Math.abs(value))
-                        : pieType === 2 ? Object.values(pieChartInfo.list_margin_long).map(value => Math.abs(value))
-                            : Object.values(pieChartInfo.list_margin_short).map(value => Math.abs(value)),
-            Labels: pieType === -1 ? ["Margin", "Spot"]
-                : pieType === 0 ? Object.keys(pieChartInfo.list_spot)
-                    : pieType === 1 ? Object.keys(pieChartInfo.list_margin)
-                        : pieType === 2 ? Object.keys(pieChartInfo.list_margin_long)
-                            : Object.keys(pieChartInfo.list_margin_short)
+    const makePieData = (data) => {
+        setPieData1({
+            type: "pie",
+            width: 280,
+            height: 280,
+            labels: ["Margin", "Spot"],
+            series: [data.total_margin, data.total_spot].map(value => Math.abs(value)),
+            options: {
+                chart: {
+                    toolbar: {
+                        show: false,
+                    },
+                },
+                title: {
+                    show: "",
+                },
+                legend: {
+                    show: false,
+                },
+                tooltip: {
+                    y: {
+                        formatter: function (val, opts) {
+                            const init = [data.total_margin, data.total_spot];
+                            const originalValue = init[opts.seriesIndex];
+                            return originalValue.toFixed(2).toString();
+                        },
+                        title: {
+                            formatter: function(seriesName) {
+                                const labels = ["Margin", "Spot"];
+                                return labels[Number(seriesName.substring(seriesName.length - 1)) - 1];
+                            }
+                        }
+                    }
+                },
+            },
+        });
+        setPieData2({
+            type: "pie",
+            width: 280,
+            height: 280,
+            labels: Object.keys(data.list_spot),
+            series: Object.values(data.list_spot).map(value => Math.abs(value)),
+            options: {
+                chart: {
+                    toolbar: {
+                        show: false,
+                    },
+                },
+                title: {
+                    show: "",
+                },
+                legend: {
+                    show: false,
+                },
+                tooltip: {
+                    y: {
+                        formatter: function (val, opts) {
+                            const init = Object.values(data.list_spot);
+                            const originalValue = init[opts.seriesIndex];
+                            return originalValue.toFixed(2).toString();
+                        },
+                        title: {
+                            formatter: function(seriesName) {
+                                const labels = Object.keys(data.list_spot);
+                                return labels[Number(seriesName.substring(seriesName.length - 1)) - 1];
+                            }
+                        }
+                    }
+                },
+            },
+        });
+        setPieData3({
+            type: "pie",
+            width: 280,
+            height: 280,
+            labels: Object.keys(data.list_margin),
+            series: Object.values(data.list_margin).map(value => Math.abs(value)),
+            options: {
+                chart: {
+                    toolbar: {
+                        show: false,
+                    },
+                },
+                title: {
+                    show: "",
+                },
+                legend: {
+                    show: false,
+                },
+                tooltip: {
+                    y: {
+                        formatter: function (val, opts) {
+                            const init = Object.values(data.list_margin);
+                            const originalValue = init[opts.seriesIndex];
+                            return originalValue.toFixed(2).toString();
+                        },
+                        title: {
+                            formatter: function(seriesName) {
+                                const labels = Object.keys(data.list_margin);
+                                return labels[Number(seriesName.substring(seriesName.length - 1)) - 1];
+                            }
+                        }
+                    }
+                },
+            },
+        })
+        setPieData4({
+            type: "pie",
+            width: 280,
+            height: 280,
+            labels: Object.keys(data.list_margin_long),
+            series: Object.values(data.list_margin_long).map(value => Math.abs(value)),
+            options: {
+                chart: {
+                    toolbar: {
+                        show: false,
+                    },
+                },
+                title: {
+                    show: "",
+                },
+                legend: {
+                    show: false,
+                },
+                tooltip: {
+                    y: {
+                        formatter: function (val, opts) {
+                            const init = Object.values(data.list_margin_long);
+                            const originalValue = init[opts.seriesIndex];
+                            return originalValue.toFixed(2).toString();
+                        },
+                        title: {
+                            formatter: function(seriesName) {
+                                const labels = Object.keys(data.list_margin_long);
+                                return labels[Number(seriesName.substring(seriesName.length - 1)) - 1];
+                            }
+                        }
+                    }
+                },
+            },
+        })
+        setPieData5({
+            type: "pie",
+            width: 280,
+            height: 280,
+            labels: Object.keys(data.list_margin_short),
+            series: Object.values(data.list_margin_short).map(value => Math.abs(value)),
+            options: {
+                chart: {
+                    toolbar: {
+                        show: false,
+                    },
+                },
+                title: {
+                    show: "",
+                },
+                legend: {
+                    show: false,
+                },
+                tooltip: {
+                    y: {
+                        formatter: function (val, opts) {
+                            const init = Object.values(data.list_margin_short);
+                            const originalValue = init[opts.seriesIndex];
+                            return originalValue.toFixed(2).toString();
+                        },
+                        title: {
+                            formatter: function(seriesName) {
+                                const labels = Object.keys(data.list_margin_short);
+                                return labels[Number(seriesName.substring(seriesName.length - 1)) - 1];
+                            }
+                        }
+                    }
+                },
+            },
         })
     }
 
@@ -428,9 +538,6 @@ export default function Dashboard() {
         init();
     }, [startDate, endDate, plType, status, periodConfig]);
 
-    useEffect(() => {
-        makePieData();
-    }, [pieType]);
 
     if (isLoading) {
         return <LoadingScreen />;
@@ -609,8 +716,22 @@ export default function Dashboard() {
                                 </Menu>
                                 <InformationCircleIcon className="w-4 h-4 text-gray-500" />
                             </div>
-                            <div className="mt-8 grid place-items-center px-2">
-                                <Chart {...pchartConfig}/>
+                            <div className="mt-8 grid place-items-center px-2 relative">
+                                <div className="absolute top-4" hidden={pieType !== -1}>
+                                    <Chart {...pieData1}/>
+                                </div>
+                                <div className="absolute top-4" hidden={pieType !== 0}>
+                                    <Chart {...pieData2}/>
+                                </div>
+                                <div className="absolute top-4" hidden={pieType !== 1}>
+                                    <Chart {...pieData3}/>
+                                </div>
+                                <div className="absolute top-4" hidden={pieType !== 2}>
+                                    <Chart {...pieData4}/>
+                                </div>
+                                <div className="absolute top-4" hidden={pieType !== 3}>
+                                    <Chart {...pieData5}/>
+                                </div>
                             </div>
                         </CardBody>
                     </Card>
