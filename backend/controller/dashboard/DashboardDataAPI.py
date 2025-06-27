@@ -398,10 +398,10 @@ class DashboardDataAPI(MethodResource):
             start_date_past = datetime(today.year - 1, 1, 1)
             end_date_past = datetime(today.year - 1, 12, 31)
         elif period_type == "3":
-            start_date = today
-            end_date = today + timedelta(days=1)
-            start_date_past = today + timedelta(days=-1)
-            end_date_past = today
+            start_date = datetime(today.year, today.month, today.day)
+            end_date = start_date + timedelta(days=1)
+            start_date_past = start_date + timedelta(days=-1)
+            end_date_past = start_date
         
 
         query = Portfolio.query
@@ -421,10 +421,10 @@ class DashboardDataAPI(MethodResource):
             'real_total_profit': round(current_info[0] + current_info[1], 2),
             'unreal_profit': round(current_info[2], 2),
             'unreal_total_profit': round(current_info[2] + current_info[3], 2),
-            'percent_real_profit': round((current_info[0] - past_info[0]) / past_info[0] * 100 if past_info[0] != 0 else 100, 2),
-            'percent_real_total_profit': round((current_info[0] + current_info[1] - past_info[0] - past_info[1]) / (past_info[0] + past_info[1]) * 100 if (past_info[0] + past_info[1]) != 0 else 100, 2),
-            'percent_unreal_profit': round((current_info[2] - past_info[2]) / past_info[2] * 100 if past_info[2] != 0 else 100, 2),
-            'percent_unreal_total_profit': round((current_info[2] + current_info[3] - past_info[2] - past_info[3]) / (past_info[2] + past_info[3]) * 100 if (past_info[2] + past_info[3]) != 0 else 100, 2),
+            'percent_real_profit': 0 if (current_info[0] - past_info[0]) == 0 else round((current_info[0] - past_info[0]) / past_info[0] * 100 if past_info[0] != 0 else 100, 2),
+            'percent_real_total_profit': 0 if (current_info[0] + current_info[1] - past_info[0] - past_info[1]) == 0 else round((current_info[0] + current_info[1] - past_info[0] - past_info[1]) / (past_info[0] + past_info[1]) * 100 if (past_info[0] + past_info[1]) != 0 else 100, 2),
+            'percent_unreal_profit': 0 if (current_info[2] - past_info[2]) == 0 else round((current_info[2] - past_info[2]) / past_info[2] * 100 if past_info[2] != 0 else 100, 2),
+            'percent_unreal_total_profit': 0 if (current_info[2] + current_info[3] - past_info[2] - past_info[3]) == 0 else round((current_info[2] + current_info[3] - past_info[2] - past_info[3]) / (past_info[2] + past_info[3]) * 100 if (past_info[2] + past_info[3]) != 0 else 100, 2),
         }
 
         return t_info
