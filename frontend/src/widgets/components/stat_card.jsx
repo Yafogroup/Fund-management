@@ -33,7 +33,7 @@ const StatCard = ({ title, value, change, isPositive }) => {
                         variant="small"
                         className={isPositive ? "text-green-500" : "text-red-500"}
                     >
-                        {change}
+                        {change} %
                     </Typography>
                 </div>
             </CardBody>

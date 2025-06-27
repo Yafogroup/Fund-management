@@ -524,10 +524,10 @@ export default function Dashboard() {
                             <div className="flex items-center justify-between mb-2">
                                 <div>
                                     <Typography variant="small" className="text-gray-300 font-medium">
-                                        Return % per month
+                                        Return profit per month
                                     </Typography>
                                     <Typography variant="small" className="text-sm text-gray-500">
-                                        (Calculated from closed trades)
+                                        (Calculated from closed positions)
                                     </Typography>
                                 </div>
                                 <InformationCircleIcon className="w-4 h-4 text-gray-500" />
@@ -546,14 +546,14 @@ export default function Dashboard() {
                                 >
                                     <span>{item.month}</span>
                                     <div className="flex items-center gap-1">
-                                        <span>{item.percent}</span>
+                                        <span>{item.percent}%</span>
                                         {item.is_positive ? (
                                             <CheckCircleIcon className="w-4 h-4 text-green-500" />
                                         ) : (
                                             <ExclamationCircleIcon className="w-4 h-4 text-red-500" />
                                         )}
                                     </div>
-                                    <span className="text-right">{item.profit}</span>
+                                    <span className="text-right">{item.profit.toLocaleString("en-US", {style:"currency", currency:"USD"})}</span>
                                 </div>
                             ))}
                         </CardBody>
