@@ -417,8 +417,8 @@ const Orders = () => {
                                         <Typography variant="small" className={`text-[16px] font-medium mb-1 ${order.trade_type === 0 ? "text-lBLue" : "text-red-500"}`}>
                                             {
                                                 order.trade_type === 0
-                                                    ? (order.position_type === 0 ? "1X Long(Spot)" : order.leverage.toString() + "X Long(Margin)")
-                                                    : (order.position_type === 0 ? "1X Short(Spot)" : order.leverage.toString() + "X Short(Margin)")
+                                                    ? (order.position_type === 0 ? "Spot" : "Margin(" + order.leverage.toString() + "X Long)")
+                                                    : (order.position_type === 0 ? "Spot" : "Margin(" + order.leverage.toString() + "X Short)")
                                             }
                                         </Typography>
                                     </td>

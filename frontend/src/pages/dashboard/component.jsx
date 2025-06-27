@@ -1,24 +1,22 @@
 import {
+    Button,
     Card,
     CardBody,
-    CardHeader, Option, Select,
-    Typography,
     Menu,
     MenuHandler,
+    MenuItem,
     MenuList,
-    MenuItem, Button, Spinner,
+    Option,
+    Select,
+    Spinner,
+    Typography,
 } from "@material-tailwind/react";
 import Chart from "react-apexcharts";
-import {
-    ExclamationCircleIcon,
-    CheckCircleIcon,
-    InformationCircleIcon,
-    ChevronUpIcon
-} from "@heroicons/react/24/solid";
+import {CheckCircleIcon, ChevronUpIcon, ExclamationCircleIcon, InformationCircleIcon} from "@heroicons/react/24/solid";
 import StatCard from "@/widgets/components/stat_card.jsx";
 import React, {useEffect, useState} from "react";
 import dashboardService from "@/api/dashboardService.jsx";
-import {subDays, subMonths, subWeeks, format, subYears} from 'date-fns';
+import {format, subMonths, subWeeks, subYears} from 'date-fns';
 
 // If you're using Next.js please use the dynamic import for react-apexcharts and remove the import from the top for the react-apexcharts
 // import dynamic from "next/dynamic";
@@ -76,6 +74,13 @@ export default function Dashboard() {
 
     const [yearData, setYearData] = useState([]);
     const [todayInfo, setTodayInfo] = useState({})
+
+    const [pieData, setPieData] = useState({
+        initData: [],
+        Series: [],
+        Labels: []
+    })
+    const [pieFirst, setPieFirst] = useState(false);
 
     const chartConfig = {
         type: "bar",
@@ -304,74 +309,41 @@ export default function Dashboard() {
         },
     };
     const pchartConfig = {
-        type: "bar",
-        width: 450,
-        height: 320,
-        series: [
-            {
-                name: "Profit",
-                data: pieType === -1 ? [pieChartInfo.total_margin, pieChartInfo.total_spot]
-                    : pieType === 0 ? Object.values(pieChartInfo.list_spot)
-                        : pieType === 1 ? Object.values(pieChartInfo.list_margin)
-                            : pieType === 2 ? Object.values(pieChartInfo.list_margin_long)
-                                : Object.values(pieChartInfo.list_margin_short)
-            }
-        ],
+        type: "pie",
+        width: 280,
+        height: 280,
+        labels: pieData.Labels,
+        series: pieData.Series,
         options: {
             chart: {
                 toolbar: {
                     show: false,
                 },
             },
-            plotOptions: {
-                bar: {
-                    horizontal: true,
-                }
+            title: {
+                show: "",
             },
-            dataLabels: {
-                enabled: false
+            legend: {
+                show: false,
             },
-            annotations: {
-                xaxis: [ // Note: use 'yaxis' for a VERTICAL line
-                    {
-                        y: 0, // THIS IS THE MAGIC: Position the vertical line at the x-value of 0
-                        borderColor: '#999',
-                        strokeDashArray: 0, // 0 means a solid line
-                        borderWidth: 1,
-                    },
-                ],
-            },
-            xaxis: {
-                categories: pieType === -1 ? ["margin", "spot"]
-                    : pieType === 0 ? Object.keys(pieChartInfo.list_spot)
-                        : pieType === 1 ? Object.keys(pieChartInfo.list_margin)
-                            : pieType === 2 ? Object.keys(pieChartInfo.list_margin_long)
-                                : Object.keys(pieChartInfo.list_margin_short),
-            },
-            grid: {
-                xaxis: {
-                    lines: {
-                        show: false
-                    }
-                },
-                yaxis: {
-                    lines: {
-                        show: false,
-                    }
-                },
-            },
-            yaxis: {
-                axisBorder: {
-                    show: false
-                },
-                axisTicks: {
-                    show: false
-                }
-            },
+            // dataLabels: {
+            //     enabled: true,
+            //     formatter: function (val, opts) {
+            //         // return pieData.initData[opts.seriesIndex].toString();
+            //         return val.toString();
+            //     },
+            // },
             tooltip: {
                 y: {
-                    formatter: function (val) {
-                        return val.toFixed(2);
+                    formatter: function (val, opts) {
+                        // const originalValue = pieData.initData[opts.seriesIndex];
+                        return val.toFixed(2).toString();
+                    },
+                    title: {
+                        formatter: function(seriesName) {
+                            // This removes the "series-1" title completely
+                            return pieData.Labels[Number(seriesName.substring(seriesName.length - 1))];
+                        }
                     }
                 }
             },
@@ -394,13 +366,45 @@ export default function Dashboard() {
         setPieChartInfo(result.data.data.pie_chart_info)
         setYearData(result.data.data.year_info)
         setTodayInfo(result.data.data.today_info)
+
+        if (!pieFirst) {
+            setPieData({
+                initData: [result.data.data.pie_chart_info.total_margin, result.data.data.pie_chart_info.total_spot],
+                Series: [result.data.data.pie_chart_info.total_margin, result.data.data.pie_chart_info.total_spot].map(value => Math.abs(value)),
+                Labels: ["Margin", "Spot"]
+            })
+            setPieFirst(false)
+        }
+
         setIsLoading(false);
     }
 
     const setPieTitle = (type, value) => {
-        setPeriodConfig(type)
         setPieType(type);
         setPieName(value);
+
+
+    }
+
+    const makePieData = () => {
+
+        setPieData({
+            initData: pieType === -1 ? [pieChartInfo.total_margin, pieChartInfo.total_spot]
+                : pieType === 0 ? Object.values(pieChartInfo.list_spot)
+                    : pieType === 1 ? Object.values(pieChartInfo.list_margin)
+                        : pieType === 2 ? Object.values(pieChartInfo.list_margin_long)
+                            : Object.values(pieChartInfo.list_margin_short),
+            Series: pieType === -1 ? [pieChartInfo.total_margin, pieChartInfo.total_spot].map(value => Math.abs(value))
+                : pieType === 0 ? Object.values(pieChartInfo.list_spot).map(value => Math.abs(value))
+                    : pieType === 1 ? Object.values(pieChartInfo.list_margin).map(value => Math.abs(value))
+                        : pieType === 2 ? Object.values(pieChartInfo.list_margin_long).map(value => Math.abs(value))
+                            : Object.values(pieChartInfo.list_margin_short).map(value => Math.abs(value)),
+            Labels: pieType === -1 ? ["Margin", "Spot"]
+                : pieType === 0 ? Object.keys(pieChartInfo.list_spot)
+                    : pieType === 1 ? Object.keys(pieChartInfo.list_margin)
+                        : pieType === 2 ? Object.keys(pieChartInfo.list_margin_long)
+                            : Object.keys(pieChartInfo.list_margin_short)
+        })
     }
 
     const setPeriodType = (type) => {
@@ -423,6 +427,10 @@ export default function Dashboard() {
     useEffect(() => {
         init();
     }, [startDate, endDate, plType, status, periodConfig]);
+
+    useEffect(() => {
+        makePieData();
+    }, [pieType]);
 
     if (isLoading) {
         return <LoadingScreen />;
@@ -601,8 +609,8 @@ export default function Dashboard() {
                                 </Menu>
                                 <InformationCircleIcon className="w-4 h-4 text-gray-500" />
                             </div>
-                            <div className="mt-8">
-                                <Chart {...pchartConfig} />
+                            <div className="mt-8 grid place-items-center px-2">
+                                <Chart {...pchartConfig}/>
                             </div>
                         </CardBody>
                     </Card>

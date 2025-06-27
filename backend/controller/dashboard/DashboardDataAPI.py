@@ -91,7 +91,7 @@ class DashboardDataAPI(MethodResource):
         bar_chart_info['total_profit'] = total_profit_list
         bar_chart_info['chart_categories'] = chart_categories
 
-        pie_chart_info = self.get_pie_info(start_date, end_date)
+        pie_chart_info = self.get_pie_info(start_date, end_date, period_type)
         t_info = self.get_today_info(start_date, end_date, period_type)
         y_info = self.get_year_info()
 
@@ -245,7 +245,25 @@ class DashboardDataAPI(MethodResource):
 
         return [closed_profit, closed_loss, open_profit, open_loss, total_profit]
     
-    def get_pie_info(self, start, end):
+    def get_pie_info(self, start, end, period_type):
+
+        today = datetime.now()
+        start_date = datetime.strptime(start, '%Y-%m-%d')
+        end_date = datetime.strptime(end, '%Y-%m-%d')
+
+        if period_type == "0":
+            start_date = datetime(today.year, today.month, 1)
+            end_date = datetime(today.year, today.month, calendar.monthrange(today.year, today.month)[1])
+        elif period_type == "1":
+            start_date = datetime(today.year, today.month, today.day) + timedelta(days=-7)
+            end_date = datetime(today.year, today.month, today.day)
+        elif period_type == "2":
+            start_date = datetime(today.year, 1, 1)
+            end_date = datetime(today.year, 12, 31)
+        elif period_type == "3":
+            start_date = datetime(today.year, today.month, today.day)
+            end_date = start_date + timedelta(days=1)
+
         token_list = TokenType.query.all()
 
         total_spot = 0
@@ -278,7 +296,7 @@ class DashboardDataAPI(MethodResource):
             Portfolio.token_symbol,
             TokenType.name.label('token_type_name')
         )        
-        query = query.filter(Portfolio.date >= start, Portfolio.date <= end)
+        query = query.filter(Portfolio.date >= start_date, Portfolio.date <= end_date)
         tt = query.all()
         temp = [{
             "uid": portfolio[0],
