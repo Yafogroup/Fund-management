@@ -431,10 +431,10 @@ export default function Dashboard() {
     return (
         <div>
             <div className="grid grid-cols-4 gap-8">
-                <StatCard title="Realized Profit" value={todayInfo.real_profit} change={todayInfo.percent_real_profit} isPositive={todayInfo.percent_real_profit > 0} />
-                <StatCard title="Total P&L" value={todayInfo.real_total_profit} change={todayInfo.percent_real_total_profit} isPositive={todayInfo.percent_real_total_profit > 0} />
-                <StatCard title="Unrealized Profit" value={todayInfo.unreal_profit} change={todayInfo.percent_unreal_profit} isPositive={todayInfo.percent_unreal_profit > 0} />
-                <StatCard title="Total Unrealized P&L" value={todayInfo.unreal_total_profit} change={todayInfo.percent_unreal_total_profit} isPositive={todayInfo.percent_unreal_total_profit > 0} />
+                <StatCard title="Realized Profit (CP)" value={todayInfo.real_profit} change={todayInfo.percent_real_profit} isPositive={todayInfo.percent_real_profit > 0} />
+                <StatCard title="Total P&L (CP + CL)" value={todayInfo.real_total_profit} change={todayInfo.percent_real_total_profit} isPositive={todayInfo.percent_real_total_profit > 0} />
+                <StatCard title="Unrealized Profit (OP)" value={todayInfo.unreal_profit} change={todayInfo.percent_unreal_profit} isPositive={todayInfo.percent_unreal_profit > 0} />
+                <StatCard title="Total Unrealized P&L (OP + OL)" value={todayInfo.unreal_total_profit} change={todayInfo.percent_unreal_total_profit} isPositive={todayInfo.percent_unreal_total_profit > 0} />
             </div>
             <div className="flex mt-4 gap-4">
                 <Card className="w-2/3 bg-white/5 backdrop-blur-sm shadow-lg rounded-xl">

@@ -15,7 +15,7 @@ const StatCard = ({ title, value, change, isPositive }) => {
         <Card className="bg-white/5 backdrop-blur-sm shadow-lg rounded-xl text-white">
             <CardBody>
                 <div className="flex justify-between items-center mb-2">
-                    <Typography variant="small" color="blue-gray" className="text-gray-400 font-medium text-lg">
+                    <Typography variant="small" color="blue-gray" className="text-lBLue font-bold text-lg ">
                         {title}
                     </Typography>
                     <InformationCircleIcon className="w-8 h-8 text-gray-500" />
