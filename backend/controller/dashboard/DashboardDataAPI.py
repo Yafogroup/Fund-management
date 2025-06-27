@@ -7,6 +7,7 @@ from werkzeug.utils import secure_filename
 import os
 from middleware import TokenRequired
 from datetime import datetime, timedelta
+import calendar
 
 class DashboardDataAPI(MethodResource):
 
@@ -91,7 +92,7 @@ class DashboardDataAPI(MethodResource):
         bar_chart_info['chart_categories'] = chart_categories
 
         pie_chart_info = self.get_pie_info(start_date, end_date)
-        t_info = self.get_today_info()
+        t_info = self.get_today_info(start_date, end_date, period_type)
         y_info = self.get_year_info()
 
 
@@ -373,33 +374,57 @@ class DashboardDataAPI(MethodResource):
 
         return pie_info
         
-    def get_today_info(self):
+    def get_today_info(self, start, end, period_type):
         
-        today = datetime.strptime(datetime.now().strftime("%Y-%m-%d"), "%Y-%m-%d")
-        tomorrow = today + timedelta(days=1)
-        yesterday = today + timedelta(days=-1)
+        today = datetime.now()
+        start_date = datetime.strptime(start, '%Y-%m-%d')
+        end_date = datetime.strptime(end, '%Y-%m-%d')
+        start_date_past = start_date + timedelta(days=-365)
+        end_date_past = end_date + timedelta(days=-365)
+
+        if period_type == "0":
+            start_date = datetime(today.year, today.month, 1)
+            end_date = datetime(today.year, today.month, calendar.monthrange(today.year, today.month)[1])
+            start_date_past = datetime(today.year, today.month - 1, 1)
+            end_date_past = datetime(today.year, today.month - 1, calendar.monthrange(today.year, today.month - 1)[1])
+        elif period_type == "1":
+            start_date = today + timedelta(days=-7)
+            end_date = today
+            start_date_past = today + timedelta(days=-14)
+            end_date_past = start_date
+        elif period_type == "2":
+            start_date = datetime(today.year, 1, 1)
+            end_date = datetime(today.year, 12, 31)
+            start_date_past = datetime(today.year - 1, 1, 1)
+            end_date_past = datetime(today.year - 1, 12, 31)
+        elif period_type == "3":
+            start_date = today
+            end_date = today + timedelta(days=1)
+            start_date_past = today + timedelta(days=-1)
+            end_date_past = today
+        
 
         query = Portfolio.query
-        query = query.filter(Portfolio.date >= today, Portfolio.date < tomorrow)
+        query = query.filter(Portfolio.date >= start_date, Portfolio.date < end_date)
         tt = query.all()
         portfolios = [p.to_dict() for p in tt]
-        today_info = self.get_detail_info(portfolios)
+        current_info = self.get_detail_info(portfolios)
 
         query = Portfolio.query
-        query = query.filter(Portfolio.date >= yesterday, Portfolio.date < today)
+        query = query.filter(Portfolio.date >= start_date_past, Portfolio.date < end_date_past)
         tt = query.all()
         portfolios = [p.to_dict() for p in tt]
-        yesterday_info = self.get_detail_info(portfolios)
+        past_info = self.get_detail_info(portfolios)
 
         t_info = {
-            'real_profit': round(today_info[0], 2),
-            'real_total_profit': round(today_info[0] + today_info[1], 2),
-            'unreal_profit': round(today_info[2], 2),
-            'unreal_total_profit': round(today_info[2] + today_info[3], 2),
-            'percent_real_profit': round((today_info[0] - yesterday_info[0]) / yesterday_info[0] * 100 if yesterday_info[0] != 0 else 100, 2),
-            'percent_real_total_profit': round((today_info[0] + today_info[1] - yesterday_info[0] - yesterday_info[1]) / (yesterday_info[0] + yesterday_info[1]) * 100 if (yesterday_info[0] + yesterday_info[1]) != 0 else 100, 2),
-            'percent_unreal_profit': round((today_info[2] - yesterday_info[2]) / yesterday_info[2] * 100 if yesterday_info[2] != 0 else 100, 2),
-            'percent_unreal_total_profit': round((today_info[2] + today_info[3] - yesterday_info[2] - yesterday_info[3]) / (yesterday_info[2] + yesterday_info[3]) * 100 if (yesterday_info[2] + yesterday_info[3]) != 0 else 100, 2),
+            'real_profit': round(current_info[0], 2),
+            'real_total_profit': round(current_info[0] + current_info[1], 2),
+            'unreal_profit': round(current_info[2], 2),
+            'unreal_total_profit': round(current_info[2] + current_info[3], 2),
+            'percent_real_profit': round((current_info[0] - past_info[0]) / past_info[0] * 100 if past_info[0] != 0 else 100, 2),
+            'percent_real_total_profit': round((current_info[0] + current_info[1] - past_info[0] - past_info[1]) / (past_info[0] + past_info[1]) * 100 if (past_info[0] + past_info[1]) != 0 else 100, 2),
+            'percent_unreal_profit': round((current_info[2] - past_info[2]) / past_info[2] * 100 if past_info[2] != 0 else 100, 2),
+            'percent_unreal_total_profit': round((current_info[2] + current_info[3] - past_info[2] - past_info[3]) / (past_info[2] + past_info[3]) * 100 if (past_info[2] + past_info[3]) != 0 else 100, 2),
         }
 
         return t_info
