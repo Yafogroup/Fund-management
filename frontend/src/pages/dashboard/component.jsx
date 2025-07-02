@@ -53,19 +53,6 @@ export default function Dashboard() {
         'total_profit': [],
     });
 
-    const [pieChartInfo, setPieChartInfo] = useState({
-        'list_margin': [],
-        'list_margin_long': [],
-        'list_margin_short': [],
-        'list_spot': [],
-        'total_margin': 0,
-        'total_spot': 0,
-        'real_profit': 0,
-        'real_profit_total': 0,
-        'unreal_profit': 0,
-        'unreal_profit_total': 0,
-    });
-
     const [startDate, setStartDate] = useState(format(new Date(), 'yyyy-MM-dd'));
     const [endDate, setEndDate] = useState(format(new Date(), 'yyyy-MM-dd'));
 
@@ -80,7 +67,6 @@ export default function Dashboard() {
     const [pieData3, setPieData3] = useState({})
     const [pieData4, setPieData4] = useState({})
     const [pieData5, setPieData5] = useState({})
-    const [pieFirst, setPieFirst] = useState(false);
 
     const chartConfig = {
         type: "bar",
@@ -322,7 +308,6 @@ export default function Dashboard() {
         console.log(result.data.data.pie_chart_info);
 
         setBarChartInfo(result.data.data.bar_chart_info);
-        setPieChartInfo(result.data.data.pie_chart_info);
         setYearData(result.data.data.year_info);
         setTodayInfo(result.data.data.today_info);
 
@@ -344,8 +329,8 @@ export default function Dashboard() {
             type: "pie",
             width: 280,
             height: 280,
-            labels: ["Margin", "Spot"],
-            series: [data.total_margin, data.total_spot].map(value => Math.abs(value)),
+            labels: Object.keys(data.all),
+            series: Object.values(data.all).map(value => Math.abs(value)),
             options: {
                 chart: {
                     toolbar: {
@@ -361,13 +346,13 @@ export default function Dashboard() {
                 tooltip: {
                     y: {
                         formatter: function (val, opts) {
-                            const init = [data.total_margin, data.total_spot];
+                            const init = Object.values(data.all);
                             const originalValue = init[opts.seriesIndex];
                             return originalValue.toFixed(2).toString();
                         },
                         title: {
                             formatter: function(seriesName) {
-                                const labels = ["Margin", "Spot"];
+                                const labels = Object.keys(data.all);
                                 return labels[Number(seriesName.substring(seriesName.length - 1)) - 1];
                             }
                         }

@@ -22,6 +22,7 @@ class Portfolio(db.Model):
     oracle = db.Column(db.Float, nullable=True)
     real_result = db.Column(db.Float, nullable=True)
     user_uid = db.Column(db.String, nullable=False)
+    closed_date = db.Column(db.DateTime, nullable=True)
 
     def __init__(self, token_id, token_name, token_symbol, position_type, token_type, leverage, entry_price, quantity, trade_type, status,user_uid):
         self.date = datetime.now()
@@ -53,4 +54,5 @@ class Portfolio(db.Model):
             "status": self.status,
             "oracle": self.oracle,
             "real_result": self.real_result,
+            "closed_date": self.closed_date,
         }

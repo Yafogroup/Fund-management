@@ -36,6 +36,20 @@ class PriceChangeTracker:
         """Fetch latest price for a list of symbols"""
         result = self.cmc.get_latest_price(','.join(symbols))
         return result
+    
+    def get_multiple_historical_prices(self, assets, start_date, end_date):
+        all_prices = {}
+
+        for token in assets:
+            token_id = token['token_id']
+            token_symbol = token['token_symbol']
+            historical_data = self.cmc.get_historical_prices(token_id, start_date, end_date)
+            all_prices[token_symbol] = {
+                'id': token_id,
+                'data': historical_data
+            }
+
+        return all_prices
 
     def get_tokens(self):
         """Fetch current prices and maintain history of interval"""     

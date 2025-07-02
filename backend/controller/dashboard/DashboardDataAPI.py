@@ -8,6 +8,7 @@ import os
 from middleware import TokenRequired
 from datetime import datetime, timedelta
 import calendar
+import pandas as pd
 
 class DashboardDataAPI(MethodResource):
 
@@ -23,248 +24,93 @@ class DashboardDataAPI(MethodResource):
         pl = request.json["pl"]
         status = request.json["status"]
 
-        if period_type == "-1":
-            period_list = self.split_period(start_date, end_date)
-        else:
-            period_list = self.make_period(period_type)
+        start = datetime.strptime(start_date, '%Y-%m-%d') + timedelta(days=-1)
+        end = datetime.strptime(end_date, '%Y-%m-%d')
+        today = datetime.now()
 
-        bar_chart_info = {}
-
-        closed_profit_list = []
-        closed_loss_list = []
-        open_profit_list = []
-        open_loss_list = []
-        total_profit_list = []
+        if period_type == "0":
+            start = datetime(today.year, 1, 1) + timedelta(days=-1)
+            end = datetime(today.year, today.month, today.day)
+        elif period_type == "1":
+            start = datetime(today.year, 1, 1) + timedelta(days=-1)
+            end = datetime(today.year, today.month, today.day)
+        elif period_type == "2":
+            start = datetime(2025, 1, 1) + timedelta(days=-1)
+            end = datetime(today.year, today.month, today.day)
+        elif period_type == "3":
+            start = datetime(today.year, today.month, 1) + timedelta(days=-2)
+            end = datetime(today.year, today.month, today.day)
         
-        chart_categories = []
-
-        count = 1
-
-        for period in period_list:
-            query = Portfolio.query
-            query = query.filter(Portfolio.date >= period[0], Portfolio.date <= period[1])
-            tt = query.all()
-            portfolios = [p.to_dict() for p in tt]
-            info = self.get_detail_info(portfolios)
-            closed_profit_list.append(round(info[0], 2))
-            closed_loss_list.append(round(info[1], 2))
-            open_profit_list.append(round(info[2], 2))
-            open_loss_list.append(round(info[3], 2))
-            
-            if pl == "-1":
-                if status == "-1":
-                    total_profit_list.append(round(info[4], 2))
-                elif status == "0":
-                    total_profit_list.append(round(info[2] + info[3], 2))
-                else:
-                    total_profit_list.append(round(info[0] + info[1], 2))
-            elif pl == "0":
-                if status == "-1":
-                    total_profit_list.append(round(info[0] + info[2], 2))
-                elif status == "0":
-                    total_profit_list.append(round(info[2], 2))
-                else:
-                    total_profit_list.append(round(info[0], 2))
-            else:
-                if status == "-1":
-                    total_profit_list.append(round(info[1] + info[3], 2))
-                elif status == "0":
-                    total_profit_list.append(round(info[3], 2))
-                else:
-                    total_profit_list.append(round(info[1], 2))
-
-            if period_type == "0":
-                chart_categories.append(period[0].strftime('%Y-%m'))
-            elif period_type == "1":
-                chart_categories.append(str(count) + "week")
-            elif period_type == "2":
-                chart_categories.append(period[0].strftime('%Y'))
-            else:
-                chart_categories.append(period[0].strftime('%Y-%m-%d'))
-
-            count = count + 1
-
-        bar_chart_info['closed_profit'] = closed_profit_list
-        bar_chart_info['closed_loss'] = closed_loss_list
-        bar_chart_info['open_profit'] = open_profit_list    
-        bar_chart_info['open_loss'] = open_loss_list
-        bar_chart_info['total_profit'] = total_profit_list
-        bar_chart_info['chart_categories'] = chart_categories
-
-        pie_chart_info = self.get_pie_info(start_date, end_date, period_type)
-        t_info = self.get_today_info(start_date, end_date, period_type)
         y_info = self.get_year_info()
+
+        daily_pnl, pie_info = self.get_daily_pnl(start, end)
+        weekly_pnl = self.get_weekly_pnl(daily_pnl)
+        monthly_pnl = self.get_monthly_pnl(daily_pnl)
+        yearly_pnl = self.get_yearly_pnl(daily_pnl)
+
+
+        if period_type == "0":
+            chart_info = self.get_sum_data(monthly_pnl, pl, status)
+            current_info = list(monthly_pnl.values())[-1]
+            past_info = list(monthly_pnl.values())[-2]
+        elif period_type == "1":
+            chart_info = self.get_sum_data(weekly_pnl, pl, status)
+            current_info = list(weekly_pnl.values())[-1]
+            past_info = list(weekly_pnl.values())[-2]
+        elif period_type == "2":
+            chart_info = self.get_sum_data(yearly_pnl, pl, status)
+            current_info = list(yearly_pnl.values())[-1]
+            if (len(yearly_pnl) > 1):
+                past_info = list(yearly_pnl.values())[-2]
+            else:
+                past_info = {
+                    'closed_profit': 0,
+                    'closed_loss': 0,
+                    'open_profit': 0,
+                    'open_loss': 0
+                }
+        elif period_type == "3":
+            chart_info = self.get_sum_data(daily_pnl, pl, status)
+            current_info = list(daily_pnl.values())[-1]
+            past_info = list(daily_pnl.values())[-2]
+        else:
+            chart_info = self.get_sum_data(daily_pnl, pl, status)
+            current_info = list(daily_pnl.values())[-1]
+            past_info = list(daily_pnl.values())[-2]
+
+        
+        bar_chart_info = {}
+        
+        bar_chart_info['closed_profit'] = chart_info['closed_profit']
+        bar_chart_info['closed_loss'] = chart_info['closed_profit']
+        bar_chart_info['open_profit'] = chart_info['open_profit']    
+        bar_chart_info['open_loss'] = chart_info['open_loss']
+        bar_chart_info['total_profit'] = chart_info['total_profit']
+        bar_chart_info['chart_categories'] = chart_info['labels']
+
+        t_info = {
+            'real_profit': round(current_info['closed_profit'], 2),
+            'real_total_profit': round(current_info['closed_profit'] + current_info['closed_loss'], 2),
+            'unreal_profit': round(current_info['open_profit'], 2),
+            'unreal_total_profit': round(current_info['open_profit'] + current_info['open_loss'], 2),
+            'percent_real_profit': 0 if (current_info['closed_profit'] - past_info['closed_profit']) == 0 else round((current_info['closed_profit'] - past_info['closed_profit']) / past_info['closed_profit'] * 100 if past_info['closed_profit'] != 0 else 100, 2),
+            'percent_real_total_profit': 0 if (current_info['closed_profit'] + current_info['closed_loss'] - past_info['closed_profit'] - past_info['closed_loss']) == 0 else round((current_info['closed_profit'] + current_info['closed_loss'] - past_info['closed_profit'] - past_info['closed_loss']) / (past_info['closed_profit'] + past_info['closed_loss']) * 100 if (past_info['closed_profit'] + past_info['closed_loss']) != 0 else 100, 2),
+            'percent_unreal_profit': 0 if (current_info['open_profit'] - past_info['open_profit']) == 0 else round((current_info['open_profit'] - past_info['open_profit']) / past_info['open_profit'] * 100 if past_info['open_profit'] != 0 else 100, 2),
+            'percent_unreal_total_profit': 0 if (current_info['open_profit'] + current_info['open_loss'] - past_info['open_profit'] - past_info['open_loss']) == 0 else round((current_info['open_profit'] + current_info['open_loss'] - past_info['open_profit'] - past_info['open_loss']) / (past_info['open_profit'] + past_info['open_loss']) * 100 if (past_info['open_profit'] + past_info['open_loss']) != 0 else 100, 2),
+        }
 
 
         response_data = {
             'bar_chart_info': bar_chart_info,
-            'pie_chart_info': pie_chart_info,
+            'pie_chart_info': pie_info,
             'today_info': t_info,
             'year_info': y_info
         }      
-
         
         return response_message(200, 'success', '', response_data)
     
-    def split_period(self, start, end, isMonth=False):
-
-        start_date = datetime.strptime(start, '%Y-%m-%d')
-        end_date = datetime.strptime(end, '%Y-%m-%d')
-
-        result = []
-        delta = (end_date - start_date).days
-
-        if isMonth == True:
-            # Split by month
-            current = start_date
-            while current <= end_date:
-                # calculate first day of next month
-                if current.month == 12:
-                    next_month = datetime(current.year + 1, 1, 1)
-                else:
-                    next_month = datetime(current.year, current.month + 1, 1)
-
-                period_end = min(next_month - timedelta(days=1), end_date)
-                result.append((current, period_end))
-                current = next_month
-        else:
-            if delta >= 60:
-                # Split by month manually
-                current = start_date
-                while current <= end_date:
-                    # calculate first day of next month
-                    if current.month == 12:
-                        next_month = datetime(current.year + 1, 1, 1)
-                    else:
-                        next_month = datetime(current.year, current.month + 1, 1)
-
-                    period_end = min(next_month - timedelta(days=1), end_date)
-                    result.append((current, period_end))
-                    current = next_month
-
-            elif delta > 14:
-                # Split by week (7 days)
-                current = start_date
-                while current <= end_date:
-                    period_end = min(current + timedelta(days=6), end_date)
-                    result.append((current, period_end))
-                    current += timedelta(days=7)
-
-            else:
-                # Split by day
-                current = start_date
-                while current <= end_date:
-                    result.append((current, current))
-                    current += timedelta(days=1)
-
-        return result
     
-    def make_period(self, type):
-        today = datetime.now()
-        result = []
-
-        if type == "0":
-            start_date = datetime(today.year, 1, 1)
-            end_date = datetime(today.year, 12, 31)
-            current = start_date
-            while current <= end_date:
-                # calculate first day of next month
-                if current.month == 12:
-                    next_month = datetime(current.year + 1, 1, 1)
-                else:
-                    next_month = datetime(current.year, current.month + 1, 1)
-
-                period_end = min(next_month - timedelta(days=1), end_date)
-                result.append((current, period_end))
-                current = next_month
-        elif type == "1":
-            start_date = datetime(today.year, today.month, 1)
-            end_date = datetime(today.year, today.month + 1, 1)
-            current = start_date
-            while current < end_date:
-                period_end = min(current + timedelta(days=6), end_date)
-                result.append((current, period_end))
-                current += timedelta(days=7)
-        elif type == "2":
-            start_date = datetime(2025, 1, 1)
-            end_date = datetime(today.year, 12, 31)
-            current = start_date
-            while current < end_date:
-                period_end = min(current + timedelta(days=365), end_date)
-                result.append((current, period_end))
-                current += timedelta(days=365)
-        else:
-            start_date = datetime(today.year, today.month, 1)
-            end_date = today
-            current = start_date
-            while current <= end_date:
-                result.append((current, current))
-                current += timedelta(days=1)
-        
-        return result
-    
-    def get_detail_info(self, p_list):
-        result = []
-        symbols = [portfolio['token_symbol'] for portfolio in p_list]
-
-        if len(symbols) > 0:
-            latest_prices = current_app.tracker.get_latest_price(list(set(symbols)))
-
-        closed_profit = 0
-        open_profit = 0
-        closed_loss = 0
-        open_loss = 0
-        total_profit = 0
-        
-        for portfolio in p_list:
-            portfolio['oracle'] = latest_prices[portfolio['token_symbol']]['price']
-            portfolio['logo'] = latest_prices[portfolio['token_symbol']]['logo']
-            portfolio['order_value'] = portfolio['entry_price'] * portfolio['quantity']
-            if (portfolio['trade_type']) == 0:
-                if portfolio['position_type'] == 0:
-                    portfolio['est_val'] = (portfolio['oracle'] - portfolio['entry_price']) * portfolio['quantity'] 
-                else:
-                    portfolio['est_val'] = (portfolio['oracle'] - portfolio['entry_price']) * portfolio['quantity'] * portfolio['leverage'] 
-            else:
-                if portfolio['position_type'] == 0:
-                    portfolio['est_val'] = (portfolio['entry_price'] - portfolio['oracle']) * portfolio['quantity'] 
-                else:
-                    portfolio['est_val'] = (portfolio['entry_price'] - portfolio['oracle']) * portfolio['quantity'] * portfolio['leverage']
-            if portfolio['status'] == 0:
-                if portfolio['est_val'] > 0:
-                    open_profit += portfolio['est_val']
-                else:
-                    open_loss += portfolio['est_val']
-            else:
-                if portfolio['real_result'] > 0:
-                    closed_profit += portfolio['real_result']
-                else:
-                    closed_loss += portfolio['real_result']
-        
-        total_profit = open_profit + open_loss + closed_profit + closed_loss
-
-        return [closed_profit, closed_loss, open_profit, open_loss, total_profit]
-    
-    def get_pie_info(self, start, end, period_type):
-
-        today = datetime.now()
-        start_date = datetime.strptime(start, '%Y-%m-%d')
-        end_date = datetime.strptime(end, '%Y-%m-%d')
-
-        if period_type == "0":
-            start_date = datetime(today.year, today.month, 1)
-            end_date = datetime(today.year, today.month, calendar.monthrange(today.year, today.month)[1])
-        elif period_type == "1":
-            start_date = datetime(today.year, today.month, today.day) + timedelta(days=-7)
-            end_date = datetime(today.year, today.month, today.day)
-        elif period_type == "2":
-            start_date = datetime(today.year, 1, 1)
-            end_date = datetime(today.year, 12, 31)
-        elif period_type == "3":
-            start_date = datetime(today.year, today.month, today.day)
-            end_date = start_date + timedelta(days=1)
-
-        token_list = TokenType.query.all()
+    def get_daily_pnl(self, start_date, end_date):
 
         total_spot = 0
         total_margin = 0
@@ -273,214 +119,235 @@ class DashboardDataAPI(MethodResource):
         list_margin_short = {}
         list_margin_long = {}
 
+        token_list = db.session.query(
+            TokenType.uid, 
+            TokenType.name
+        ).all()
+
+
         for token_type in token_list:
-            list_spot[token_type.name] = 0
-            list_margin[token_type.name] = 0
-            list_margin_short[token_type.name] = 0
-            list_margin_long[token_type.name] = 0
+            list_spot[token_type['name']] = 0
+            list_margin[token_type['name']] = 0
+            list_margin_short[token_type['name']] = 0
+            list_margin_long[token_type['name']] = 0
+        
+        
+        query = Portfolio.query
+        portfolios = query.all()
 
-        query = Portfolio.query.join(TokenType, Portfolio.token_type == TokenType.uid).with_entities(
-            Portfolio.uid,
-            Portfolio.date,
-            Portfolio.token_id,
-            Portfolio.position_type,
-            Portfolio.token_type,
-            Portfolio.leverage,
-            Portfolio.entry_price,
-            Portfolio.quantity,
-            Portfolio.trade_type,
-            Portfolio.status,
-            Portfolio.oracle,
-            Portfolio.real_result,
-            Portfolio.token_name,
-            Portfolio.token_symbol,
-            TokenType.name.label('token_type_name')
-        )        
-        query = query.filter(Portfolio.date >= start_date, Portfolio.date <= end_date)
-        tt = query.all()
-        temp = [{
-            "uid": portfolio[0],
-            "date": portfolio[1].strftime("%m/%d/%Y"),
-            "token_id": portfolio[2],
-            "position_type": portfolio[3],
-            "token_type": portfolio[4],
-            "leverage": portfolio[5],
-            "entry_price": portfolio[6],
-            "quantity": portfolio[7],
-            "trade_type": portfolio[8],
-            "status": portfolio[9],
-            "oracle": portfolio[10],
-            "real_result": portfolio[11],
-            "token_name": portfolio[12],
-            "token_symbol": portfolio[13],
-            "token_type_name": portfolio[14],
-        } for portfolio in tt]
+        assets = db.session.query(
+            Portfolio.token_id, 
+            Portfolio.token_symbol
+        ).distinct().all()
 
-        symbols = [portfolio['token_symbol'] for portfolio in temp]
+        history_prices = current_app.tracker.get_multiple_historical_prices(assets, start_date, end_date)
 
-        if len(symbols) > 0:
-            latest_prices = current_app.tracker.get_latest_price(list(set(symbols)))
+        daily_pnl = {}
 
-
-        real_profit = 0
-        real_profit_total = 0
-        unreal_profit = 0
-        unreal_profit_total = 0        
-
-        for portfolio in temp:
-            portfolio['oracle'] = latest_prices[portfolio['token_symbol']]['price']
-            portfolio['logo'] = latest_prices[portfolio['token_symbol']]['logo']
-            portfolio['order_value'] = portfolio['entry_price'] * portfolio['quantity']
+        current = start_date + timedelta(days=1)
+        while current <= end_date:
+            closed_profit = 0
+            open_profit = 0
+            closed_loss = 0
+            open_loss = 0
             
-            if portfolio['trade_type'] == 0:
-                if portfolio['position_type'] == 0:
-                    portfolio['est_val'] = round((portfolio['oracle'] - portfolio['entry_price']) * portfolio['quantity'], 2)
-                else:
-                    portfolio['est_val'] = round((portfolio['oracle'] - portfolio['entry_price']) * portfolio['quantity'] * portfolio['leverage'], 2) 
-            else:
-                if portfolio['position_type'] == 0:
-                    portfolio['est_val'] = round((portfolio['entry_price'] - portfolio['oracle']) * portfolio['quantity'], 2)
-                else:
-                    portfolio['est_val'] = round((portfolio['entry_price'] - portfolio['oracle']) * portfolio['quantity'] * portfolio['leverage'], 2)
-
-
-            if portfolio['position_type'] == 0:
-                if portfolio['status'] == 0:
-                    total_spot += portfolio['est_val']
-                    list_spot[portfolio['token_type_name']] += portfolio['est_val']
-                else:
-                    total_spot += portfolio['real_result']
-                    list_spot[portfolio['token_type_name']] += portfolio['real_result']
-            else:
-                if portfolio['status'] == 0:
-                    total_margin += portfolio['est_val']
-                    list_margin[portfolio['token_type_name']] += portfolio['est_val']
-                    if portfolio['trade_type'] == 0:
-                        list_margin_long[portfolio['token_type_name']] += portfolio['est_val']
+            for portfolio in portfolios:
+                oracle = history_prices[portfolio.token_symbol]['data'][history_prices[portfolio.token_symbol]['data']['date'] == current.strftime('%Y-%m-%d')]['price'].values[0]
+                
+                if (portfolio.trade_type) == 0:
+                    if portfolio.position_type == 0:
+                        est_val = (oracle - portfolio.entry_price) * portfolio.quantity 
                     else:
-                        list_margin_short[portfolio['token_type_name']] += portfolio['est_val']
+                        est_val = (oracle - portfolio.entry_price) * portfolio.quantity * portfolio.leverage 
                 else:
-                    total_margin += portfolio['real_result']
-                    list_margin[portfolio['token_type_name']] += portfolio['real_result']
-                    if portfolio['trade_type'] == 0:
-                        list_margin_long[portfolio['token_type_name']] += portfolio['real_result']
+                    if portfolio.position_type == 0:
+                        est_val = (portfolio.entry_price - oracle) * portfolio.quantity 
                     else:
-                        list_margin_short[portfolio['token_type_name']] += portfolio['real_result']
-            
-            if portfolio['status'] == 1:
-                real_profit_total += portfolio['real_result']
-                if portfolio['real_result'] > 0:
-                    real_profit += portfolio['real_result']
-            else:
-                unreal_profit_total += portfolio['est_val']
-                if portfolio['est_val'] > 0:
-                    unreal_profit += portfolio['est_val']
-            
+                        est_val = (portfolio.entry_price - oracle) * portfolio.quantity  * portfolio.leverage
 
+                est_val = round(est_val, 2)
+                
+                if portfolio.status == 0:
+                    if est_val > 0:
+                        open_profit += est_val
+                    else:
+                        open_loss += est_val
+                else:
+                    if portfolio.closed_date != None and portfolio.closed_date.strftime('%Y-%m-%d') == current.strftime('%Y-%m-%d'):
+                        if portfolio.real_result > 0:
+                            closed_profit += portfolio.real_result
+                        else:
+                            closed_loss += portfolio.real_result
+
+                # For pie chart
+                if portfolio.position_type == 0:
+                    if portfolio.status == 0:
+                        total_spot += est_val
+                        list_spot[list(filter(lambda e: e['uid'] == portfolio.token_type, token_list))[0].name] += est_val
+                    else:
+                        total_spot += portfolio.real_result
+                        list_spot[list(filter(lambda e: e['uid'] == portfolio.token_type, token_list))[0].name] += portfolio.real_result
+                else:
+                    if portfolio.status == 0:
+                        total_margin += est_val
+                        list_margin[list(filter(lambda e: e['uid'] == portfolio.token_type, token_list))[0].name] += est_val
+                        if portfolio.trade_type == 0:
+                            list_margin_long[list(filter(lambda e: e['uid'] == portfolio.token_type, token_list))[0].name] += est_val
+                        else:
+                            list_margin_short[list(filter(lambda e: e['uid'] == portfolio.token_type, token_list))[0].name] += est_val
+                    else:
+                        total_margin += portfolio.real_result
+                        list_margin[list(filter(lambda e: e['uid'] == portfolio.token_type, token_list))[0].name] += portfolio.real_result
+                        if portfolio.trade_type == 0:
+                            list_margin_long[list(filter(lambda e: e['uid'] == portfolio.token_type, token_list))[0].name] += portfolio.real_result
+                        else:
+                            list_margin_short[list(filter(lambda e: e['uid'] == portfolio.token_type, token_list))[0].name] += portfolio.real_result
+
+            
+            daily_pnl[current.strftime('%Y-%m-%d')] = {
+                'open_profit': round(open_profit, 2),
+                'open_loss': round(open_loss, 2),
+                'closed_profit': round(closed_profit, 2),
+                'closed_loss': round(closed_loss, 2)
+            }
+
+            current = current + timedelta(days=1)
+        
         pie_info = {
-            'total_spot': round(total_spot, 2),
-            'total_margin': round(total_margin, 2),
+            'all': {'spot': total_spot, 'margin': total_margin},
             'list_spot': list_spot,
             'list_margin': list_margin,
-            'list_margin_short': list_margin_short,
             'list_margin_long': list_margin_long,
-            'real_profit': real_profit,
-            'real_profit_total': real_profit_total,
-            'unreal_profit': unreal_profit,
-            'unreal_profit_total': unreal_profit_total
+            'list_margin_short': list_margin_short
         }
 
-        return pie_info
+        return daily_pnl, pie_info
         
-    def get_today_info(self, start, end, period_type):
+    def get_weekly_pnl(self, daily_pnl):
+        df = pd.DataFrame.from_dict(daily_pnl, orient='index')
+        df.index = pd.to_datetime(df.index)
         
-        today = datetime.now()
-        start_date = datetime.strptime(start, '%Y-%m-%d')
-        end_date = datetime.strptime(end, '%Y-%m-%d')
-        start_date_past = start_date + timedelta(days=-365)
-        end_date_past = end_date + timedelta(days=-365)
-
-        if period_type == "0":
-            start_date = datetime(today.year, today.month, 1)
-            end_date = datetime(today.year, today.month, calendar.monthrange(today.year, today.month)[1])
-            start_date_past = datetime(today.year, today.month - 1, 1)
-            end_date_past = datetime(today.year, today.month - 1, calendar.monthrange(today.year, today.month - 1)[1])
-        elif period_type == "1":
-            start_date = today + timedelta(days=-7)
-            end_date = today
-            start_date_past = today + timedelta(days=-14)
-            end_date_past = start_date
-        elif period_type == "2":
-            start_date = datetime(today.year, 1, 1)
-            end_date = datetime(today.year, 12, 31)
-            start_date_past = datetime(today.year - 1, 1, 1)
-            end_date_past = datetime(today.year - 1, 12, 31)
-        elif period_type == "3":
-            start_date = datetime(today.year, today.month, today.day)
-            end_date = start_date + timedelta(days=1)
-            start_date_past = start_date + timedelta(days=-1)
-            end_date_past = start_date
+        # Add time period columns
+        df['week'] = df.index.isocalendar().year.astype(str) + '-W' + df.index.isocalendar().week.astype(str)
         
+        # Weekly aggregation
+        weekly = df.groupby('week').agg({
+            'open_profit': 'sum',
+            'open_loss': 'sum',
+            'closed_profit': 'sum',
+            'closed_loss': 'sum'
+        })
 
-        query = Portfolio.query
-        query = query.filter(Portfolio.date >= start_date, Portfolio.date < end_date)
-        tt = query.all()
-        portfolios = [p.to_dict() for p in tt]
-        current_info = self.get_detail_info(portfolios)
+        pnl_columns = ['open_profit', 'open_loss', 'closed_profit', 'closed_loss']
+        cols_to_round = [col for col in pnl_columns if col in weekly.columns]
+        weekly[cols_to_round] = weekly[cols_to_round].round(2)
 
-        query = Portfolio.query
-        query = query.filter(Portfolio.date >= start_date_past, Portfolio.date < end_date_past)
-        tt = query.all()
-        portfolios = [p.to_dict() for p in tt]
-        past_info = self.get_detail_info(portfolios)
+        weekly_results = weekly.to_dict('index')
 
-        t_info = {
-            'real_profit': round(current_info[0], 2),
-            'real_total_profit': round(current_info[0] + current_info[1], 2),
-            'unreal_profit': round(current_info[2], 2),
-            'unreal_total_profit': round(current_info[2] + current_info[3], 2),
-            'percent_real_profit': 0 if (current_info[0] - past_info[0]) == 0 else round((current_info[0] - past_info[0]) / past_info[0] * 100 if past_info[0] != 0 else 100, 2),
-            'percent_real_total_profit': 0 if (current_info[0] + current_info[1] - past_info[0] - past_info[1]) == 0 else round((current_info[0] + current_info[1] - past_info[0] - past_info[1]) / (past_info[0] + past_info[1]) * 100 if (past_info[0] + past_info[1]) != 0 else 100, 2),
-            'percent_unreal_profit': 0 if (current_info[2] - past_info[2]) == 0 else round((current_info[2] - past_info[2]) / past_info[2] * 100 if past_info[2] != 0 else 100, 2),
-            'percent_unreal_total_profit': 0 if (current_info[2] + current_info[3] - past_info[2] - past_info[3]) == 0 else round((current_info[2] + current_info[3] - past_info[2] - past_info[3]) / (past_info[2] + past_info[3]) * 100 if (past_info[2] + past_info[3]) != 0 else 100, 2),
+        return weekly_results
+    
+    def get_monthly_pnl(self, daily_pnl):
+        df = pd.DataFrame.from_dict(daily_pnl, orient='index')
+        df.index = pd.to_datetime(df.index)
+        
+        # Add time period columns
+        df['month'] = df.index.to_period('M')
+
+        # Monthly aggregation
+        monthly = df.groupby('month').agg({
+            'open_profit': 'sum',
+            'open_loss': 'sum',
+            'closed_profit': 'sum',
+            'closed_loss': 'sum'
+        })
+
+        pnl_columns = ['open_profit', 'open_loss', 'closed_profit', 'closed_loss']
+        cols_to_round = [col for col in pnl_columns if col in monthly.columns]
+        monthly[cols_to_round] = monthly[cols_to_round].round(2)
+
+        monthly.index = monthly.index.strftime('%Y-%m')
+        monthly_result = monthly.to_dict('index')
+
+        return monthly_result
+    
+    def get_yearly_pnl(self, daily_pnl):
+        df = pd.DataFrame.from_dict(daily_pnl, orient='index')
+        df.index = pd.to_datetime(df.index)
+        
+        # Add time period columns
+        df['year'] = df.index.to_period('Y')
+
+        # Monthly aggregation
+        yearly = df.groupby('year').agg({
+            'open_profit': 'sum',
+            'open_loss': 'sum',
+            'closed_profit': 'sum',
+            'closed_loss': 'sum'
+        })
+        
+        pnl_columns = ['open_profit', 'open_loss', 'closed_profit', 'closed_loss']
+        cols_to_round = [col for col in pnl_columns if col in yearly.columns]
+        yearly[cols_to_round] = yearly[cols_to_round].round(2)
+
+        yearly.index = yearly.index.strftime('%Y')
+        yearly_result = yearly.to_dict('index')
+
+        return yearly_result
+    
+    def get_sum_data(self, data_pnl, pl, status):
+        df = pd.DataFrame.from_dict(data_pnl, orient='index')
+
+        if pl == "-1":
+            if status == "-1":
+                df['total_profit'] = df['closed_profit'] + df['open_profit'] + df['closed_loss'] + df['open_loss']
+            elif status == "0":
+                df['total_profit'] = df['open_profit'] + df['open_loss']
+            else:
+                df['total_profit'] = df['closed_profit'] + df['closed_loss']
+        elif pl == "0":
+            if status == "-1":
+                df['total_profit'] = df['closed_profit'] + df['open_profit']
+            elif status == "0":
+                df['total_profit'] = df['open_profit']
+            else:
+                df['total_profit'] = df['closed_profit']
+        else:
+            if status == "-1":
+                df['total_profit'] = df['closed_loss'] + df['open_loss']
+            elif status == "0":
+                df['total_profit'] = df['open_loss']
+            else:
+                df['total_profit'] = df['closed_loss']
+        
+        return {
+            'labels': df.index.tolist(),
+            'closed_profit': df['closed_profit'].tolist(),
+            'closed_loss': df['closed_loss'].tolist(),
+            'open_profit': df['open_profit'].tolist(),
+            'open_loss': df['open_loss'].tolist(),
+            'total_profit': df['total_profit'].tolist()
         }
-
-        return t_info
-
+    
     def get_year_info(self):
-
         today = datetime.now()
-        past = datetime.strptime('2025-06-01', '%Y-%m-%d')
+        start = datetime(2025, 5, 1) + timedelta(days=-1)
+        end = datetime(today.year, today.month, today.day)
+        daily_pnl, _ = self.get_daily_pnl(start, end)
+        monthly_pnl = self.get_monthly_pnl(daily_pnl)
+        chart_info = self.get_sum_data(monthly_pnl, "-1", "-1")
 
-        period_list = self.split_period(past.strftime('%Y-%m-%d'), today.strftime('%Y-%m-%d'), isMonth=True)
-
-        year_info = []
-        past_val = None
-
-        for period in period_list:
-            query = Portfolio.query
-            query = query.filter(Portfolio.date >= period[0], Portfolio.date <= period[1])
-            tt = query.all()
-            portfolios = [p.to_dict() for p in tt]
-            info = self.get_detail_info(portfolios)
-
-            if past_val is None:
-                past_val = 0
-
-            year_info.append({
-                'month' : period[0].strftime('%Y-%m'),
-                'percent': 0 if round(info[0] + info[1], 2) - past_val == 0 else round((round(info[0] + info[1], 2) - past_val) / past_val * 100 if past_val != 0 else 100, 2),
-                'profit': round(info[0] + info[1], 2),
-                'is_positive': (round(info[0] + info[1], 2) - past_val) >= 0
+        result = []
+        for index in range(0, len(chart_info['labels'])):
+            
+            if index == 0:
+                percent = 0
+            else:
+                percent = round((chart_info['total_profit'][index] - chart_info['total_profit'][index - 1]) / chart_info['total_profit'][index - 1] * 100 if chart_info['total_profit'][index - 1] != 0 else 100, 2)
+            
+            result.append({
+                'month': chart_info['labels'][index],
+                'percent': percent,
+                'profit': chart_info['total_profit'][index]
             })
-            past_val = round(info[0] + info[1], 2)
-
-            
-        return year_info
-            
-            
-
-
-
-
        
+        return result

@@ -1,5 +1,7 @@
 import os
 import requests
+import pandas as pd
+from datetime import timedelta
 
 class CoinMarketCapAPI:
     def __init__(self):
@@ -96,3 +98,27 @@ class CoinMarketCapAPI:
         except requests.exceptions.RequestException as e:
             print(f"Error fetching prices: {e}")
             return {}
+        
+    def get_historical_prices(self, coin_id, start_date, end_date):
+        url = f'{self.base_url}/cryptocurrency/quotes/historical'
+
+        params = {
+            'id': str(coin_id),
+            'time_start': start_date.strftime('%Y-%m-%d'),
+            'time_end': end_date.strftime('%Y-%m-%d'),
+            'interval': 'daily',
+            'convert': 'USD'
+        }
+        
+        response = self.session.get(url, params=params)
+        data = response.json()
+        
+        # Process the data into a DataFrame
+        prices = []
+        for item in data['data']['quotes']:
+            prices.append({
+                'date': item['timestamp'][:10],
+                'price': item['quote']['USD']['price']
+            })
+        
+        return pd.DataFrame(prices)
