@@ -519,9 +519,13 @@ export default function Dashboard() {
         setStartDate(format(start, 'yyyy-MM-dd'));
     }
 
+    const applyFilter = () => {
+        init();
+    }
+
     useEffect(() => {
         init();
-    }, [startDate, endDate, plType, status, periodConfig]);
+    }, []);
 
 
     if (isLoading) {
@@ -568,7 +572,7 @@ export default function Dashboard() {
                                     </div>
                                 </div>
                             </div>
-                            <div className="grid grid-cols-3 gap-4 rounded-none md:flex-row md:items-center px-8">
+                            <div className="grid grid-cols-4 gap-20 rounded-none md:flex-row md:items-center px-8">
                                 <div>
                                     <Typography variant="small" color="dark" className="font-medium text-[16px]">
                                         Granularity
@@ -612,6 +616,9 @@ export default function Dashboard() {
                                         <Option value="1">Close</Option>
                                     </Select>
                                 </div>
+                                <Button color="blue" style={{width:'100px'}} onClick={applyFilter} className="mt-6">
+                                    Apply
+                                </Button>
                             </div>
                         </div>
                         <Chart {...chartConfig} />

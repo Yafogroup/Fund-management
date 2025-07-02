@@ -109,6 +109,38 @@ class DashboardDataAPI(MethodResource):
         
         return response_message(200, 'success', '', response_data)
     
+    def get_masked_data(self, start_date, end_date):
+
+        assets = db.session.query(
+            Portfolio.token_id, 
+            Portfolio.token_symbol
+        ).distinct().all()
+
+
+        history_prices = current_app.tracker.historical_prices
+
+        mask_start = pd.to_datetime(start_date)
+        mask_end = pd.to_datetime(end_date)
+
+        result = {}
+        
+
+        for token in assets:
+            token_id = token['token_id']
+            token_symbol = token['token_symbol']
+            
+            df = history_prices[token_symbol]['data'].copy()
+            if df.index.name != 'date':
+                df['date'] = pd.to_datetime(df['date'])  # First convert to datetime
+                df = df.set_index('date')
+            mask = (df.index >= mask_start) & (df.index <= mask_end)
+            date_range_df = df.loc[mask]
+            result[token_symbol] = {
+                'data': date_range_df
+            }
+        
+        return result
+    
     
     def get_daily_pnl(self, start_date, end_date):
 
@@ -135,12 +167,7 @@ class DashboardDataAPI(MethodResource):
         query = Portfolio.query
         portfolios = query.all()
 
-        assets = db.session.query(
-            Portfolio.token_id, 
-            Portfolio.token_symbol
-        ).distinct().all()
-
-        history_prices = current_app.tracker.get_multiple_historical_prices(assets, start_date, end_date)
+        history_prices = self.get_masked_data(start_date, end_date)
 
         daily_pnl = {}
 
@@ -152,7 +179,7 @@ class DashboardDataAPI(MethodResource):
             open_loss = 0
             
             for portfolio in portfolios:
-                oracle = history_prices[portfolio.token_symbol]['data'][history_prices[portfolio.token_symbol]['data']['date'] == current.strftime('%Y-%m-%d')]['price'].values[0]
+                oracle = history_prices[portfolio.token_symbol]['data'].loc[current.strftime('%Y-%m-%d')]['price']
                 
                 if (portfolio.trade_type) == 0:
                     if portfolio.position_type == 0:
@@ -334,7 +361,7 @@ class DashboardDataAPI(MethodResource):
         end = datetime(today.year, today.month, today.day)
         daily_pnl, _ = self.get_daily_pnl(start, end)
         monthly_pnl = self.get_monthly_pnl(daily_pnl)
-        chart_info = self.get_sum_data(monthly_pnl, "-1", "-1")
+        chart_info = self.get_sum_data(monthly_pnl, "-1", "1")
 
         result = []
         for index in range(0, len(chart_info['labels'])):
@@ -347,7 +374,8 @@ class DashboardDataAPI(MethodResource):
             result.append({
                 'month': chart_info['labels'][index],
                 'percent': percent,
-                'profit': chart_info['total_profit'][index]
+                'profit': chart_info['total_profit'][index],
+                'is_positive': percent > 0
             })
        
         return result

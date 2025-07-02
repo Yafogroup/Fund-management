@@ -3,6 +3,8 @@ from datetime import datetime, timedelta
 import time
 from service import CoinMarketCapAPI
 import threading
+from model import Portfolio, TokenType
+from controller import db
 
 class PriceChangeTracker:
     def __init__(self):
@@ -14,6 +16,8 @@ class PriceChangeTracker:
         self.change_log = []
         self.token_list = []
         self.token_all_list = []
+        self.historical_prices = {}
+
         self.stop_event = threading.Event()
         self.thread = threading.Thread(target=self.background_task, daemon=True)
         self._lock = threading.Lock()
@@ -22,6 +26,7 @@ class PriceChangeTracker:
             f.write(str(self.interval))
 
         self.get_all_tokens()
+        self.get_multiple_historical_prices()
         
     def get_all_tokens(self):
         self.token_all_list = self.cmc.get_all_tokens()
@@ -37,19 +42,29 @@ class PriceChangeTracker:
         result = self.cmc.get_latest_price(','.join(symbols))
         return result
     
-    def get_multiple_historical_prices(self, assets, start_date, end_date):
-        all_prices = {}
+    def get_multiple_historical_prices(self):
+
+        assets = db.session.query(
+            Portfolio.token_id, 
+            Portfolio.token_symbol
+        ).distinct().all()
+
+        self.historical_prices = {}
+
+        today = datetime.now()
+        start_date = datetime(2024, 12, 31)
+        end_date = datetime(today.year, today.month, today.day)
 
         for token in assets:
             token_id = token['token_id']
             token_symbol = token['token_symbol']
             historical_data = self.cmc.get_historical_prices(token_id, start_date, end_date)
-            all_prices[token_symbol] = {
+            self.historical_prices[token_symbol] = {
                 'id': token_id,
                 'data': historical_data
             }
 
-        return all_prices
+        print("\nGot the historical price")
 
     def get_tokens(self):
         """Fetch current prices and maintain history of interval"""     
