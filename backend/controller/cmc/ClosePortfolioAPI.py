@@ -28,6 +28,7 @@ class ClosePortfolioAPI(MethodResource):
             else:
                 pt.status = 1
                 pt.real_result = real_result if real_result is not None else 0.0
+                pt.closed_date = datetime.now().strftime("%m/%d/%Y")
                 db.session.commit()
 
             return response_message(200, 'success', 'Close the portfolio')
