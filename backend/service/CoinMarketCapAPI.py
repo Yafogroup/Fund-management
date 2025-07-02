@@ -2,17 +2,28 @@ import os
 import requests
 import pandas as pd
 from datetime import timedelta
+from time import sleep
 
 class CoinMarketCapAPI:
     def __init__(self):
         self.api_key = os.getenv('CMC_API_KEY')
+        self.api_key_free = os.getenv('CMC_API_KEY_FREE')
         self.base_url = "https://pro-api.coinmarketcap.com/v1"
+        self.session = requests.Session()
+
         self.headers = {
             'Accepts': 'application/json',
             'X-CMC_PRO_API_KEY': self.api_key
         }
-        self.session = requests.Session()
+        
         self.session.headers.update(self.headers)
+
+    def set_api_key(self, isFree=False):
+        """Set the API key for the session"""
+        if isFree:
+            self.session.headers.update({'X-CMC_PRO_API_KEY': self.api_key_free})
+        else:
+            self.session.headers.update({'X-CMC_PRO_API_KEY': self.api_key})
     
     def get_current_prices(self, limit=3000):
         """Get current prices for top cryptocurrencies"""
@@ -24,7 +35,7 @@ class CoinMarketCapAPI:
                 'sort': 'volume_24h',
                 'convert': 'USD'
             }
-            
+            self.set_api_key(True)
             response = self.session.get(url, params=params)
             response.raise_for_status()
             data = response.json()
@@ -55,6 +66,7 @@ class CoinMarketCapAPI:
             params = {
                 'sort': 'cmc_rank',
             }
+            self.set_api_key(True)
             
             response = self.session.get(url, params=params)
             response.raise_for_status()
@@ -80,7 +92,8 @@ class CoinMarketCapAPI:
             params = {
                 'symbol': symbols,
             }
-            
+            self.set_api_key(True)
+
             response = self.session.get(url, params=params)
             response.raise_for_status()
             data = response.json()
@@ -109,6 +122,8 @@ class CoinMarketCapAPI:
             'interval': 'daily',
             'convert': 'USD'
         }
+
+        self.set_api_key(False)
         
         response = self.session.get(url, params=params)
         data = response.json()
