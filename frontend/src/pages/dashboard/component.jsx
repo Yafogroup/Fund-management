@@ -519,6 +519,17 @@ export default function Dashboard() {
         setStartDate(format(start, 'yyyy-MM-dd'));
     }
 
+    const setCustomDataRage = (value, type) => {
+        if (type === 0) {
+            setStartDate(value);
+        } else {
+            setEndDate(value);
+        }
+        setPeriodConfig("-1");
+        setPlType("-1")
+        setStatus("-1")
+    }
+
     const applyFilter = () => {
         init();
     }
@@ -554,7 +565,7 @@ export default function Dashboard() {
                                             type="date"
                                             value={startDate}
                                             onClick={(e) => e.currentTarget.showPicker()}
-                                            onChange={(e) => setStartDate(e.target.value)}
+                                            onChange={(e) => setCustomDataRage(e.target.value, 0)}
                                             className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-transparent text-lBLue"
                                         />
                                     </div>
@@ -566,7 +577,7 @@ export default function Dashboard() {
                                             type="date"
                                             value={endDate}
                                             onClick={(e) => e.currentTarget.showPicker()}
-                                            onChange={(e) => setEndDate(e.target.value)}
+                                            onChange={(e) => setCustomDataRage(e.target.value, 1)}
                                             className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-transparent text-lBLue"
                                         />
                                     </div>
