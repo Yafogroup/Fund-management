@@ -1,7 +1,7 @@
 import {
     Button,
     Card,
-    CardBody,
+    CardBody, Carousel, Dialog, DialogBody, DialogHeader, IconButton,
     Menu,
     MenuHandler,
     MenuItem,
@@ -17,6 +17,8 @@ import StatCard from "@/widgets/components/stat_card.jsx";
 import React, {useEffect, useState} from "react";
 import dashboardService from "@/api/dashboardService.jsx";
 import {format, subMonths, subWeeks, subYears} from 'date-fns';
+import ItemEvent from "@/widgets/components/item_event.jsx";
+import {XMarkIcon} from "@heroicons/react/24/solid/index.js";
 
 // If you're using Next.js please use the dynamic import for react-apexcharts and remove the import from the top for the react-apexcharts
 // import dynamic from "next/dynamic";
@@ -67,6 +69,14 @@ export default function Dashboard() {
     const [pieData3, setPieData3] = useState({})
     const [pieData4, setPieData4] = useState({})
     const [pieData5, setPieData5] = useState({})
+
+    const [eventList, setEventList] = useState([])
+    const [viewModalOpen, setViewModalOpen] = useState(false);
+    const [selectedEvent, setSelectedEvent] = useState(null);
+    const handleView = (event) => {
+        setSelectedEvent(event);
+        setViewModalOpen(true);
+    };
 
     const chartConfig = {
         type: "bar",
@@ -304,12 +314,12 @@ export default function Dashboard() {
             "status": status,
             "period_type": periodConfig,
         });
-        console.log(result.data.data.bar_chart_info);
-        console.log(result.data.data.pie_chart_info);
+        console.log(result.data.data.event_list);
 
         setBarChartInfo(result.data.data.bar_chart_info);
         setYearData(result.data.data.year_info);
         setTodayInfo(result.data.data.today_info);
+        setEventList(result.data.data.event_list);
 
         makePieData(result.data.data.pie_chart_info);
         setPieTitle(-1, "All");
@@ -738,8 +748,106 @@ export default function Dashboard() {
                             </div>
                         </CardBody>
                     </Card>
+                    <Dialog open={viewModalOpen} handler={() => setViewModalOpen(false)} size="lg">
+                        <div className="flex justify-between items-center px-4 pt-4">
+                            <DialogHeader>{selectedEvent?.title}</DialogHeader>
+                            <IconButton variant="text" onClick={() => setViewModalOpen(false)}>
+                                <XMarkIcon className="w-6 h-6" />
+                            </IconButton>
+                        </div>
+                        <DialogBody className="px-6 pb-4 space-y-4">
+                            <div className="max-h-[80vh] overflow-y-auto px-4">
+                                {selectedEvent?.image && (
+                                    <img
+                                        src={selectedEvent.image}
+                                        alt="Memo"
+                                        className="max-w-full rounded-lg"
+                                    />
+                                )}
+                                <p className="text-gray-800 whitespace-pre-wrap">
+                                    {selectedEvent?.content}
+                                </p>
+                            </div>
+                        </DialogBody>
+                    </Dialog>
                 </div>
             </div>
+            <Carousel className="rounded-xl mt-4"
+                  autoplay={true}
+                  loop={true}
+                  prevArrow={({ handlePrev }) => (
+                      <IconButton
+                          variant="text"
+                          color="light-blue"
+                          size="lg"
+                          onClick={handlePrev}
+                          className="!absolute top-2/4 left-4 -translate-y-2/4"
+                      >
+                          <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              strokeWidth={2}
+                              stroke="currentColor"
+                              className="h-6 w-6"
+                          >
+                              <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
+                              />
+                          </svg>
+                      </IconButton>
+                  )}
+                  nextArrow={({ handleNext }) => (
+                      <IconButton
+                          variant="text"
+                          color="light-blue"
+                          size="lg"
+                          onClick={handleNext}
+                          className="!absolute top-2/4 !right-4 -translate-y-2/4"
+                      >
+                          <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              strokeWidth={2}
+                              stroke="currentColor"
+                              className="h-6 w-6"
+                          >
+                              <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+                              />
+                          </svg>
+                      </IconButton>
+                  )}
+                  navigation={({ setActiveIndex, activeIndex, length }) => (
+                      <div className="absolute bottom-4 left-2/4 z-50 flex -translate-x-2/4 gap-2">
+                          {new Array(length).fill("").map((_, i) => (
+                              <span
+                                  key={i}
+                                  className={`block h-1 cursor-pointer rounded-2xl transition-all content-[''] ${
+                                      activeIndex === i ? "w-8 bg-black" : "w-4 bg-black/50"
+                                  }`}
+                                  onClick={() => setActiveIndex(i)}
+                              />
+                          ))}
+                      </div>
+                  )}
+            >
+                {
+                    eventList.map((event, index) => (
+                        <ItemEvent
+                            event={event}
+                            key={index}
+                            onClick={() => handleView(event)}
+                            noButton={true}
+                        />
+                    ))
+                }
+            </Carousel>
         </div>
     );
 }

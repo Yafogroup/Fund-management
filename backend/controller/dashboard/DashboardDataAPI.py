@@ -1,6 +1,6 @@
 from flask_apispec import MethodResource, marshal_with, doc, use_kwargs
 from helper import response_message, Serializers, RequestResponse, RequestPost, Auth
-from model import Portfolio, TokenType
+from model import Portfolio, TokenType, Event
 from controller import db
 from flask import request, current_app
 from werkzeug.utils import secure_filename
@@ -99,12 +99,15 @@ class DashboardDataAPI(MethodResource):
             'percent_unreal_total_profit': 0 if (current_info['open_profit'] + current_info['open_loss'] - past_info['open_profit'] - past_info['open_loss']) == 0 else round((current_info['open_profit'] + current_info['open_loss'] - past_info['open_profit'] - past_info['open_loss']) / (past_info['open_profit'] + past_info['open_loss']) * 100 if (past_info['open_profit'] + past_info['open_loss']) != 0 else 100, 2),
         }
 
+        event_list = Event.query.order_by(Event.happen_time.desc()).limit(5).all()
+
 
         response_data = {
             'bar_chart_info': bar_chart_info,
             'pie_chart_info': pie_info,
             'today_info': t_info,
-            'year_info': y_info
+            'year_info': y_info,
+            'event_list': [event.to_dict() for event in event_list]
         }      
         
         return response_message(200, 'success', '', response_data)

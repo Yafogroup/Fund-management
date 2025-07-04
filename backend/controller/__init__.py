@@ -36,4 +36,11 @@ from .memo import UpdateMemoAPI
 from .memo import ExportMemoAPI
 from .memo import ImportMemoAPI
 
+from .event import AddEventAPI
+from .event import DeleteEventAPI
+from .event import EventListAPI
+from .event import UpdateEventAPI
+from .event import ExportEventAPI
+from .event import ImportEventAPI
+
 from .dashboard import DashboardDataAPI

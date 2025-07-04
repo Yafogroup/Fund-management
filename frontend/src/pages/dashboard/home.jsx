@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import {
   Typography,
   Card,
@@ -27,9 +27,26 @@ import {
 } from "@/data";
 import { CheckCircleIcon, ClockIcon } from "@heroicons/react/24/solid";
 
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { Input } from "@material-tailwind/react";
+
 export function Home() {
+  const [selectedDate, setSelectedDate] = useState(new Date());
   return (
     <div className="mt-12">
+      <div className="w-72">
+        <label className="text-sm text-blue-gray-600 mb-1 block">Select Date & Time</label>
+        <DatePicker
+            selected={selectedDate}
+            onChange={(date) => setSelectedDate(date)}
+            showTimeSelect
+            timeFormat="HH:mm"
+            timeIntervals={15}
+            dateFormat="yyyy-MM-dd h:mm aa"
+            customInput={<Input label="Date Time" />}
+            showMonthYearDropdown={false}/>
+      </div>
       <div className="mb-12 grid gap-y-10 gap-x-6 md:grid-cols-2 xl:grid-cols-4">
         {statisticsCardsData.map(({ icon, title, footer, ...rest }) => (
           <StatisticsCard

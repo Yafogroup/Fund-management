@@ -41,7 +41,13 @@ from controller import (
     TokenCurrentAPI,
     ExportMemoAPI,
     ImportMemoAPI,
-    DashboardDataAPI
+    DashboardDataAPI,
+    EventListAPI,
+    AddEventAPI,
+    UpdateEventAPI,
+    DeleteEventAPI,
+    ExportEventAPI,
+    ImportEventAPI
 )
 
 app.config.update({
@@ -167,4 +173,22 @@ docs.register(PortfolioDelete)
 
 api.add_resource(DashboardDataAPI, f'{ENDPOINT}/dashboard/info', methods=['POST'])
 docs.register(DashboardDataAPI)
+
+api.add_resource(EventListAPI, f'{ENDPOINT}/event/list', methods=['POST'])
+docs.register(EventListAPI)
+
+api.add_resource(AddEventAPI, f'{ENDPOINT}/event/add', methods=['POST'])
+docs.register(AddEventAPI)
+
+api.add_resource(UpdateEventAPI, f'{ENDPOINT}/event/edit', methods=['POST'])
+docs.register(UpdateEventAPI)
+
+api.add_resource(DeleteEventAPI, f'{ENDPOINT}/event/delete/<int:memo_uid>', methods=['DELETE'])
+docs.register(DeleteEventAPI)
+
+api.add_resource(ExportEventAPI, f'{ENDPOINT}/event/export', methods=['POST'])
+docs.register(ExportEventAPI)
+
+api.add_resource(ImportEventAPI, f'{ENDPOINT}/event/import', methods=['POST'])
+docs.register(ImportEventAPI)
 

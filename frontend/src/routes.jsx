@@ -6,7 +6,8 @@ import {
   ServerStackIcon,
   RectangleStackIcon,
   ClipboardDocumentIcon,
-  ShoppingCartIcon
+  NewspaperIcon,
+  ShoppingCartIcon,
 } from "@heroicons/react/24/solid";
 import { Home, Profile, Tokens, Notifications } from "@/pages/dashboard";
 import { SignIn, SignUp } from "@/pages/auth";
@@ -16,6 +17,7 @@ import Unauthorized from "@/pages/dashboard/unauthorized.jsx";
 import Orders from "@/pages/dashboard/orders.jsx";
 import Toke_type from "@/pages/dashboard/toke_type.jsx";
 import Dashboard from "@/pages/dashboard/component.jsx";
+import Event from "@/pages/dashboard/event.jsx";
 
 const icon = {
   className: "w-5 h-5 text-inherit",
@@ -55,6 +57,12 @@ export const routes = [
         name: "memo",
         path: "/memo",
         element: <Memo />,
+      },
+      {
+        icon: <NewspaperIcon {...icon} />,
+        name: "event",
+        path: "/event",
+        element: <Event />,
       },
       {
         icon: <InformationCircleIcon {...icon} />,

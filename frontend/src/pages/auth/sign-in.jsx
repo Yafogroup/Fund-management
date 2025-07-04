@@ -40,6 +40,7 @@ export function SignIn() {
         auth_token: response.data.data.auth_token,
         role: response.data.data.role,
         user_token: response.data.data.user_token,
+        event_list: response.data.data.event_list,
       });
       navigate("/dashboard/home");
     } else {
