@@ -29,13 +29,13 @@ class DashboardDataAPI(MethodResource):
         today = datetime.now()
 
         if period_type == "0":
-            start = datetime(today.year, 1, 1) + timedelta(days=-1)
+            start = datetime(today.year, 6, 1) + timedelta(days=-1)
             end = datetime(today.year, today.month, today.day)
         elif period_type == "1":
-            start = datetime(today.year, 1, 1) + timedelta(days=-1)
+            start = datetime(today.year, 6, 1) + timedelta(days=-1)
             end = datetime(today.year, today.month, today.day)
         elif period_type == "2":
-            start = datetime(2025, 1, 1) + timedelta(days=-1)
+            start = datetime(2025, 6, 1) + timedelta(days=-1)
             end = datetime(today.year, today.month, today.day)
         elif period_type == "3":
             start = datetime(today.year, today.month, 1) + timedelta(days=-2)
