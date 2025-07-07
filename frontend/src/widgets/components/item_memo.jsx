@@ -14,12 +14,12 @@ const ItemMemo = ({ memo, onView, onEdit, onDelete }) => {
     return (
         <Card
             key={memo.id}
-            className={`relative shadow-md hover:shadow-lg transition-shadow duration-300 ${
+            className={`h-[120px] relative shadow-md hover:shadow-lg transition-shadow duration-300 ${
                 hasImage ? "flex flex-row" : "flex flex-col"
             }`}
         >
             {hasImage && (
-                <div className="w-1/3 min-w-[120px] max-w-[160px] h-full">
+                <div className="w-1/3 min-w-[120px] max-w-[160px] h-[120px]">
                     <img
                         src={memo.image}
                         alt={memo.title}

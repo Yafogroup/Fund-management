@@ -59,7 +59,7 @@ export default function Dashboard() {
     const [endDate, setEndDate] = useState(format(new Date(), 'yyyy-MM-dd'));
 
     const [pieType, setPieType] = useState(-1);
-    const [pieName, setPieName] = useState("All");
+    const [pieName, setPieName] = useState("Margin");
 
     const [yearData, setYearData] = useState([]);
     const [todayInfo, setTodayInfo] = useState({})
@@ -231,7 +231,7 @@ export default function Dashboard() {
         height: 360,
         series: [
             {
-                name: "Sales",
+                name: "Total P&L",
                 data: barChartInfo.total_profit,
             },
         ],
@@ -329,9 +329,7 @@ export default function Dashboard() {
 
     const setPieTitle = (type, value) => {
         setPieType(type);
-        setPieName(value);
-
-
+        if (type > 0) setPieName(value);
     }
 
     const makePieData = (data) => {
@@ -694,37 +692,16 @@ export default function Dashboard() {
                                         Return profit per token type
                                     </Typography>
                                 </div>
+                                <Button onClick={() => setPieTitle(-1, "All")} color={pieType === -1 ? 'light-blue' : 'black'}>All</Button>
+                                <Button onClick={() => setPieTitle(0, "Spot")} color={pieType === 0 ? 'light-blue' : 'black'}>Spot</Button>
                                 <Menu>
                                     <MenuHandler>
-                                        <Button>{pieName}</Button>
+                                        <Button color={pieType > 0 ? 'light-blue' : 'black'}>{pieName}</Button>
                                     </MenuHandler>
                                     <MenuList>
-                                        <MenuItem onClick={() => setPieTitle(-1, "All")}>All</MenuItem>
-                                        <MenuItem onClick={() => setPieTitle(0, "Spot")}>Spot</MenuItem>
-                                        <Menu
-                                            placement="right-start"
-                                            open={openMenu}
-                                            handler={setOpenMenu}
-                                            allowHover
-                                            offset={15}
-                                        >
-                                            <MenuHandler className="flex items-center justify-between">
-                                                <MenuItem>
-                                                    Margin
-                                                    <ChevronUpIcon
-                                                        strokeWidth={2.5}
-                                                        className={`h-3.5 w-3.5 transition-transform ${
-                                                            openMenu ? "rotate-90" : ""
-                                                        }`}
-                                                    />
-                                                </MenuItem>
-                                            </MenuHandler>
-                                            <MenuList>
-                                                <MenuItem onClick={() => setPieTitle(1, "Margin")}>All</MenuItem>
-                                                <MenuItem onClick={() => setPieTitle(2, "Long")}>Long</MenuItem>
-                                                <MenuItem onClick={() => setPieTitle(3, "Short")}>Short</MenuItem>
-                                            </MenuList>
-                                        </Menu>
+                                        <MenuItem onClick={() => setPieTitle(1, "Margin")}>Margin</MenuItem>
+                                        <MenuItem onClick={() => setPieTitle(2, "Long")}>Long</MenuItem>
+                                        <MenuItem onClick={() => setPieTitle(3, "Short")}>Short</MenuItem>
                                     </MenuList>
                                 </Menu>
                                 <InformationCircleIcon className="w-4 h-4 text-gray-500" />

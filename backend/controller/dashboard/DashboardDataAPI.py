@@ -93,10 +93,10 @@ class DashboardDataAPI(MethodResource):
             'real_total_profit': round(current_info['closed_profit'] + current_info['closed_loss'], 2),
             'unreal_profit': round(current_info['open_profit'], 2),
             'unreal_total_profit': round(current_info['open_profit'] + current_info['open_loss'], 2),
-            'percent_real_profit': 0 if (current_info['closed_profit'] - past_info['closed_profit']) == 0 else round((current_info['closed_profit'] - past_info['closed_profit']) / past_info['closed_profit'] * 100 if past_info['closed_profit'] != 0 else 100, 2),
-            'percent_real_total_profit': 0 if (current_info['closed_profit'] + current_info['closed_loss'] - past_info['closed_profit'] - past_info['closed_loss']) == 0 else round((current_info['closed_profit'] + current_info['closed_loss'] - past_info['closed_profit'] - past_info['closed_loss']) / (past_info['closed_profit'] + past_info['closed_loss']) * 100 if (past_info['closed_profit'] + past_info['closed_loss']) != 0 else 100, 2),
-            'percent_unreal_profit': 0 if (current_info['open_profit'] - past_info['open_profit']) == 0 else round((current_info['open_profit'] - past_info['open_profit']) / past_info['open_profit'] * 100 if past_info['open_profit'] != 0 else 100, 2),
-            'percent_unreal_total_profit': 0 if (current_info['open_profit'] + current_info['open_loss'] - past_info['open_profit'] - past_info['open_loss']) == 0 else round((current_info['open_profit'] + current_info['open_loss'] - past_info['open_profit'] - past_info['open_loss']) / (past_info['open_profit'] + past_info['open_loss']) * 100 if (past_info['open_profit'] + past_info['open_loss']) != 0 else 100, 2),
+            'percent_real_profit': self.get_percent(current_info['closed_profit'], past_info['closed_profit']),
+            'percent_real_total_profit': self.get_percent(current_info['closed_profit'] + current_info['closed_loss'], past_info['closed_profit'] + past_info['closed_loss']),
+            'percent_unreal_profit': self.get_percent(current_info['open_profit'], past_info['open_profit']),
+            'percent_unreal_total_profit': self.get_percent(current_info['open_profit'] + current_info['open_loss'], past_info['open_profit'] + past_info['open_loss']),
         }
 
         event_list = Event.query.order_by(Event.happen_time.desc()).limit(5).all()
@@ -111,6 +111,17 @@ class DashboardDataAPI(MethodResource):
         }      
         
         return response_message(200, 'success', '', response_data)
+    
+    def get_percent(self, current, past):
+        result = 0
+        if current == past:
+            result = 0
+        else:
+            result = round((current - past) / past * 100 if past != 0 else 100, 2)
+        
+        if past < 0:
+            result = -result
+        return result
     
     def get_masked_data(self, start_date, end_date):
 
@@ -298,6 +309,20 @@ class DashboardDataAPI(MethodResource):
         monthly.index = monthly.index.strftime('%Y-%m')
         monthly_result = monthly.to_dict('index')
 
+        today = datetime.now()
+
+        for month, values in monthly_result.items():
+            m = datetime.strptime(month, '%Y-%m')
+            if m.year == today.year and m.month == today.month:
+                m = datetime(today.year, today.month, today.day)
+            else:
+                m = datetime(m.year, m.month, calendar.monthrange(m.year, m.month)[1])
+            open_profit = daily_pnl[m.strftime('%Y-%m-%d')]['open_profit']
+            open_loss = daily_pnl[m.strftime('%Y-%m-%d')]['open_loss']
+
+            values['open_profit'] = open_profit
+            values['open_loss'] = open_loss
+
         return monthly_result
     
     def get_yearly_pnl(self, daily_pnl):
@@ -321,6 +346,18 @@ class DashboardDataAPI(MethodResource):
 
         yearly.index = yearly.index.strftime('%Y')
         yearly_result = yearly.to_dict('index')
+
+        today = datetime.now()
+
+        for year, values in yearly_result.items():
+            m = datetime(int(year), 12, 31)
+            if m.year == today.year:
+                m = datetime(today.year, today.month, today.day)
+            open_profit = daily_pnl[m.strftime('%Y-%m-%d')]['open_profit']
+            open_loss = daily_pnl[m.strftime('%Y-%m-%d')]['open_loss']
+
+            values['open_profit'] = open_profit
+            values['open_loss'] = open_loss
 
         return yearly_result
     
@@ -349,6 +386,8 @@ class DashboardDataAPI(MethodResource):
             else:
                 df['total_profit'] = df['closed_loss']
         
+        df['total_profit'] = round(df['total_profit'], 2)
+
         return {
             'labels': df.index.tolist(),
             'closed_profit': df['closed_profit'].tolist(),
