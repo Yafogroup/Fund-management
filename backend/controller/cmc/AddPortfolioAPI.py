@@ -64,4 +64,5 @@ class AddPortfolioAPI(MethodResource):
             pt.oracle = oracle
 
         db.session.commit()
+        current_app.tracker.get_multiple_historical_prices()
         return response_message(200, 'success', 'Portfolio saved successfully.')

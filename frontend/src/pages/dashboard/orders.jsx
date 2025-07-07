@@ -68,6 +68,8 @@ const Orders = () => {
     const [sortColumn, setSortColumn] = useState("Date");
     const [sortDirection, setSortDirection] = useState(0);
 
+    const [saving, setSaving] = useState(false);
+
 
     const [form, setForm] = useState({
         token_id: 0,
@@ -248,7 +250,9 @@ const Orders = () => {
         formData.append("token_symbol", form.token_symbol);
 
         try {
+            setSaving(true);
             const response = await PortfolioService.save(formData);
+            setSaving(false);
             if (response.status === 200) {
                 showNotification(messages.portfolio_saved, 'green');
                 setEditModalOpen(false);

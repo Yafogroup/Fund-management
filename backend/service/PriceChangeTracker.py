@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 import time
 from service import CoinMarketCapAPI
 import threading
-from model import Portfolio, TokenType
+from model import UserToken, Portfolio
 from controller import db
 
 class PriceChangeTracker:
@@ -17,6 +17,7 @@ class PriceChangeTracker:
         self.token_list = []
         self.token_all_list = []
         self.historical_prices = {}
+        self.assets = []
 
         self.stop_event = threading.Event()
         self.thread = threading.Thread(target=self.background_task, daemon=True)
@@ -49,13 +50,19 @@ class PriceChangeTracker:
             Portfolio.token_symbol
         ).distinct().all()
 
-        self.historical_prices = {}
+        # ids = db.session.query(UserToken.token_uid).all()
+        # idStr = ','.join([str(i[0]) for i in ids])
+        # idList = idStr.split(',')
+
+        # assets = [token for token in self.token_all_list if str(token['id']) in idList]
+
+        new_assets = [item for item in assets if item not in self.assets]
 
         today = datetime.now()
         start_date = datetime(2024, 12, 31)
         end_date = datetime(today.year, today.month, today.day)
 
-        for token in assets:
+        for token in new_assets:
             token_id = token['token_id']
             token_symbol = token['token_symbol']
             historical_data = self.cmc.get_historical_prices(token_id, start_date, end_date)
@@ -63,6 +70,8 @@ class PriceChangeTracker:
                 'id': token_id,
                 'data': historical_data
             }
+
+        self.assets = assets
 
         print("\nGot the historical price")
 
