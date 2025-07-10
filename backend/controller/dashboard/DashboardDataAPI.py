@@ -82,7 +82,7 @@ class DashboardDataAPI(MethodResource):
         bar_chart_info = {}
         
         bar_chart_info['closed_profit'] = chart_info['closed_profit']
-        bar_chart_info['closed_loss'] = chart_info['closed_profit']
+        bar_chart_info['closed_loss'] = chart_info['closed_loss']
         bar_chart_info['open_profit'] = chart_info['open_profit']    
         bar_chart_info['open_loss'] = chart_info['open_loss']
         bar_chart_info['total_profit'] = chart_info['total_profit']
@@ -284,6 +284,18 @@ class DashboardDataAPI(MethodResource):
         weekly[cols_to_round] = weekly[cols_to_round].round(2)
 
         weekly_results = weekly.to_dict('index')
+
+        today = datetime.now()
+
+        for week, values in weekly_results.items():
+            m = datetime.strptime(week + '-1', '%Y-W%W-%w').date() + timedelta(days=6.9)
+            if m.year == today.year and m.month == today.month:
+                m = datetime(today.year, today.month, today.day)
+            open_profit = daily_pnl[m.strftime('%Y-%m-%d')]['open_profit']
+            open_loss = daily_pnl[m.strftime('%Y-%m-%d')]['open_loss']
+
+            values['open_profit'] = open_profit
+            values['open_loss'] = open_loss
 
         return weekly_results
     
