@@ -185,6 +185,8 @@ class DashboardDataAPI(MethodResource):
 
         daily_pnl = {}
 
+        today = datetime.now()
+
         current = start_date + timedelta(days=1)
         while current <= end_date:
             closed_profit = 0
@@ -221,29 +223,29 @@ class DashboardDataAPI(MethodResource):
                             closed_loss += portfolio.real_result
 
                 # For pie chart
-                if portfolio.position_type == 0:
-                    if portfolio.status == 0:
-                        total_spot += est_val
-                        list_spot[list(filter(lambda e: e['uid'] == portfolio.token_type, token_list))[0].name] += est_val
-                    else:
-                        total_spot += portfolio.real_result
-                        list_spot[list(filter(lambda e: e['uid'] == portfolio.token_type, token_list))[0].name] += portfolio.real_result
-                else:
-                    if portfolio.status == 0:
-                        total_margin += est_val
-                        list_margin[list(filter(lambda e: e['uid'] == portfolio.token_type, token_list))[0].name] += est_val
-                        if portfolio.trade_type == 0:
-                            list_margin_long[list(filter(lambda e: e['uid'] == portfolio.token_type, token_list))[0].name] += est_val
+                if current.strftime('%Y-%m-%d') == today.strftime('%Y-%m-%d'):
+                    if portfolio.position_type == 0:
+                        if portfolio.status == 0:
+                            total_spot += est_val
+                            list_spot[list(filter(lambda e: e['uid'] == portfolio.token_type, token_list))[0].name] += est_val
                         else:
-                            list_margin_short[list(filter(lambda e: e['uid'] == portfolio.token_type, token_list))[0].name] += est_val
+                            total_spot += portfolio.real_result
+                            list_spot[list(filter(lambda e: e['uid'] == portfolio.token_type, token_list))[0].name] += portfolio.real_result
                     else:
-                        total_margin += portfolio.real_result
-                        list_margin[list(filter(lambda e: e['uid'] == portfolio.token_type, token_list))[0].name] += portfolio.real_result
-                        if portfolio.trade_type == 0:
-                            list_margin_long[list(filter(lambda e: e['uid'] == portfolio.token_type, token_list))[0].name] += portfolio.real_result
+                        if portfolio.status == 0:
+                            total_margin += est_val
+                            list_margin[list(filter(lambda e: e['uid'] == portfolio.token_type, token_list))[0].name] += est_val
+                            if portfolio.trade_type == 0:
+                                list_margin_long[list(filter(lambda e: e['uid'] == portfolio.token_type, token_list))[0].name] += est_val
+                            else:
+                                list_margin_short[list(filter(lambda e: e['uid'] == portfolio.token_type, token_list))[0].name] += est_val
                         else:
-                            list_margin_short[list(filter(lambda e: e['uid'] == portfolio.token_type, token_list))[0].name] += portfolio.real_result
-
+                            total_margin += portfolio.real_result
+                            list_margin[list(filter(lambda e: e['uid'] == portfolio.token_type, token_list))[0].name] += portfolio.real_result
+                            if portfolio.trade_type == 0:
+                                list_margin_long[list(filter(lambda e: e['uid'] == portfolio.token_type, token_list))[0].name] += portfolio.real_result
+                            else:
+                                list_margin_short[list(filter(lambda e: e['uid'] == portfolio.token_type, token_list))[0].name] += portfolio.real_result
             
             daily_pnl[current.strftime('%Y-%m-%d')] = {
                 'open_profit': round(open_profit, 2),
@@ -376,27 +378,29 @@ class DashboardDataAPI(MethodResource):
     def get_sum_data(self, data_pnl, pl, status):
         df = pd.DataFrame.from_dict(data_pnl, orient='index')
 
-        if pl == "-1":
-            if status == "-1":
-                df['total_profit'] = df['closed_profit'] + df['open_profit'] + df['closed_loss'] + df['open_loss']
-            elif status == "0":
-                df['total_profit'] = df['open_profit'] + df['open_loss']
-            else:
-                df['total_profit'] = df['closed_profit'] + df['closed_loss']
-        elif pl == "0":
-            if status == "-1":
-                df['total_profit'] = df['closed_profit'] + df['open_profit']
-            elif status == "0":
-                df['total_profit'] = df['open_profit']
-            else:
-                df['total_profit'] = df['closed_profit']
-        else:
-            if status == "-1":
-                df['total_profit'] = df['closed_loss'] + df['open_loss']
-            elif status == "0":
-                df['total_profit'] = df['open_loss']
-            else:
-                df['total_profit'] = df['closed_loss']
+        # if pl == "-1":
+        #     if status == "-1":
+        #         df['total_profit'] = df['closed_profit'] + df['open_profit'] + df['closed_loss'] + df['open_loss']
+        #     elif status == "0":
+        #         df['total_profit'] = df['open_profit'] + df['open_loss']
+        #     else:
+        #         df['total_profit'] = df['closed_profit'] + df['closed_loss']
+        # elif pl == "0":
+        #     if status == "-1":
+        #         df['total_profit'] = df['closed_profit'] + df['open_profit']
+        #     elif status == "0":
+        #         df['total_profit'] = df['open_profit']
+        #     else:
+        #         df['total_profit'] = df['closed_profit']
+        # else:
+        #     if status == "-1":
+        #         df['total_profit'] = df['closed_loss'] + df['open_loss']
+        #     elif status == "0":
+        #         df['total_profit'] = df['open_loss']
+        #     else:
+        #         df['total_profit'] = df['closed_loss']
+
+        df['total_profit'] = df['closed_profit'] + df['closed_loss']
         
         df['total_profit'] = round(df['total_profit'], 2)
 
