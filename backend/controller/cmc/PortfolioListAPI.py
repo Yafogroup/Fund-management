@@ -41,7 +41,8 @@ class PortfolioListAPI(MethodResource):
             Portfolio.real_result,
             Portfolio.token_name,
             Portfolio.token_symbol,
-            TokenType.name.label('token_type_name')
+            TokenType.name.label('token_type_name'),
+            Portfolio.closed_date,
         )        
 
         if search:
@@ -81,6 +82,7 @@ class PortfolioListAPI(MethodResource):
         temp = [{
             "uid": portfolio[0],
             "date": portfolio[1].strftime("%m/%d/%Y"),
+            "closed_date": '' if portfolio[15] == None else portfolio[15].strftime("%m/%d/%Y"),
             "token_id": portfolio[2],
             "position_type": portfolio[3],
             "token_type": portfolio[4],

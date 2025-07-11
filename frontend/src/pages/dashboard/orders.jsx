@@ -97,7 +97,8 @@ const Orders = () => {
 
     const headers = [
         "No",
-        "Date",
+        "Open Date",
+        "Closed Date",
         "Name",
         "Type",
         "Position",
@@ -272,7 +273,7 @@ const Orders = () => {
     }, [searchTerm, startDate, endDate, status, tokenType, filterPosition, sortColumn, sortDirection]);
 
     return (
-        <div className="p-4">
+        <div className="p-4 overflow-x-auto scrollbar">
             <Card className="bg-dark">
                 <CardBody className="px-0 pt-0">
                     <div className="flex flex-col md:flex-row md:items-end gap-4 mb-6">
@@ -404,6 +405,7 @@ const Orders = () => {
                                 <tr key={index}>
                                     <td className="p-4 text-lBLue">{index+1}</td>
                                     <td className="p-4 text-lBLue">{order.date}</td>
+                                    <td className="p-4 text-lBLue">{order.closed_date === '' ? <span className="text-red-500 ml-4">---</span> : order.closed_date}</td>
                                     <td className="p-4 flex items-center">
                                         <Avatar
                                             src={order.logo}
