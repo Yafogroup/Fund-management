@@ -311,7 +311,7 @@ class DashboardDataAPI(MethodResource):
 
             w_result[m.strftime('%Y-%m-%d')] = values
 
-        return w_result
+        return weekly_results
     
     def get_monthly_pnl(self, daily_pnl):
         df = pd.DataFrame.from_dict(daily_pnl, orient='index')
