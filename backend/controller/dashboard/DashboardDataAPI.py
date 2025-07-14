@@ -303,8 +303,8 @@ class DashboardDataAPI(MethodResource):
 
         for week, values in weekly_results.items():
             m = datetime.strptime(week + '-1', '%Y-W%W-%w').date() + timedelta(days=6.9)
-            if m.year == today.year and m.month == today.month:
-                m = datetime(today.year, today.month, today.day)
+            if m >= datetime.date(today):
+                m = datetime.date(today)
             open_profit = daily_pnl[m.strftime('%Y-%m-%d')]['open_profit']
             open_loss = daily_pnl[m.strftime('%Y-%m-%d')]['open_loss']
 
@@ -313,7 +313,7 @@ class DashboardDataAPI(MethodResource):
 
             w_result[m.strftime('%Y-%m-%d')] = values
 
-        return weekly_results
+        return w_result
     
     def get_monthly_pnl(self, daily_pnl):
         df = pd.DataFrame.from_dict(daily_pnl, orient='index')
