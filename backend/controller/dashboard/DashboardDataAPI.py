@@ -302,7 +302,7 @@ class DashboardDataAPI(MethodResource):
         w_result = {}
 
         for week, values in weekly_results.items():
-            m = datetime.strptime(week + '-1', '%Y-W%W-%w').date() + timedelta(days=6.9)
+            m = datetime.strptime(week + '-1', '%Y-W%W-%w').date() + timedelta(days=-1)
             if m >= datetime.date(today):
                 m = datetime.date(today)
             open_profit = daily_pnl[m.strftime('%Y-%m-%d')]['open_profit']
