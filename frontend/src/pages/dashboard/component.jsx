@@ -1,7 +1,8 @@
 import {
+    Accordion, AccordionBody, AccordionHeader,
     Button,
     Card,
-    CardBody, Carousel, Dialog, DialogBody, DialogHeader, IconButton,
+    CardBody, Carousel, Checkbox, Dialog, DialogBody, DialogFooter, DialogHeader, IconButton,
     Menu,
     MenuHandler,
     MenuItem,
@@ -69,6 +70,27 @@ export default function Dashboard() {
     const [pieData3, setPieData3] = useState({})
     const [pieData4, setPieData4] = useState({})
     const [pieData5, setPieData5] = useState({})
+
+    const events = localStorage.getItem('events');
+    const ev_list = events === null || events === "" ? [] : JSON.parse(events);
+    const [open, setOpen] = React.useState(0);
+    const handleOpen = (value) => setOpen(open === value ? -1 : value);
+
+    const showSetting = localStorage.getItem('show_setting');
+    let va = true;
+    if (showSetting !== null && showSetting !== "") {
+        const v = showSetting.split('#')[0]
+        const da = showSetting.split('#')[1]
+        if (da === format(new Date(), 'yyyy-MM-dd')) {
+            va = v === '1';
+        } else {
+            va = false;
+        }
+    } else {
+        va = false;
+    }
+    const [showAgain, setShowAgain] = useState(va);
+    const [eventModalOpen, setEventModalOpen] = useState(!va);
 
     const [eventList, setEventList] = useState([])
     const [viewModalOpen, setViewModalOpen] = useState(false);
@@ -825,6 +847,61 @@ export default function Dashboard() {
                     ))
                 }
             </Carousel>
+            <Dialog open={eventModalOpen} handler={() => setEventModalOpen(false)}>
+                <DialogHeader>Upcoming Events</DialogHeader>
+                <DialogBody className="max-h-[70vh] overflow-y-auto">
+                {
+                    ev_list.map((event, index) => (
+                        <Accordion open={open === index} className="mb-2 rounded-lg border border-blue-gray-100 px-4">
+                            <AccordionHeader
+                                onClick={() => handleOpen(index)}
+                                className={`border-b-0 transition-colors ${
+                                    open === index ? "text-blue-500 hover:!text-blue-700" : ""
+                                }`}
+                            >
+                                {event.title}
+                            </AccordionHeader>
+                            <AccordionBody className="pt-0 text-base font-normal">
+                                <div className="max-h-[80vh] overflow-y-auto px-4">
+                                    {event?.image && (
+                                        <img
+                                            src={event.image}
+                                            alt="Memo"
+                                            className="max-w-full rounded-lg"
+                                        />
+                                    )}
+                                    <p className="text-gray-800 whitespace-pre-wrap">
+                                        {event?.content}
+                                    </p>
+                                </div>
+                            </AccordionBody>
+                        </Accordion>
+                    ))
+                }
+                </DialogBody>
+                <DialogFooter>
+                    <Checkbox
+                        label={
+                            <Typography
+                                variant="small"
+                                color="gray"
+                                className="flex items-center justify-start font-medium"
+                            >
+                                Don't show this again today.
+                            </Typography>
+                        }
+                        value={showAgain}
+                        onChange={(e) => setShowAgain(e.currentTarget.checked)}
+                        containerProps={{ className: "-ml-2.5" }}
+                    />
+                    <Button className="ml-auto" variant="filled" onClick={() => {
+                        if (showAgain) {
+                            localStorage.setItem("show_setting", "1#" + format(new Date(), 'yyyy-MM-dd'))
+                        }
+                        setEventModalOpen(false)
+                    }}>Close</Button>
+                </DialogFooter>
+            </Dialog>
         </div>
     );
 }
