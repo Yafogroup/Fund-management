@@ -160,6 +160,8 @@ class DashboardDataAPI(MethodResource):
 
         total_spot = 0
         total_margin = 0
+        total_margin_long = 0
+        total_margin_short = 0
         list_spot = {}
         list_margin = {}
         list_margin_short = {}
@@ -179,7 +181,7 @@ class DashboardDataAPI(MethodResource):
         
         
         query = Portfolio.query
-        portfolios = query.all()
+        
 
         history_prices = self.get_masked_data(start_date, end_date)
 
@@ -194,6 +196,8 @@ class DashboardDataAPI(MethodResource):
             closed_loss = 0
             open_loss = 0
             
+            portfolios = query.filter(Portfolio.date <= current.strftime('%Y-%m-%d')).all()
+
             for portfolio in portfolios:
                 oracle = history_prices[portfolio.token_symbol]['data'].loc[current.strftime('%Y-%m-%d')]['price']
                 
@@ -237,15 +241,19 @@ class DashboardDataAPI(MethodResource):
                             list_margin[list(filter(lambda e: e['uid'] == portfolio.token_type, token_list))[0].name] += est_val
                             if portfolio.trade_type == 0:
                                 list_margin_long[list(filter(lambda e: e['uid'] == portfolio.token_type, token_list))[0].name] += est_val
+                                total_margin_long += est_val
                             else:
                                 list_margin_short[list(filter(lambda e: e['uid'] == portfolio.token_type, token_list))[0].name] += est_val
+                                total_margin_short += est_val
                         else:
                             total_margin += portfolio.real_result
                             list_margin[list(filter(lambda e: e['uid'] == portfolio.token_type, token_list))[0].name] += portfolio.real_result
                             if portfolio.trade_type == 0:
                                 list_margin_long[list(filter(lambda e: e['uid'] == portfolio.token_type, token_list))[0].name] += portfolio.real_result
+                                total_margin_long += portfolio.real_result
                             else:
                                 list_margin_short[list(filter(lambda e: e['uid'] == portfolio.token_type, token_list))[0].name] += portfolio.real_result
+                                total_margin_short += portfolio.real_result
             
             daily_pnl[current.strftime('%Y-%m-%d')] = {
                 'open_profit': round(open_profit, 2),
@@ -259,7 +267,7 @@ class DashboardDataAPI(MethodResource):
         pie_info = {
             'all': {'spot': total_spot, 'margin': total_margin},
             'list_spot': list_spot,
-            'list_margin': list_margin,
+            'list_margin': {'long': total_margin_long, 'short': total_margin_short},
             'list_margin_long': list_margin_long,
             'list_margin_short': list_margin_short
         }
@@ -289,6 +297,8 @@ class DashboardDataAPI(MethodResource):
 
         today = datetime.now()
 
+        w_result = {}
+
         for week, values in weekly_results.items():
             m = datetime.strptime(week + '-1', '%Y-W%W-%w').date() + timedelta(days=6.9)
             if m.year == today.year and m.month == today.month:
@@ -299,7 +309,9 @@ class DashboardDataAPI(MethodResource):
             values['open_profit'] = open_profit
             values['open_loss'] = open_loss
 
-        return weekly_results
+            w_result[m.strftime('%Y-%m-%d')] = values
+
+        return w_result
     
     def get_monthly_pnl(self, daily_pnl):
         df = pd.DataFrame.from_dict(daily_pnl, orient='index')
