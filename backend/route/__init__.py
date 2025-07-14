@@ -47,7 +47,8 @@ from controller import (
     UpdateEventAPI,
     DeleteEventAPI,
     ExportEventAPI,
-    ImportEventAPI
+    ImportEventAPI,
+    UpcomingEventListAPI
 )
 
 app.config.update({
@@ -191,4 +192,7 @@ docs.register(ExportEventAPI)
 
 api.add_resource(ImportEventAPI, f'{ENDPOINT}/event/import', methods=['POST'])
 docs.register(ImportEventAPI)
+
+api.add_resource(UpcomingEventListAPI, f'{ENDPOINT}/event/upcoming', methods=['POST'])
+docs.register(UpcomingEventListAPI)
 

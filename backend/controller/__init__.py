@@ -42,5 +42,6 @@ from .event import EventListAPI
 from .event import UpdateEventAPI
 from .event import ExportEventAPI
 from .event import ImportEventAPI
+from .event import UpcomingEventListAPI
 
 from .dashboard import DashboardDataAPI

@@ -25,6 +25,10 @@ const EventService = {
     import: (data) => {
         return axiosClient.post('/event/import', data);
     },
+
+    upcoming: () => {
+        return axiosClient.post('/event/upcoming');
+    },
 };
 
 export default EventService;

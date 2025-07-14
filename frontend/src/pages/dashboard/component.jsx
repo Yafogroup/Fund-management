@@ -20,6 +20,7 @@ import dashboardService from "@/api/dashboardService.jsx";
 import {format, subMonths, subWeeks, subYears} from 'date-fns';
 import ItemEvent from "@/widgets/components/item_event.jsx";
 import {XMarkIcon} from "@heroicons/react/24/solid/index.js";
+import eventService from "@/api/eventService.jsx";
 
 // If you're using Next.js please use the dynamic import for react-apexcharts and remove the import from the top for the react-apexcharts
 // import dynamic from "next/dynamic";
@@ -71,8 +72,7 @@ export default function Dashboard() {
     const [pieData4, setPieData4] = useState({})
     const [pieData5, setPieData5] = useState({})
 
-    const events = localStorage.getItem('events');
-    const ev_list = events === null || events === "" ? [] : JSON.parse(events);
+    const [evList, setEvList] = useState([]);
     const [open, setOpen] = React.useState(0);
     const handleOpen = (value) => setOpen(open === value ? -1 : value);
 
@@ -342,6 +342,7 @@ export default function Dashboard() {
         setYearData(result.data.data.year_info);
         setTodayInfo(result.data.data.today_info);
         setEventList(result.data.data.event_list);
+        setEvList(result.data.data.upcoming_event);
 
         makePieData(result.data.data.pie_chart_info);
         setPieTitle(-1, "All");
@@ -352,6 +353,11 @@ export default function Dashboard() {
     const setPieTitle = (type, value) => {
         setPieType(type);
         if (type > 0) setPieName(value);
+    }
+
+    const get_upcoming_events = async () => {
+        const result = await eventService.upcoming();
+
     }
 
     const makePieData = (data) => {
@@ -851,7 +857,7 @@ export default function Dashboard() {
                 <DialogHeader>Upcoming Events</DialogHeader>
                 <DialogBody className="max-h-[70vh] overflow-y-auto">
                 {
-                    ev_list.map((event, index) => (
+                    evList.map((event, index) => (
                         <Accordion open={open === index} className="mb-2 rounded-lg border border-blue-gray-100 px-4">
                             <AccordionHeader
                                 onClick={() => handleOpen(index)}
@@ -878,6 +884,16 @@ export default function Dashboard() {
                         </Accordion>
                     ))
                 }
+                    {
+                        evList.length === 0 &&
+                        <Typography
+                            variant="h4"
+                            color="gray"
+                            className="flex items-center justify-start font-medium"
+                        >
+                            There are no events yet within 3 days.
+                        </Typography>
+                    }
                 </DialogBody>
                 <DialogFooter>
                     <Checkbox

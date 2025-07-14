@@ -100,6 +100,7 @@ class DashboardDataAPI(MethodResource):
         }
 
         event_list = Event.query.order_by(Event.happen_time.desc()).limit(5).all()
+        ev_list = Event.query.filter(Event.happen_time >= datetime.now()).filter(Event.happen_time <= (datetime.now() + timedelta(days=3))).all()
 
 
         response_data = {
@@ -107,7 +108,8 @@ class DashboardDataAPI(MethodResource):
             'pie_chart_info': pie_info,
             'today_info': t_info,
             'year_info': y_info,
-            'event_list': [event.to_dict() for event in event_list]
+            'event_list': [event.to_dict() for event in event_list],
+            'upcoming_event': [event.to_dict() for event in ev_list],
         }      
         
         return response_message(200, 'success', '', response_data)
