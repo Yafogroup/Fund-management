@@ -184,7 +184,7 @@ docs.register(AddEventAPI)
 api.add_resource(UpdateEventAPI, f'{ENDPOINT}/event/edit', methods=['POST'])
 docs.register(UpdateEventAPI)
 
-api.add_resource(DeleteEventAPI, f'{ENDPOINT}/event/delete/<int:memo_uid>', methods=['DELETE'])
+api.add_resource(DeleteEventAPI, f'{ENDPOINT}/event/delete/<int:event_uid>', methods=['DELETE'])
 docs.register(DeleteEventAPI)
 
 api.add_resource(ExportEventAPI, f'{ENDPOINT}/event/export', methods=['POST'])
