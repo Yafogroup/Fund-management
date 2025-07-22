@@ -101,11 +101,16 @@ class PortfolioListAPI(MethodResource):
         symbols = [portfolio['token_symbol'] for portfolio in temp]
 
         latest_prices = current_app.tracker.get_latest_price(list(set(symbols)))
+        total_order = 0
         
         for portfolio in temp:
             portfolio['oracle'] = latest_prices[portfolio['token_symbol']]['price']
             portfolio['logo'] = latest_prices[portfolio['token_symbol']]['logo']
             portfolio['order_value'] = portfolio['entry_price'] * portfolio['quantity']
+            
+            if portfolio['status'] == 0:
+                total_order = total_order + portfolio['order_value']
+
             if (portfolio['trade_type']) == 0:
                 if portfolio['position_type'] == 0:
                     portfolio['est_val'] = (portfolio['oracle'] - portfolio['entry_price']) * portfolio['quantity'] 
@@ -130,4 +135,4 @@ class PortfolioListAPI(MethodResource):
                 temp.sort(key=lambda x: x['order_value'])
             temp = temp[offset:offset+limit]
         
-        return response_message(200, 'success', '', {"portfolio_list": temp})
+        return response_message(200, 'success', '', {"portfolio_list": temp, 'total_order': total_order})

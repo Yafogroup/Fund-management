@@ -69,6 +69,7 @@ const Orders = () => {
     const [sortDirection, setSortDirection] = useState(0);
 
     const [saving, setSaving] = useState(false);
+    const [totalOrder, setTotalOrder] = useState(0);
 
 
     const [form, setForm] = useState({
@@ -130,6 +131,7 @@ const Orders = () => {
             const response = await portfolioService.getList(params);
             let fetched = response.data.data.portfolio_list;
             setPortfolioList((prev) => (reset ? fetched : [...prev, ...fetched]));
+            setTotalOrder(response.data.data.total_order)
             setOffset((prev) => (reset ? limit : prev + limit));
             setHasMore(fetched.length === limit);
         } catch (err) {
@@ -356,6 +358,10 @@ const Orders = () => {
                                     </Tab>
                                 </TabsHeader>
                             </Tabs>
+                        </div>
+                        <div className="flex pb-2 text-center justify-center items-center">
+                            <Typography variant="small" className="text-[16px] font-medium text-lBLue">Total Order:</Typography>
+                            <Typography className="text-[20px] font-bold text-lBLue ml-2">{totalOrder.toLocaleString("en-US", {style:"currency", currency:"USD"})}</Typography>
                         </div>
                         <div className="w-full text-right pr-1 flex-1">
                             <Button

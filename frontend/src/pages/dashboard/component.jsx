@@ -581,7 +581,8 @@ export default function Dashboard() {
 
     return (
         <div>
-            <div className="grid grid-cols-4 gap-8">
+            <div className="grid grid-cols-5 gap-8">
+                <StatCard title="Total Order (TO)" value={todayInfo.total_order} change={todayInfo.percent_total_order} isPositive={todayInfo.percent_total_order > 0} />
                 <StatCard title="Realized Profit (CP)" value={todayInfo.real_profit} change={todayInfo.percent_real_profit} isPositive={todayInfo.percent_real_profit > 0} />
                 <StatCard title="Total P&L (CP + CL)" value={todayInfo.real_total_profit} change={todayInfo.percent_real_total_profit} isPositive={todayInfo.percent_real_total_profit > 0} />
                 <StatCard title="Unrealized Profit (OP)" value={todayInfo.unreal_profit} change={todayInfo.percent_unreal_profit} isPositive={todayInfo.percent_unreal_profit > 0} />

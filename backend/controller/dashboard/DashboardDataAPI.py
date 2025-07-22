@@ -67,7 +67,8 @@ class DashboardDataAPI(MethodResource):
                     'closed_profit': 0,
                     'closed_loss': 0,
                     'open_profit': 0,
-                    'open_loss': 0
+                    'open_loss': 0,
+                    'total_order': 0,
                 }
         elif period_type == "3":
             chart_info = self.get_sum_data(daily_pnl, pl, status)
@@ -89,10 +90,12 @@ class DashboardDataAPI(MethodResource):
         bar_chart_info['chart_categories'] = chart_info['labels']
 
         t_info = {
+            'total_order': round(current_info['total_order'], 2),
             'real_profit': round(current_info['closed_profit'], 2),
             'real_total_profit': round(current_info['closed_profit'] + current_info['closed_loss'], 2),
             'unreal_profit': round(current_info['open_profit'], 2),
             'unreal_total_profit': round(current_info['open_profit'] + current_info['open_loss'], 2),
+            'percent_total_order': self.get_percent(current_info['total_order'], past_info['total_order']),
             'percent_real_profit': self.get_percent(current_info['closed_profit'], past_info['closed_profit']),
             'percent_real_total_profit': self.get_percent(current_info['closed_profit'] + current_info['closed_loss'], past_info['closed_profit'] + past_info['closed_loss']),
             'percent_unreal_profit': self.get_percent(current_info['open_profit'], past_info['open_profit']),
@@ -197,6 +200,7 @@ class DashboardDataAPI(MethodResource):
             open_profit = 0
             closed_loss = 0
             open_loss = 0
+            total_order = 0
             
             portfolios = query.filter(Portfolio.date <= current.strftime('%Y-%m-%d')).all()
 
@@ -217,6 +221,7 @@ class DashboardDataAPI(MethodResource):
                 est_val = round(est_val, 2)
                 
                 if portfolio.status == 0:
+                    total_order += portfolio.entry_price * portfolio.quantity
                     if est_val > 0:
                         open_profit += est_val
                     else:
@@ -261,7 +266,8 @@ class DashboardDataAPI(MethodResource):
                 'open_profit': round(open_profit, 2),
                 'open_loss': round(open_loss, 2),
                 'closed_profit': round(closed_profit, 2),
-                'closed_loss': round(closed_loss, 2)
+                'closed_loss': round(closed_loss, 2),
+                'total_order': round(total_order, 2),
             }
 
             current = current + timedelta(days=1)
@@ -288,10 +294,11 @@ class DashboardDataAPI(MethodResource):
             'open_profit': 'sum',
             'open_loss': 'sum',
             'closed_profit': 'sum',
-            'closed_loss': 'sum'
+            'closed_loss': 'sum',
+            'total_order': 'sum',
         })
 
-        pnl_columns = ['open_profit', 'open_loss', 'closed_profit', 'closed_loss']
+        pnl_columns = ['open_profit', 'open_loss', 'closed_profit', 'closed_loss', 'total_order']
         cols_to_round = [col for col in pnl_columns if col in weekly.columns]
         weekly[cols_to_round] = weekly[cols_to_round].round(2)
 
@@ -307,9 +314,11 @@ class DashboardDataAPI(MethodResource):
                 m = datetime.date(today)
             open_profit = daily_pnl[m.strftime('%Y-%m-%d')]['open_profit']
             open_loss = daily_pnl[m.strftime('%Y-%m-%d')]['open_loss']
+            total_order = daily_pnl[m.strftime('%Y-%m-%d')]['total_order']
 
             values['open_profit'] = open_profit
             values['open_loss'] = open_loss
+            values['total_order'] = total_order
 
             w_result[m.strftime('%Y-%m-%d')] = values
 
@@ -327,10 +336,11 @@ class DashboardDataAPI(MethodResource):
             'open_profit': 'sum',
             'open_loss': 'sum',
             'closed_profit': 'sum',
-            'closed_loss': 'sum'
+            'closed_loss': 'sum',
+            'total_order': 'sum',
         })
 
-        pnl_columns = ['open_profit', 'open_loss', 'closed_profit', 'closed_loss']
+        pnl_columns = ['open_profit', 'open_loss', 'closed_profit', 'closed_loss', 'total_order']
         cols_to_round = [col for col in pnl_columns if col in monthly.columns]
         monthly[cols_to_round] = monthly[cols_to_round].round(2)
 
@@ -347,9 +357,11 @@ class DashboardDataAPI(MethodResource):
                 m = datetime(m.year, m.month, calendar.monthrange(m.year, m.month)[1])
             open_profit = daily_pnl[m.strftime('%Y-%m-%d')]['open_profit']
             open_loss = daily_pnl[m.strftime('%Y-%m-%d')]['open_loss']
+            total_order = daily_pnl[m.strftime('%Y-%m-%d')]['total_order']
 
             values['open_profit'] = open_profit
             values['open_loss'] = open_loss
+            values['total_order'] = total_order
 
         return monthly_result
     
@@ -365,10 +377,11 @@ class DashboardDataAPI(MethodResource):
             'open_profit': 'sum',
             'open_loss': 'sum',
             'closed_profit': 'sum',
-            'closed_loss': 'sum'
+            'closed_loss': 'sum',
+            'total_order': 'sum',
         })
         
-        pnl_columns = ['open_profit', 'open_loss', 'closed_profit', 'closed_loss']
+        pnl_columns = ['open_profit', 'open_loss', 'closed_profit', 'closed_loss', 'total_order']
         cols_to_round = [col for col in pnl_columns if col in yearly.columns]
         yearly[cols_to_round] = yearly[cols_to_round].round(2)
 
@@ -383,9 +396,11 @@ class DashboardDataAPI(MethodResource):
                 m = datetime(today.year, today.month, today.day)
             open_profit = daily_pnl[m.strftime('%Y-%m-%d')]['open_profit']
             open_loss = daily_pnl[m.strftime('%Y-%m-%d')]['open_loss']
+            total_order = daily_pnl[m.strftime('%Y-%m-%d')]['total_order']
 
             values['open_profit'] = open_profit
             values['open_loss'] = open_loss
+            values['total_order'] = total_order
 
         return yearly_result
     
@@ -439,6 +454,8 @@ class DashboardDataAPI(MethodResource):
         for index in range(0, len(chart_info['labels'])):
             
             if index == 0:
+                percent = 0
+            elif chart_info['total_profit'][index] == chart_info['total_profit'][index - 1]:
                 percent = 0
             else:
                 percent = round((chart_info['total_profit'][index] - chart_info['total_profit'][index - 1]) / chart_info['total_profit'][index - 1] * 100 if chart_info['total_profit'][index - 1] != 0 else 100, 2)
