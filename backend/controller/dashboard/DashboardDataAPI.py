@@ -444,7 +444,7 @@ class DashboardDataAPI(MethodResource):
     
     def get_year_info(self):
         today = datetime.now()
-        start = datetime(2025, 5, 1) + timedelta(days=-1)
+        start = datetime(2025, 6, 1) + timedelta(days=-1)
         end = datetime(today.year, today.month, today.day)
         daily_pnl, _ = self.get_daily_pnl(start, end)
         monthly_pnl = self.get_monthly_pnl(daily_pnl)
