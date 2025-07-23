@@ -5,10 +5,12 @@ import { useAuth } from './AuthContext';
 
 function ProtectedRoute({ children, allowedRoles }) {
     const token = localStorage.getItem('authToken');
-    const { user } = useAuth();
+    const { user, isLoggedIn, loading  } = useAuth();
+
+    if (loading) return null;
 
     if (!token) {
-        return <Navigate to="/login" replace />;
+        return <Navigate to="/auth/sign-in" replace />;
     }
 
     if (allowedRoles && !allowedRoles.includes(user.role)) {

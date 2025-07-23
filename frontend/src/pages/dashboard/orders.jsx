@@ -33,6 +33,7 @@ import portfolioService from "@/api/portfolioService.jsx";
 import {PencilIcon, TrashIcon} from "@heroicons/react/24/solid";
 import * as sea from "node:sea";
 import CompactPrice from "@/widgets/components/compact_price.jsx";
+import {Pagination} from "@/widgets/components/pagination.jsx";
 
 const Orders = () => {
 
@@ -45,6 +46,10 @@ const Orders = () => {
     const limit = 100;
     const [hasMore, setHasMore] = useState(true);
     const [loading, setLoading] = useState(false);
+
+    const [pageCount, setPageCount] = useState("8");
+    const [pageTotal, setPageTotal] = useState(1);
+    const [page, setPage] = useState(1);
 
     const [tokenList, setTokenList] = useState([]);
     const [allTokenList, setAllTokenList] = useState([]);
@@ -117,8 +122,8 @@ const Orders = () => {
         setLoading(true);
         try {
             const params = {
-                offset: reset ? 0 : offset,
-                limit: limit,
+                offset: (page - 1) * pageCount,
+                limit: pageCount,
                 search: searchTerm,
                 start_date: startDate,
                 end_date: endDate,
@@ -128,12 +133,13 @@ const Orders = () => {
                 sort_column: sortColumn,
                 sort_direction: sortDirection,
             };
+            setShowLoading(true);
             const response = await portfolioService.getList(params);
             let fetched = response.data.data.portfolio_list;
             setPortfolioList((prev) => (reset ? fetched : [...prev, ...fetched]));
             setTotalOrder(response.data.data.total_order)
-            setOffset((prev) => (reset ? limit : prev + limit));
-            setHasMore(fetched.length === limit);
+            setPageTotal(response.data.data.page_count);
+            setShowLoading(false);
         } catch (err) {
             console.error("Failed to fetch portfolio list", err);
         } finally {
@@ -272,14 +278,36 @@ const Orders = () => {
 
     useEffect(() => {
         fetchPortfolioList(true);
-    }, [searchTerm, startDate, endDate, status, tokenType, filterPosition, sortColumn, sortDirection]);
+    }, [searchTerm, startDate, endDate, status, tokenType, filterPosition, sortColumn, sortDirection, page, pageCount]);
+
+    if (showLoading) {
+        return <LoadingScreen />;
+    }
 
     return (
         <div className="p-4 overflow-x-auto scrollbar">
             <Card className="bg-dark">
                 <CardBody className="px-0 pt-0">
+                    <div className="flex pb-2 text-right justify-end items-center">
+                        <Typography variant="small" className="text-[16px] font-medium text-lBLue">Total Order:</Typography>
+                        <Typography className="text-[20px] font-bold text-lBLue ml-2">{totalOrder.toLocaleString("en-US", {style:"currency", currency:"USD"})}</Typography>
+                    </div>
                     <div className="flex flex-col md:flex-row md:items-end gap-4 mb-6">
-                        <div className="w-full md:w-1/6">
+                        <div className="w-20">
+                            <Select label="Select Page Count" value={pageCount}
+                                    onChange={(e) => {
+                                        setPage(1);
+                                        setPageCount(e);
+                                    }}
+                                    size="lg" className="text-lBLue text-sm"
+                            >
+                                <Option value="8">8</Option>
+                                <Option value="10">10</Option>
+                                <Option value="12">12</Option>
+                                <Option value="20">30</Option>
+                            </Select>
+                        </div>
+                        <div className="w-full md:w-1/6 ml-32">
                             <Input
                                 label="Search"
                                 value={searchTerm}
@@ -359,10 +387,6 @@ const Orders = () => {
                                 </TabsHeader>
                             </Tabs>
                         </div>
-                        <div className="flex pb-2 text-center justify-center items-center">
-                            <Typography variant="small" className="text-[16px] font-medium text-lBLue">Total Order:</Typography>
-                            <Typography className="text-[20px] font-bold text-lBLue ml-2">{totalOrder.toLocaleString("en-US", {style:"currency", currency:"USD"})}</Typography>
-                        </div>
                         <div className="w-full text-right pr-1 flex-1">
                             <Button
                                 variant="outlined"
@@ -409,7 +433,7 @@ const Orders = () => {
 
                             return (
                                 <tr key={index}>
-                                    <td className="p-4 text-lBLue">{index+1}</td>
+                                    <td className="p-4 text-lBLue">{index + 1 + (page - 1) * pageCount}</td>
                                     <td className="p-4 text-lBLue">{order.date}</td>
                                     <td className="p-4 text-lBLue">{order.closed_date === '' ? <span className="text-red-500 ml-4">---</span> : order.closed_date}</td>
                                     <td className="p-4 flex items-center">
@@ -524,18 +548,15 @@ const Orders = () => {
                     }
                 </CardBody>
             </Card>
-            {hasMore && (
-                <div className="mt-8 flex justify-center">
-                    <Button
-                        variant="outlined"
-                        color="blue"
-                        onClick={() => fetchPortfolioList()}
-                        disabled={loading}
-                    >
-                        {loading ? "Loading..." : "Load More"}
-                    </Button>
-                </div>
-            )}
+            <div className="mt-8 flex justify-center">
+                <Pagination
+                    page={pageTotal}
+                    active={page}
+                    onPageChange={(p) => {
+                        setPage(p);
+                    }}
+                />
+            </div>
             <Dialog open={editModalOpen} handler={() => setEditModalOpen(false)} size="md">
                 <div className="flex justify-between items-center px-4 pt-4">
                     <DialogHeader>{selectedPf ? "Edit Portfolio" : "Create Portfolio"}</DialogHeader>
@@ -728,5 +749,18 @@ const Orders = () => {
         </div>
     );
 };
+
+function LoadingScreen() {
+    return (
+        <div className="fixed inset-0 grid h-screen w-screen place-items-center bg-gray-900 bg-opacity-75 transition-opacity">
+            <div className="flex flex-col items-center gap-4">
+                <Spinner color="amber" className="h-16 w-16" />
+                <Typography color="white" className="text-xl font-normal">
+                    Loading data...
+                </Typography>
+            </div>
+        </div>
+    );
+}
 
 export default Orders;

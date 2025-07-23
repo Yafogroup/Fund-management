@@ -4,7 +4,7 @@ from model import Portfolio, TokenType
 from controller import db
 from flask import request, current_app
 from werkzeug.utils import secure_filename
-import os
+import os, math
 from middleware import TokenRequired
 
 class PortfolioListAPI(MethodResource):
@@ -68,16 +68,18 @@ class PortfolioListAPI(MethodResource):
 
         if sort_column == "Date":
             if sort_direction == 0:
-                portfolios = query.order_by(Portfolio.date.desc()).offset(offset).limit(limit).all()
+                portfolios = query.order_by(Portfolio.date.desc()).all()
             else:
-                portfolios = query.order_by(Portfolio.date.asc()).offset(offset).limit(limit).all()
+                portfolios = query.order_by(Portfolio.date.asc()).all()
         elif sort_column == "Result":
             if sort_direction == 0:
-                portfolios = query.order_by(Portfolio.real_result.desc()).offset(offset).limit(limit).all()
+                portfolios = query.order_by(Portfolio.real_result.desc()).all()
             else:
-                portfolios = query.order_by(Portfolio.real_result.asc()).offset(offset).limit(limit).all()
+                portfolios = query.order_by(Portfolio.real_result.asc()).all()
         else:
             portfolios = query.all()
+
+        total_count = query.count()
 
         temp = [{
             "uid": portfolio[0],
@@ -127,12 +129,13 @@ class PortfolioListAPI(MethodResource):
                 temp.sort(key=lambda x: x['est_val'], reverse=True)
             else:
                 temp.sort(key=lambda x: x['est_val'])
-            temp = temp[offset:offset+limit]
+            
         if sort_column == "Order Value":
             if sort_direction == 0:
                 temp.sort(key=lambda x: x['order_value'], reverse=True)
             else:
                 temp.sort(key=lambda x: x['order_value'])
-            temp = temp[offset:offset+limit]
+            
+        temp = temp[offset:offset+limit]
         
-        return response_message(200, 'success', '', {"portfolio_list": temp, 'total_order': total_order})
+        return response_message(200, 'success', '', {"portfolio_list": temp, 'total_order': total_order, "page_count": math.ceil(total_count / limit)})
