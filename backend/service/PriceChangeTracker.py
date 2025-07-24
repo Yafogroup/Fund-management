@@ -18,6 +18,7 @@ class PriceChangeTracker:
         self.token_all_list = []
         self.historical_prices = {}
         self.assets = []
+        self.initiated = False
 
         self.stop_event = threading.Event()
         self.thread = threading.Thread(target=self.background_task, daemon=True)
@@ -71,6 +72,7 @@ class PriceChangeTracker:
             }
 
         self.assets = assets
+        self.initiated = True
 
         print("\nGot the historical price.\nBackend service is started...")
 
@@ -166,7 +168,6 @@ class PriceChangeTracker:
             time.sleep(current_interval)
     
     def start(self):
-        self.get_multiple_historical_prices()
         if not self.thread or not self.thread.is_alive():
             self.thread.start()
         else:

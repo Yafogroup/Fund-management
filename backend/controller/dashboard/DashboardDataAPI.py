@@ -24,6 +24,9 @@ class DashboardDataAPI(MethodResource):
         pl = request.json["pl"]
         status = request.json["status"]
 
+        if current_app.tracker.initiated is False:
+            current_app.tracker.get_multiple_historical_prices()
+
         start = datetime.strptime(start_date, '%Y-%m-%d') + timedelta(days=-1)
         end = datetime.strptime(end_date, '%Y-%m-%d')
         today = datetime.now()
