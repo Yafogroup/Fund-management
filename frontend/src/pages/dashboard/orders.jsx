@@ -161,7 +161,6 @@ const Orders = () => {
             setAllTokenList(temp);
             temp = temp.filter(item => selectedTokenIds.includes(item.id.toString()));
             setTokenList(temp);
-            fetchPortfolioList(true);
 
         } catch (err) {
             showNotification("Sever error...", 'red');
@@ -272,13 +271,17 @@ const Orders = () => {
         }
     }
 
+    const handleApply = async () => {
+        fetchPortfolioList(true);
+    }
+
     useEffect(() => {
         init();
     }, [])
 
     useEffect(() => {
         fetchPortfolioList(true);
-    }, [searchTerm, startDate, endDate, status, tokenType, filterPosition, sortColumn, sortDirection, page, pageCount]);
+    }, [page])
 
     if (showLoading) {
         return <LoadingScreen />;
@@ -370,22 +373,31 @@ const Orders = () => {
                             </Select>
                         </div>
                         <div className="w-60 ml-10">
-                            <Tabs value="app">
+                            <Tabs value={status.toString()}>
                                 <TabsHeader>
-                                    <Tab value="app" onClick={() => setStatus(-1)}>
+                                    <Tab value="-1" onClick={() => setStatus(-1)}>
                                         {/*<HomeIcon className="-mt-1 mr-2 inline-block h-5 w-5" />*/}
                                         All
                                     </Tab>
-                                    <Tab value="message" onClick={() => setStatus(0)}>
+                                    <Tab value="0" onClick={() => setStatus(0)}>
                                         {/*<BookOpenIcon className="-mt-0.5 mr-2 inline-block h-5 w-5" />*/}
                                         Open
                                     </Tab>
-                                    <Tab value="settings" onClick={() => setStatus(1)}>
+                                    <Tab value="1" onClick={() => setStatus(1)}>
                                         {/*<LockClosedIcon className="-mt-1 mr-2 inline-block h-5 w-5" />*/}
                                         Close
                                     </Tab>
                                 </TabsHeader>
                             </Tabs>
+                        </div>
+                        <div className="w-full pr-1 flex-1">
+                            <Button
+                                variant="filled"
+                                color="blue"
+                                onClick={() => handleApply()}
+                            >
+                                Apply
+                            </Button>
                         </div>
                         <div className="w-full text-right pr-1 flex-1">
                             <Button

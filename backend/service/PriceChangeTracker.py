@@ -27,7 +27,6 @@ class PriceChangeTracker:
             f.write(str(self.interval))
 
         self.get_all_tokens()
-        self.get_multiple_historical_prices()
         
     def get_all_tokens(self):
         self.token_all_list = self.cmc.get_all_tokens()
@@ -73,7 +72,7 @@ class PriceChangeTracker:
 
         self.assets = assets
 
-        print("\nGot the historical price")
+        print("\nGot the historical price.\nBackend service is started...")
 
     def get_tokens(self):
         """Fetch current prices and maintain history of interval"""     
@@ -167,6 +166,7 @@ class PriceChangeTracker:
             time.sleep(current_interval)
     
     def start(self):
+        self.get_multiple_historical_prices()
         if not self.thread or not self.thread.is_alive():
             self.thread.start()
         else:
