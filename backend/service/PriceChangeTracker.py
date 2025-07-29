@@ -70,6 +70,7 @@ class PriceChangeTracker:
                 'id': token_id,
                 'data': historical_data
             }
+            time.sleep(2)  # wait 2 seconds (30 requests/minute = 2s between calls)
 
         self.assets = assets
         self.initiated = True
