@@ -127,6 +127,8 @@ class CoinMarketCapAPI:
         
         response = self.session.get(url, params=params)
         data = response.json()
+
+        print(f"\nFetching historical prices for {coin_id} from {start_date} to {end_date} is {data}")
         
         # Process the data into a DataFrame
         prices = []
