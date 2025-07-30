@@ -572,7 +572,7 @@ export default function Dashboard() {
 
     useEffect(() => {
         init();
-    }, []);
+    }, [startDate, endDate, plType, status]);
 
 
     if (isLoading) {
@@ -664,7 +664,7 @@ export default function Dashboard() {
                                         <Option value="1">Close</Option>
                                     </Select>
                                 </div>
-                                <Button color="blue" style={{width:'100px'}} onClick={applyFilter} className="mt-6">
+                                <Button color="blue" style={{width:'100px'}} onClick={applyFilter} className="mt-6" hidden={true}>
                                     Apply
                                 </Button>
                             </div>

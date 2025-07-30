@@ -281,7 +281,7 @@ const Orders = () => {
 
     useEffect(() => {
         fetchPortfolioList(true);
-    }, [page])
+    }, [page, pageCount, searchTerm, startDate, endDate, tokenType, filterPosition, status])
 
     if (showLoading) {
         return <LoadingScreen />;
@@ -390,7 +390,7 @@ const Orders = () => {
                                 </TabsHeader>
                             </Tabs>
                         </div>
-                        <div className="w-full pr-1 flex-1">
+                        <div className="w-full pr-1 flex-1" hidden={true}>
                             <Button
                                 variant="filled"
                                 color="blue"

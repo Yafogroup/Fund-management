@@ -83,6 +83,11 @@ export function SignIn() {
               }}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  doLogin();
+                }}
+              }
             />
           </div>
           <Checkbox
