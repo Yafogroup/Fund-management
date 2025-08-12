@@ -31,6 +31,7 @@ class DashboardDataAPI(MethodResource):
         end = datetime.strptime(end_date, '%Y-%m-%d')
         today = datetime.now()
 
+
         if period_type == "0":
             start = datetime(today.year, 6, 1) + timedelta(days=-1)
             end = datetime(today.year, today.month, today.day)

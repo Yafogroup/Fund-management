@@ -9,9 +9,16 @@ export default withMT({
   theme: {
     extend: {
       colors: {
-        dark: "#060e15",
+        cDark: "#040717",
         lBLue: "#45beef",
-        lGreen: "#19951c"
+        lBLue1: "#44e6f9",
+        lGreen: "#19951c",
+        sidebar: "#0d1726",
+        cBlue: "#23b0c1",
+        cBlue1: "#0783d5",
+        cBlue2: "#244474",
+        cBlue3: "#18263c",
+        cPink: "#7837c1"
       },
     },
     fontFamily: {

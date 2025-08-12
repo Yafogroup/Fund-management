@@ -19,7 +19,7 @@ import React, {useEffect, useState} from "react";
 import dashboardService from "@/api/dashboardService.jsx";
 import {format, subMonths, subWeeks, subYears} from 'date-fns';
 import ItemEvent from "@/widgets/components/item_event.jsx";
-import {XMarkIcon} from "@heroicons/react/24/solid/index.js";
+import {ArrowDownIcon, ArrowUpIcon, XMarkIcon} from "@heroicons/react/24/solid/index.js";
 import eventService from "@/api/eventService.jsx";
 
 // If you're using Next.js please use the dynamic import for react-apexcharts and remove the import from the top for the react-apexcharts
@@ -184,7 +184,7 @@ export default function Dashboard() {
                 toolbar: {
                     show: false,
                 },
-                stacked: true,
+                stacked: false,
             },
             title: {
                 show: "",
@@ -192,7 +192,7 @@ export default function Dashboard() {
             dataLabels: {
                 enabled: false,
             },
-            colors: ["#3b82f6", "#e80519", "#7dd3fc", "#72e60c"],
+            colors: ["#7c39c8", "#2de3f8", "#088de4", "#294d85"],
             plotOptions: {
                 bar: {
                     columnWidth: "40%",
@@ -269,7 +269,7 @@ export default function Dashboard() {
             dataLabels: {
                 enabled: false,
             },
-            colors: ["#17f109"],
+            colors: ["#44e6f9"],
             stroke: {
                 lineCap: "round",
                 curve: "smooth",
@@ -363,7 +363,7 @@ export default function Dashboard() {
     const makePieData = (data) => {
         setPieData1({
             type: "pie",
-            width: 280,
+            width: 400,
             height: 280,
             labels: Object.keys(data.all),
             series: Object.values(data.all).map(value => Math.abs(value)),
@@ -377,7 +377,7 @@ export default function Dashboard() {
                     show: "",
                 },
                 legend: {
-                    show: false,
+                    show: true,
                 },
                 tooltip: {
                     y: {
@@ -412,7 +412,7 @@ export default function Dashboard() {
                     show: "",
                 },
                 legend: {
-                    show: false,
+                    show: true,
                 },
                 tooltip: {
                     y: {
@@ -447,7 +447,7 @@ export default function Dashboard() {
                     show: "",
                 },
                 legend: {
-                    show: false,
+                    show: true,
                 },
                 tooltip: {
                     y: {
@@ -482,7 +482,7 @@ export default function Dashboard() {
                     show: "",
                 },
                 legend: {
-                    show: false,
+                    show: true,
                 },
                 tooltip: {
                     y: {
@@ -517,7 +517,7 @@ export default function Dashboard() {
                     show: "",
                 },
                 legend: {
-                    show: false,
+                    show: true,
                 },
                 tooltip: {
                     y: {
@@ -572,7 +572,7 @@ export default function Dashboard() {
 
     useEffect(() => {
         init();
-    }, [startDate, endDate, plType, status]);
+    }, []);
 
 
     if (isLoading) {
@@ -581,139 +581,149 @@ export default function Dashboard() {
 
     return (
         <div>
-            <div className="grid grid-cols-5 gap-8">
-                <StatCard title="Total Order (TO)" value={todayInfo.total_order} change={todayInfo.percent_total_order} isPositive={todayInfo.percent_total_order > 0} />
-                <StatCard title="Realized Profit (CP)" value={todayInfo.real_profit} change={todayInfo.percent_real_profit} isPositive={todayInfo.percent_real_profit > 0} />
-                <StatCard title="Total P&L (CP + CL)" value={todayInfo.real_total_profit} change={todayInfo.percent_real_total_profit} isPositive={todayInfo.percent_real_total_profit > 0} />
-                <StatCard title="Unrealized Profit (OP)" value={todayInfo.unreal_profit} change={todayInfo.percent_unreal_profit} isPositive={todayInfo.percent_unreal_profit > 0} />
-                <StatCard title="Total Unrealized P&L (OP + OL)" value={todayInfo.unreal_total_profit} change={todayInfo.percent_unreal_total_profit} isPositive={todayInfo.percent_unreal_total_profit > 0} />
-            </div>
-            <div className="flex mt-4 gap-4">
-                <Card className="w-2/3 bg-white/5 backdrop-blur-sm shadow-lg rounded-xl">
-                    <CardBody className="px-2 pb-0">
-                        <div className="flex">
-                            <div className="w-1/3">
-                                <Typography variant="small" color="dark" className="font-medium text-[16px]">
-                                    Period
-                                </Typography>
-                                <div className="flex">
-                                    <div className="w-full">
-                                        <input
-                                            type="date"
-                                            value={startDate}
-                                            onClick={(e) => e.currentTarget.showPicker()}
-                                            onChange={(e) => setCustomDataRage(e.target.value, 0)}
-                                            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-transparent text-lBLue"
-                                        />
-                                    </div>
-                                    <Typography variant="small" color="white" className="font-medium text-[16px] pt-2 pl-4">
-                                        to
-                                    </Typography>
-                                    <div className="w-full ml-4">
-                                        <input
-                                            type="date"
-                                            value={endDate}
-                                            onClick={(e) => e.currentTarget.showPicker()}
-                                            onChange={(e) => setCustomDataRage(e.target.value, 1)}
-                                            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-transparent text-lBLue"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="grid grid-cols-4 gap-20 rounded-none md:flex-row md:items-center px-8">
-                                <div>
-                                    <Typography variant="small" color="dark" className="font-medium text-[16px]">
-                                        Granularity
-                                    </Typography>
-                                    <Select label="Select an option"
-                                            size="lg" className="text-lBLue"
-                                            onChange={(value) => setPeriodType(value)}
-                                            value={periodConfig}
-                                    >
-                                        <Option value="0">Monthly</Option>
-                                        <Option value="1">Weekly</Option>
-                                        <Option value="2">Yearly</Option>
-                                        <Option value="3">Daily</Option>
-                                    </Select>
-                                </div>
-                                <div>
-                                    <Typography variant="small" color="dark" className="font-medium text-[16px]">
-                                        P&L
-                                    </Typography>
-                                    <Select label="Select an option"
-                                            size="lg" className="text-lBLue"
-                                            value={plType}
-                                            onChange={(value) => setPlType(value)}
-                                    >
-                                        <Option value="-1">All</Option>
-                                        <Option value="0">Profit</Option>
-                                        <Option value="1">Loss</Option>
-                                    </Select>
-                                </div>
-                                <div>
-                                    <Typography variant="small" color="dark" className="font-medium text-[16px]">
-                                        Status
-                                    </Typography>
-                                    <Select label="Select an option"
-                                            size="lg" className="text-lBLue"
-                                            value={status}
-                                            onChange={(value) => setStatus(value)}
-                                    >
-                                        <Option value="-1">All</Option>
-                                        <Option value="0">Open</Option>
-                                        <Option value="1">Close</Option>
-                                    </Select>
-                                </div>
-                                <Button color="blue" style={{width:'100px'}} onClick={applyFilter} className="mt-6" hidden={true}>
-                                    Apply
-                                </Button>
-                            </div>
+            <div className="flex">
+                <Card className="shadow-lg rounded-xl bg-transparent w-1/3">
+                    <CardBody>
+                        <div className="flex justify-between items-center mb-2">
+                            <Typography variant="small" color="blue-gray" className="text-white font-bold text-[17px] ">
+                                {"Total Volume"}
+                            </Typography>
                         </div>
-                        <Chart {...chartConfig} />
-                        <Chart {...lchartConfig} />
+                        <Typography className="text-white font-bold text-[40px] ">
+                            {todayInfo.total_order.toLocaleString("en-US", {style:"currency", currency:"USD"})}
+                        </Typography>
+                        <div className="flex items-center mt-2">
+                            {todayInfo.percent_total_order > 0 ? (
+                                <ArrowUpIcon className="w-4 h-4 text-green-500 mr-1" />
+                            ) : (
+                                <ArrowDownIcon className="w-4 h-4 text-red-500 mr-1" />
+                            )}
+                            <Typography
+                                className={`text-[20px] ${todayInfo.percent_total_order > 0 ? "text-green-500" : "text-red-500"}`}
+                            >
+                                {Math.abs(todayInfo.percent_total_order)} %
+                            </Typography>
+                        </div>
                     </CardBody>
                 </Card>
-                <div className="w-1/3 grid grid-rows-2 gap-4 max-h-[960px]">
-                    <Card className="bg-white/5 backdrop-blur-sm shadow-lg rounded-xl scrollbar">
-                        <CardBody>
-                            <div className="flex items-center justify-between mb-2">
-                                <div>
-                                    <Typography variant="small" className="text-gray-300 font-medium">
-                                        Return profit per month
+                <div className="grid grid-cols-4 gap-8 flex-1">
+                    <StatCard title="Realized Profit" type={1} value={todayInfo.real_profit} change={todayInfo.percent_real_profit} isPositive={todayInfo.percent_real_profit > 0} />
+                    <StatCard title="Total P&L" type={1} value={todayInfo.real_total_profit} change={todayInfo.percent_real_total_profit} isPositive={todayInfo.percent_real_total_profit > 0} />
+                    <StatCard title="Unrealized Profit" type={2} value={todayInfo.unreal_profit} change={todayInfo.percent_unreal_profit} isPositive={todayInfo.percent_unreal_profit > 0} />
+                    <StatCard title="Total Unrealized P&L" type={2} value={todayInfo.unreal_total_profit} change={todayInfo.percent_unreal_total_profit} isPositive={todayInfo.percent_unreal_total_profit > 0} />
+                </div>
+            </div>
+            <div className="flex mt-4 gap-4">
+                <div className="w-2/3 ">
+                    <Card className="bg-sidebar backdrop-blur-sm shadow-lg rounded-xl">
+                        <CardBody className="px-2 pb-0">
+                            <div className="flex">
+                                <div className="w-1/3">
+                                    <Typography variant="small" color="dark" className="font-medium text-[16px]">
+                                        Period
                                     </Typography>
-                                    <Typography variant="small" className="text-sm text-gray-500">
-                                        (Calculated from closed positions)
-                                    </Typography>
-                                </div>
-                                <InformationCircleIcon className="w-4 h-4 text-gray-500" />
-                            </div>
-
-                            <div className="grid grid-cols-3 text-gray-400 text-sm border-b border-gray-700 pb-1 mb-2">
-                                <span>Month</span>
-                                <span>% Return</span>
-                                <span className="text-right">$ Returned</span>
-                            </div>
-
-                            {yearData.map((item, index) => (
-                                <div
-                                    key={index}
-                                    className="grid grid-cols-3 items-center text-sm py-1 text-white"
-                                >
-                                    <span>{item.month}</span>
-                                    <div className="flex items-center gap-1">
-                                        <span>{item.percent}%</span>
-                                        {item.is_positive ? (
-                                            <CheckCircleIcon className="w-4 h-4 text-green-500" />
-                                        ) : (
-                                            <ExclamationCircleIcon className="w-4 h-4 text-red-500" />
-                                        )}
+                                    <div className="flex">
+                                        <div className="w-full">
+                                            <input
+                                                type="date"
+                                                value={startDate}
+                                                onClick={(e) => e.currentTarget.showPicker()}
+                                                onChange={(e) => setCustomDataRage(e.target.value, 0)}
+                                                className="w-full px-3 py-2 bg-cBlue3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-lBLue"
+                                            />
+                                        </div>
+                                        <Typography variant="small" color="white" className="font-medium text-[16px] pt-2 pl-4">
+                                            to
+                                        </Typography>
+                                        <div className="w-full ml-4">
+                                            <input
+                                                type="date"
+                                                value={endDate}
+                                                onClick={(e) => e.currentTarget.showPicker()}
+                                                onChange={(e) => setCustomDataRage(e.target.value, 1)}
+                                                className="w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-cBlue3 text-lBLue"
+                                            />
+                                        </div>
                                     </div>
-                                    <span className="text-right">{item.profit.toLocaleString("en-US", {style:"currency", currency:"USD"})}</span>
                                 </div>
-                            ))}
+                                <div className="grid grid-cols-4 gap-20 rounded-none md:flex-row md:items-center px-8">
+                                    <div>
+                                        <Typography variant="small" color="dark" className="font-medium text-[16px]">
+                                            Granularity
+                                        </Typography>
+                                        <Select label=""
+                                                size="md" className="text-lBLue bg-cBlue3 focus:outline-none border-none !border-t-transparent focus:!border-t-transparent data-[open=true]:!border-t-transparent"
+                                                onChange={(value) => setPeriodType(value)}
+                                                value={periodConfig}
+                                                labelProps={{
+                                                    // kill the notch lines + white patch behind the label
+                                                    className:
+                                                        "before:!border-0 after:!border-0 " +    // no borders on the pseudo parts
+                                                        "before:!bg-transparent after:!bg-transparent"
+                                                }}
+                                        >
+                                            <Option value="0">Monthly</Option>
+                                            <Option value="1">Weekly</Option>
+                                            <Option value="2">Yearly</Option>
+                                            <Option value="3">Daily</Option>
+                                        </Select>
+                                    </div>
+                                    <div>
+                                        <Typography variant="small" color="dark" className="font-medium text-[16px]">
+                                            P&L
+                                        </Typography>
+                                        <Select label=""
+                                                size="md" className="text-lBLue bg-cBlue3 focus:outline-none border-none !border-t-transparent focus:!border-t-transparent data-[open=true]:!border-t-transparent"
+                                                value={plType}
+                                                onChange={(value) => setPlType(value)}
+                                                labelProps={{
+                                                    // kill the notch lines + white patch behind the label
+                                                    className:
+                                                        "before:!border-0 after:!border-0 " +    // no borders on the pseudo parts
+                                                        "before:!bg-transparent after:!bg-transparent"
+                                                }}
+                                        >
+                                            <Option value="-1">All</Option>
+                                            <Option value="0">Profit</Option>
+                                            <Option value="1">Loss</Option>
+                                        </Select>
+                                    </div>
+                                    <div>
+                                        <Typography variant="small" color="dark" className="font-medium text-[16px]">
+                                            Status
+                                        </Typography>
+                                        <Select label=""
+                                                size="md" className="text-lBLue bg-cBlue3 focus:outline-none border-none !border-t-transparent focus:!border-t-transparent data-[open=true]:!border-t-transparent"
+                                                value={status}
+                                                onChange={(value) => setStatus(value)}
+                                                labelProps={{
+                                                    // kill the notch lines + white patch behind the label
+                                                    className:
+                                                        "before:!border-0 after:!border-0 " +    // no borders on the pseudo parts
+                                                        "before:!bg-transparent after:!bg-transparent"
+                                                }}
+                                        >
+                                            <Option value="-1">All</Option>
+                                            <Option value="0">Open</Option>
+                                            <Option value="1">Close</Option>
+                                        </Select>
+                                    </div>
+                                    <Button style={{width:'100px'}} onClick={applyFilter} className="mt-6 bg-gradient-to-br from-[#0023af] via-[#006ec1] to-[#00a0ce] " hidden={false}>
+                                        Apply
+                                    </Button>
+                                </div>
+                            </div>
+                            <Chart {...chartConfig} />
                         </CardBody>
                     </Card>
-                    <Card className="bg-white/5 backdrop-blur-sm shadow-lg rounded-xl">
+                    <Card className="bg-sidebar backdrop-blur-sm shadow-lg rounded-xl mt-4">
+                        <CardBody className="px-2 pb-0">
+                            <Chart {...lchartConfig} />
+                        </CardBody>
+                    </Card>
+                </div>
+                <div className="w-1/3 grid grid-rows-2 gap-4 max-h-[1000px]">
+                    <Card className="bg-sidebar backdrop-blur-sm shadow-lg rounded-xl">
                         <CardBody>
                             <div className="flex items-center justify-between mb-2">
                                 <div>
@@ -752,6 +762,45 @@ export default function Dashboard() {
                                     <Chart {...pieData5}/>
                                 </div>
                             </div>
+                        </CardBody>
+                    </Card>
+                    <Card className="bg-sidebar backdrop-blur-sm shadow-lg rounded-xl scrollbar">
+                        <CardBody>
+                            <div className="flex items-center justify-between mb-2">
+                                <div>
+                                    <Typography variant="small" className="text-gray-300 font-medium">
+                                        Return profit per month
+                                    </Typography>
+                                    <Typography variant="small" className="text-sm text-gray-500">
+                                        (Calculated from closed positions)
+                                    </Typography>
+                                </div>
+                                <InformationCircleIcon className="w-4 h-4 text-gray-500" />
+                            </div>
+
+                            <div className="grid grid-cols-3 text-gray-400 text-sm border-b border-gray-700 pb-1 mb-2">
+                                <span>Month</span>
+                                <span>% Return</span>
+                                <span className="text-right">$ Returned</span>
+                            </div>
+
+                            {yearData.map((item, index) => (
+                                <div
+                                    key={index}
+                                    className="grid grid-cols-3 items-center text-sm py-1 text-white"
+                                >
+                                    <span>{item.month}</span>
+                                    <div className="flex items-center gap-1">
+                                        <span>{item.percent}%</span>
+                                        {item.is_positive ? (
+                                            <CheckCircleIcon className="w-4 h-4 text-green-500" />
+                                        ) : (
+                                            <ExclamationCircleIcon className="w-4 h-4 text-red-500" />
+                                        )}
+                                    </div>
+                                    <span className="text-right">{item.profit.toLocaleString("en-US", {style:"currency", currency:"USD"})}</span>
+                                </div>
+                            ))}
                         </CardBody>
                     </Card>
                     <Dialog open={viewModalOpen} handler={() => setViewModalOpen(false)} size="lg">

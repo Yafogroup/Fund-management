@@ -27,6 +27,7 @@ import userService from "@/api/userService.jsx";
 import Helper from "@/helper.jsx";
 import authService from "@/api/authService.jsx";
 import {useNavigate} from "react-router-dom";
+import {MagnifyingGlassIcon} from "@heroicons/react/24/outline/index.js";
 
 export function Users() {
 
@@ -161,36 +162,38 @@ export function Users() {
 
   return (
     <div className="mt-12 mb-8 flex flex-col gap-12">
-      <div className="flex items-center gap-5">
-        <div className="md:mr-4 md:w-56">
-          <Input label="Search"
-                 value={search}
-                 onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-        <div className="mr-6 ml-auto">
-          <Button
-              variant="filled"
-              color="blue"
-              onClick={() => handleNew()}
-          >
-            Add New
-          </Button>
-        </div>
-      </div>
-      <Card className="bg-dark">
-        <CardBody className="px-0 pt-0 pb-2">
-          <table className="w-full min-w-[640px] table-auto">
+      <Card className="bg-sidebar">
+        <CardBody className="px-4 py-8">
+          <div className="flex items-center gap-5">
+            <div className="md:mr-4 md:w-56 bg-cBlue3 rounded-lg">
+              <Input label="Search"
+                     value={search}
+                     className="border-none "
+                     icon={<MagnifyingGlassIcon className="h-5 w-5" />}
+                     onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
+            <div className="mr-6 ml-auto">
+              <Button
+                  variant="gradient"
+                  className="bg-gradient-to-tr from-[#0023af] via-[#004fb9] to-[#00a4ce]"
+                  onClick={() => handleNew()}
+              >
+                Add New
+              </Button>
+            </div>
+          </div>
+          <table className="w-full min-w-[640px] table-auto mt-8">
             <thead>
               <tr>
                 {headers.map((el) => (
                   <th
                     key={el}
-                    className="border-b border-blue-gray-50 py-3 px-5 text-left"
+                    className="border-b border-blue-gray-600 py-3 px-5 text-left"
                   >
                     <Typography
                       variant="small"
-                      className="text-[18px] font-medium text-lBLue"
+                      className="text-[18px] font-medium text-blue-gray-600"
                     >
                       {el}
                     </Typography>
@@ -202,61 +205,56 @@ export function Users() {
               {
                 userList.length > 0 && userList.map(
                       ({ uid, email, registered_on, last_logged_in, is_admin}, idx) => {
-                        const className = `py-3 px-5 ${
-                            idx === userList.length - 1
-                                ? ""
-                                : "border-b border-blue-gray-50"
-                        }`;
+                        const className = `py-3 px-5`;
 
                         return (
                             <tr key={idx}>
                               <td className={className}>
-                                <Typography className="font-semibold text-lBLue">
+                                <Typography className="font-semibold text-blue-gray-600">
                                   {idx + 1}
                                 </Typography>
                               </td>
                               <td className={className}>
-                                <Typography className="font-semibold text-lBLue">
+                                <Typography className="font-semibold text-blue-gray-600">
                                   {email}
                                 </Typography>
                               </td>
                               <td className={className}>
-                                <Typography className="font-semibold text-lBLue">
+                                <Typography className="font-semibold text-blue-gray-600">
                                   {registered_on}
                                 </Typography>
                               </td>
                               <td className={className}>
-                                <Typography className="font-semibold text-lBLue">
+                                <Typography className="font-semibold text-blue-gray-600">
                                   {last_logged_in}
                                 </Typography>
                               </td>
                               <td className={className}>
-                                <Chip
+                                <Typography
                                     variant="gradient"
-                                    color={is_admin > 0 ? "blue" : "grey"}
-                                    value={is_admin > 0 ? "admin" : "user"}
-                                    className="py-0.5 px-2 text-[11px] font-medium w-fit"
-                                />
+                                    className={`py-0.5 px-2 text-[17px] font-medium w-fit ${is_admin > 0 ? "text-cBlue" : "text-blue-gray-600"}`}>
+                                  {is_admin > 0 ? "Admin" : "User"}
+                                </Typography>
                               </td>
                               <td className={className}>
                                 <div className="flex gap-2 z-10">
                                   <Tooltip content="Edit">
-                                    <IconButton
+                                    <Button
                                         size="sm"
                                         color="green"
                                         onClick={() => onEdit(userList[idx])}
                                     >
-                                      <PencilIcon className="h-4 w-4" />
-                                    </IconButton>
+                                      Edit
+                                    </Button>
                                   </Tooltip>
                                   <Tooltip content="Edit">
-                                    <IconButton
+                                    <Button
                                         size="sm"
                                         color="red"
                                         onClick={() => onDelete(userList[idx])}
                                     >
-                                      <TrashIcon className="h-4 w-4" />
-                                    </IconButton>
+                                      Delete
+                                    </Button>
                                   </Tooltip>
                                 </div>
                               </td>

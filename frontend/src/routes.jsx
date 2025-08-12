@@ -28,50 +28,74 @@ export const routes = [
     layout: "dashboard",
     pages: [
       {
-        icon: <HomeIcon {...icon} />,
+        icon: [
+          <img src={"/img/dash_on.png"} alt="icon" />,
+          <img src={"/img/dash_off.png"} alt="icon" />,
+        ],
         name: "dashboard",
         path: "/home",
         element: <Dashboard />,
       },
       {
-        icon: <UserCircleIcon {...icon} />,
+        icon: [
+          <img src={"/img/user_on.png"} alt="icon" />,
+          <img src={"/img/user_off.png"} alt="icon" />,
+        ],
         name: "user",
         path: "/user",
         allowedRoles: ['admin'],
         element: <Users />
       },
       {
-        icon: <TableCellsIcon {...icon} />,
+        icon: [
+          <img src={"/img/token_on.png"} alt="icon" />,
+          <img src={"/img/token_off.png"} alt="icon" />,
+        ],
         name: "tokens",
         path: "/tokens",
         element: <Tokens />,
       },
       {
-        icon: <ShoppingCartIcon {...icon} />,
+        icon: [
+          <img src={"/img/portfolio_on.png"} alt="icon" />,
+          <img src={"/img/portfolio_off.png"} alt="icon" />,
+        ],
         name: "Portfolio",
         path: "/orders",
         element: <Orders />,
       },
       {
-        icon: <ClipboardDocumentIcon {...icon} />,
+        icon: [
+          <img src={"/img/memo_on.png"} alt="icon" />,
+          <img src={"/img/memo_off.png"} alt="icon" />,
+        ],
         name: "memo",
         path: "/memo",
         element: <Memo />,
       },
       {
-        icon: <NewspaperIcon {...icon} />,
+        icon: [
+          <img src={"/img/event_on.png"} alt="icon" />,
+          <img src={"/img/event_off.png"} alt="icon" />,
+        ],
         name: "event",
         path: "/event",
         element: <Event />,
       },
       {
-        icon: <InformationCircleIcon {...icon} />,
+        icon: [
+          <img src={"/img/tokentype_on.png"} alt="icon" />,
+          <img src={"/img/tokentype_off.png"} alt="icon" />,
+        ],
         name: "Token Type",
         path: "/token_type",
         element: <Toke_type />,
       },
       {
-        icon: <InformationCircleIcon {...icon} />,
+        icon: [
+          <img src={"/img/dash_on.png"} alt="icon" />,
+          <img src={"/img/dash_off.png"} alt="icon" />,
+        ],
         name: "profile",
         path: "/profile",
         element: <Home />,
@@ -83,19 +107,28 @@ export const routes = [
     layout: "auth",
     pages: [
       {
-        icon: <ServerStackIcon {...icon} />,
+        icon: [
+          <img src={"/img/dash_on.png"} alt="icon" />,
+          <img src={"/img/dash_off.png"} alt="icon" />,
+        ],
         name: "sign in",
         path: "/sign-in",
         element: <SignIn />,
       },
       {
-        icon: <RectangleStackIcon {...icon} />,
+        icon: [
+          <img src={"/img/dash_on.png"} alt="icon" />,
+          <img src={"/img/dash_off.png"} alt="icon" />,
+        ],
         name: "sign up",
         path: "/sign-up",
         element: <SignUp />,
       },
       {
-        icon: <RectangleStackIcon {...icon} />,
+        icon: [
+          <img src={"/img/dash_on.png"} alt="icon" />,
+          <img src={"/img/dash_off.png"} alt="icon" />,
+        ],
         name: "unauthorized",
         path: "/unauthorized",
         element: <Unauthorized />,

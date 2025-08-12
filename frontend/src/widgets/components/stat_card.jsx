@@ -10,17 +10,16 @@ import {
     InformationCircleIcon,
 } from "@heroicons/react/24/solid";
 
-const StatCard = ({ title, value, change, isPositive }) => {
+const StatCard = ({ title, value, change, isPositive, type }) => {
     return (
-        <Card className="bg-white/5 backdrop-blur-sm shadow-lg rounded-xl text-white">
+        <Card className={`backdrop-blur-sm shadow-lg rounded-xl text-white ${type === 1 ? "bg-gradient-to-br from-[#0d1726] via-[#0d1826] to-[#10511e] " : "bg-gradient-to-br from-[#0d1726] via-[#181b29] to-[#471520] "}`}>
             <CardBody>
                 <div className="flex justify-between items-center mb-2">
-                    <Typography variant="small" color="blue-gray" className="text-lBLue font-bold text-lg ">
+                    <Typography color="blue-gray" className="text-white font-bold text-[17px] ">
                         {title}
                     </Typography>
-                    <InformationCircleIcon className="w-8 h-8 text-gray-500" />
                 </div>
-                <Typography variant="h4" className="text-white">
+                <Typography className="text-white text-[28px] font-bold">
                     {value.toLocaleString("en-US", {style:"currency", currency:"USD"})}
                 </Typography>
                 <div className="flex items-center mt-2">
@@ -30,8 +29,7 @@ const StatCard = ({ title, value, change, isPositive }) => {
                         <ArrowDownIcon className="w-4 h-4 text-red-500 mr-1" />
                     )}
                     <Typography
-                        variant="small"
-                        className={isPositive ? "text-green-500" : "text-red-500"}
+                        className={isPositive ? "text-green-500 font-bold text-[20px]" : "text-red-500 font-bold text-[20px]"}
                     >
                         {Math.abs(change)} %
                     </Typography>
