@@ -281,7 +281,7 @@ const Orders = () => {
 
     useEffect(() => {
         fetchPortfolioList(true);
-    }, [])
+    }, [page])
 
     if (showLoading) {
         return <LoadingScreen />;
