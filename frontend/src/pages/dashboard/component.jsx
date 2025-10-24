@@ -362,22 +362,61 @@ export default function Dashboard() {
 
     const makePieData = (data) => {
         setPieData1({
-            type: "pie",
+            type: "donut",
             width: 400,
             height: 280,
-            labels: Object.keys(data.all),
             series: Object.values(data.all).map(value => Math.abs(value)),
             options: {
                 chart: {
-                    toolbar: {
-                        show: false,
-                    },
+                    toolbar: { show: false },
                 },
-                title: {
-                    show: "",
+                labels: Object.keys(data.all),
+                colors: ["#00E8FF", "#9C27B0"], // cyan & purple
+                stroke: {
+                    show: false,       // ✅ hides borders
+                    width: 0,          // ✅ no border width
+                },
+                dataLabels: {
+                    enabled: true,
+                    formatter: function (val) {
+                        return val.toFixed(0) + " %";
+                    },
+                    style: {
+                        fontSize: "16px",
+                        fontWeight: "bold",
+                        colors: ["#fff"],
+                    },
+                    dropShadow: { enabled: false },
                 },
                 legend: {
                     show: true,
+                    position: "right",
+                    fontSize: "16px",
+                    labels: {
+                        colors: "#fff",
+                    },
+                    markers: {
+                        width: 10,
+                        height: 24,
+                        radius: 12,
+                    },
+                    itemMargin: {
+                        horizontal: 10,
+                        vertical: 20,
+                    },
+                    formatter: function (seriesName) {
+                        return seriesName.charAt(0).toUpperCase() + seriesName.slice(1);
+                    },
+                },
+                fill: {
+                    type: "gradient",
+                },
+                plotOptions: {
+                    pie: {
+                        donut: {
+                            size: "70%",
+                        },
+                    },
                 },
                 tooltip: {
                     y: {
@@ -387,20 +426,20 @@ export default function Dashboard() {
                             return originalValue.toFixed(2).toString();
                         },
                         title: {
-                            formatter: function(seriesName) {
+                            formatter: function (seriesName, opts) {
                                 const labels = Object.keys(data.all);
-                                return labels[Number(seriesName.substring(seriesName.length - 1)) - 1];
-                            }
-                        }
-                    }
+                                return labels[opts.seriesIndex];
+                            },
+                        },
+                    },
                 },
             },
         });
+
         setPieData2({
-            type: "pie",
-            width: 280,
+            type: "donut",
+            width: 400,
             height: 280,
-            labels: Object.keys(data.list_spot),
             series: Object.values(data.list_spot).map(value => Math.abs(value)),
             options: {
                 chart: {
@@ -408,11 +447,55 @@ export default function Dashboard() {
                         show: false,
                     },
                 },
+                labels: Object.keys(data.list_spot),
+                stroke: {
+                    show: false,       // ✅ hides borders
+                    width: 0,          // ✅ no border width
+                },
+                dataLabels: {
+                    enabled: true,
+                    formatter: function (val) {
+                        return val.toFixed(0) + " %";
+                    },
+                    style: {
+                        fontSize: "16px",
+                        fontWeight: "bold",
+                        colors: ["#fff"],
+                    },
+                    dropShadow: { enabled: false },
+                },
                 title: {
                     show: "",
                 },
                 legend: {
                     show: true,
+                    position: "right",
+                    fontSize: "14px",
+                    labels: {
+                        colors: "#fff",
+                    },
+                    markers: {
+                        width: 10,
+                        height: 15,
+                        radius: 12,
+                    },
+                    itemMargin: {
+                        horizontal: 10,
+                        vertical: 4,
+                    },
+                    formatter: function (seriesName) {
+                        return seriesName.charAt(0).toUpperCase() + seriesName.slice(1);
+                    },
+                },
+                fill: {
+                    type: "gradient",
+                },
+                plotOptions: {
+                    pie: {
+                        donut: {
+                            size: "70%",
+                        },
+                    },
                 },
                 tooltip: {
                     y: {
@@ -432,10 +515,9 @@ export default function Dashboard() {
             },
         });
         setPieData3({
-            type: "pie",
-            width: 280,
+            type: "donut",
+            width: 400,
             height: 280,
-            labels: Object.keys(data.list_margin),
             series: Object.values(data.list_margin).map(value => Math.abs(value)),
             options: {
                 chart: {
@@ -443,11 +525,55 @@ export default function Dashboard() {
                         show: false,
                     },
                 },
+                labels: Object.keys(data.list_margin),
+                stroke: {
+                    show: false,       // ✅ hides borders
+                    width: 0,          // ✅ no border width
+                },
+                dataLabels: {
+                    enabled: true,
+                    formatter: function (val) {
+                        return val.toFixed(0) + " %";
+                    },
+                    style: {
+                        fontSize: "16px",
+                        fontWeight: "bold",
+                        colors: ["#fff"],
+                    },
+                    dropShadow: { enabled: false },
+                },
                 title: {
                     show: "",
                 },
                 legend: {
                     show: true,
+                    position: "right",
+                    fontSize: "14px",
+                    labels: {
+                        colors: "#fff",
+                    },
+                    markers: {
+                        width: 12,
+                        height: 24,
+                        radius: 12,
+                    },
+                    itemMargin: {
+                        horizontal: 10,
+                        vertical: 20,
+                    },
+                    formatter: function (seriesName) {
+                        return seriesName.charAt(0).toUpperCase() + seriesName.slice(1);
+                    },
+                },
+                fill: {
+                    type: "gradient",
+                },
+                plotOptions: {
+                    pie: {
+                        donut: {
+                            size: "70%",
+                        },
+                    },
                 },
                 tooltip: {
                     y: {
@@ -467,10 +593,9 @@ export default function Dashboard() {
             },
         })
         setPieData4({
-            type: "pie",
-            width: 280,
+            type: "donut",
+            width: 400,
             height: 280,
-            labels: Object.keys(data.list_margin_long),
             series: Object.values(data.list_margin_long).map(value => Math.abs(value)),
             options: {
                 chart: {
@@ -478,11 +603,55 @@ export default function Dashboard() {
                         show: false,
                     },
                 },
+                labels: Object.keys(data.list_margin_long),
+                stroke: {
+                    show: false,       // ✅ hides borders
+                    width: 0,          // ✅ no border width
+                },
                 title: {
                     show: "",
                 },
+                dataLabels: {
+                    enabled: true,
+                    formatter: function (val) {
+                        return val.toFixed(0) + " %";
+                    },
+                    style: {
+                        fontSize: "16px",
+                        fontWeight: "bold",
+                        colors: ["#fff"],
+                    },
+                    dropShadow: { enabled: false },
+                },
                 legend: {
                     show: true,
+                    position: "right",
+                    fontSize: "14px",
+                    labels: {
+                        colors: "#fff",
+                    },
+                    markers: {
+                        width: 12,
+                        height: 12,
+                        radius: 12,
+                    },
+                    itemMargin: {
+                        horizontal: 10,
+                        vertical: 4,
+                    },
+                    formatter: function (seriesName) {
+                        return seriesName.charAt(0).toUpperCase() + seriesName.slice(1);
+                    },
+                },
+                fill: {
+                    type: "gradient",
+                },
+                plotOptions: {
+                    pie: {
+                        donut: {
+                            size: "70%",
+                        },
+                    },
                 },
                 tooltip: {
                     y: {
@@ -502,10 +671,9 @@ export default function Dashboard() {
             },
         })
         setPieData5({
-            type: "pie",
-            width: 280,
+            type: "donut",
+            width: 400,
             height: 280,
-            labels: Object.keys(data.list_margin_short),
             series: Object.values(data.list_margin_short).map(value => Math.abs(value)),
             options: {
                 chart: {
@@ -513,11 +681,55 @@ export default function Dashboard() {
                         show: false,
                     },
                 },
+                labels: Object.keys(data.list_margin_short),
+                stroke: {
+                    show: false,       // ✅ hides borders
+                    width: 0,          // ✅ no border width
+                },
                 title: {
                     show: "",
                 },
+                dataLabels: {
+                    enabled: true,
+                    formatter: function (val) {
+                        return val.toFixed(0) + " %";
+                    },
+                    style: {
+                        fontSize: "16px",
+                        fontWeight: "bold",
+                        colors: ["#fff"],
+                    },
+                    dropShadow: { enabled: false },
+                },
                 legend: {
                     show: true,
+                    position: "right",
+                    fontSize: "14px",
+                    labels: {
+                        colors: "#fff",
+                    },
+                    markers: {
+                        width: 12,
+                        height: 12,
+                        radius: 12,
+                    },
+                    itemMargin: {
+                        horizontal: 10,
+                        vertical: 4,
+                    },
+                    formatter: function (seriesName) {
+                        return seriesName.charAt(0).toUpperCase() + seriesName.slice(1);
+                    },
+                },
+                fill: {
+                    type: "gradient",
+                },
+                plotOptions: {
+                    pie: {
+                        donut: {
+                            size: "70%",
+                        },
+                    },
                 },
                 tooltip: {
                     y: {
@@ -585,7 +797,7 @@ export default function Dashboard() {
                 <Card className="shadow-lg rounded-xl bg-transparent w-1/3">
                     <CardBody>
                         <div className="flex justify-between items-center mb-2">
-                            <Typography variant="small" color="blue-gray" className="text-white font-bold text-[17px] ">
+                            <Typography color="blue-gray" className="text-white text-[20px] ">
                                 {"Total Volume"}
                             </Typography>
                         </div>
@@ -606,7 +818,7 @@ export default function Dashboard() {
                         </div>
                     </CardBody>
                 </Card>
-                <div className="grid grid-cols-4 gap-8 flex-1">
+                <div className="grid grid-cols-4 gap-4 flex-1">
                     <StatCard title="Realized Profit" type={1} value={todayInfo.real_profit} change={todayInfo.percent_real_profit} isPositive={todayInfo.percent_real_profit > 0} />
                     <StatCard title="Total P&L" type={1} value={todayInfo.real_total_profit} change={todayInfo.percent_real_total_profit} isPositive={todayInfo.percent_real_total_profit > 0} />
                     <StatCard title="Unrealized Profit" type={2} value={todayInfo.unreal_profit} change={todayInfo.percent_unreal_profit} isPositive={todayInfo.percent_unreal_profit > 0} />
@@ -646,7 +858,7 @@ export default function Dashboard() {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="grid grid-cols-4 gap-20 rounded-none md:flex-row md:items-center px-8">
+                                <div className="grid grid-cols-4 gap-20 rounded-none md:flex-row md:items-center px-2">
                                     <div>
                                         <Typography variant="small" color="dark" className="font-medium text-[16px]">
                                             Granularity
@@ -727,8 +939,8 @@ export default function Dashboard() {
                         <CardBody>
                             <div className="flex items-center justify-between mb-2">
                                 <div>
-                                    <Typography variant="small" className="text-gray-300 font-medium">
-                                        Return profit per token type
+                                    <Typography className="text-gray-300 text-[20px]">
+                                        Spot & Margin Rate
                                     </Typography>
                                 </div>
                                 <Button onClick={() => setPieTitle(-1, "All")} color={pieType === -1 ? 'light-blue' : 'black'}>All</Button>
@@ -743,7 +955,6 @@ export default function Dashboard() {
                                         <MenuItem onClick={() => setPieTitle(3, "Short")}>Short</MenuItem>
                                     </MenuList>
                                 </Menu>
-                                <InformationCircleIcon className="w-4 h-4 text-gray-500" />
                             </div>
                             <div className="mt-8 grid place-items-center px-2 relative">
                                 <div className="absolute top-4" hidden={pieType !== -1}>
@@ -766,28 +977,27 @@ export default function Dashboard() {
                     </Card>
                     <Card className="bg-sidebar backdrop-blur-sm shadow-lg rounded-xl scrollbar">
                         <CardBody>
-                            <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center justify-between mb-8">
                                 <div>
-                                    <Typography variant="small" className="text-gray-300 font-medium">
+                                    <Typography className="text-gray-300 text-[20px]">
                                         Return profit per month
                                     </Typography>
-                                    <Typography variant="small" className="text-sm text-gray-500">
+                                    <Typography variant="small" className="text-lBLue1 mt-2">
                                         (Calculated from closed positions)
                                     </Typography>
                                 </div>
-                                <InformationCircleIcon className="w-4 h-4 text-gray-500" />
                             </div>
 
-                            <div className="grid grid-cols-3 text-gray-400 text-sm border-b border-gray-700 pb-1 mb-2">
+                            <div className="grid grid-cols-3 text-gray-400 text-[20px] pb-1 mb-2">
                                 <span>Month</span>
-                                <span>% Return</span>
+                                <span>% Month</span>
                                 <span className="text-right">$ Returned</span>
                             </div>
 
                             {yearData.map((item, index) => (
                                 <div
                                     key={index}
-                                    className="grid grid-cols-3 items-center text-sm py-1 text-white"
+                                    className="grid grid-cols-3 items-center text-[17px] py-1 text-white"
                                 >
                                     <span>{item.month}</span>
                                     <div className="flex items-center gap-1">
@@ -827,82 +1037,82 @@ export default function Dashboard() {
                     </Dialog>
                 </div>
             </div>
-            <Carousel className="rounded-xl mt-4"
-                  autoplay={true}
-                  loop={true}
-                  prevArrow={({ handlePrev }) => (
-                      <IconButton
-                          variant="text"
-                          color="light-blue"
-                          size="lg"
-                          onClick={handlePrev}
-                          className="!absolute top-2/4 left-4 -translate-y-2/4"
-                      >
-                          <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              strokeWidth={2}
-                              stroke="currentColor"
-                              className="h-6 w-6"
-                          >
-                              <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
-                              />
-                          </svg>
-                      </IconButton>
-                  )}
-                  nextArrow={({ handleNext }) => (
-                      <IconButton
-                          variant="text"
-                          color="light-blue"
-                          size="lg"
-                          onClick={handleNext}
-                          className="!absolute top-2/4 !right-4 -translate-y-2/4"
-                      >
-                          <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              strokeWidth={2}
-                              stroke="currentColor"
-                              className="h-6 w-6"
-                          >
-                              <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
-                              />
-                          </svg>
-                      </IconButton>
-                  )}
-                  navigation={({ setActiveIndex, activeIndex, length }) => (
-                      <div className="absolute bottom-4 left-2/4 z-50 flex -translate-x-2/4 gap-2">
-                          {new Array(length).fill("").map((_, i) => (
-                              <span
-                                  key={i}
-                                  className={`block h-1 cursor-pointer rounded-2xl transition-all content-[''] ${
-                                      activeIndex === i ? "w-8 bg-black" : "w-4 bg-black/50"
-                                  }`}
-                                  onClick={() => setActiveIndex(i)}
-                              />
-                          ))}
-                      </div>
-                  )}
-            >
-                {
-                    eventList.map((event, index) => (
-                        <ItemEvent
-                            event={event}
-                            key={index}
-                            onClick={() => handleView(event)}
-                            noButton={true}
-                        />
-                    ))
-                }
-            </Carousel>
+            {/*<Carousel className="rounded-xl mt-4"*/}
+            {/*      autoplay={true}*/}
+            {/*      loop={true}*/}
+            {/*      prevArrow={({ handlePrev }) => (*/}
+            {/*          <IconButton*/}
+            {/*              variant="text"*/}
+            {/*              color="light-blue"*/}
+            {/*              size="lg"*/}
+            {/*              onClick={handlePrev}*/}
+            {/*              className="!absolute top-2/4 left-4 -translate-y-2/4"*/}
+            {/*          >*/}
+            {/*              <svg*/}
+            {/*                  xmlns="http://www.w3.org/2000/svg"*/}
+            {/*                  fill="none"*/}
+            {/*                  viewBox="0 0 24 24"*/}
+            {/*                  strokeWidth={2}*/}
+            {/*                  stroke="currentColor"*/}
+            {/*                  className="h-6 w-6"*/}
+            {/*              >*/}
+            {/*                  <path*/}
+            {/*                      strokeLinecap="round"*/}
+            {/*                      strokeLinejoin="round"*/}
+            {/*                      d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"*/}
+            {/*                  />*/}
+            {/*              </svg>*/}
+            {/*          </IconButton>*/}
+            {/*      )}*/}
+            {/*      nextArrow={({ handleNext }) => (*/}
+            {/*          <IconButton*/}
+            {/*              variant="text"*/}
+            {/*              color="light-blue"*/}
+            {/*              size="lg"*/}
+            {/*              onClick={handleNext}*/}
+            {/*              className="!absolute top-2/4 !right-4 -translate-y-2/4"*/}
+            {/*          >*/}
+            {/*              <svg*/}
+            {/*                  xmlns="http://www.w3.org/2000/svg"*/}
+            {/*                  fill="none"*/}
+            {/*                  viewBox="0 0 24 24"*/}
+            {/*                  strokeWidth={2}*/}
+            {/*                  stroke="currentColor"*/}
+            {/*                  className="h-6 w-6"*/}
+            {/*              >*/}
+            {/*                  <path*/}
+            {/*                      strokeLinecap="round"*/}
+            {/*                      strokeLinejoin="round"*/}
+            {/*                      d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"*/}
+            {/*                  />*/}
+            {/*              </svg>*/}
+            {/*          </IconButton>*/}
+            {/*      )}*/}
+            {/*      navigation={({ setActiveIndex, activeIndex, length }) => (*/}
+            {/*          <div className="absolute bottom-4 left-2/4 z-50 flex -translate-x-2/4 gap-2">*/}
+            {/*              {new Array(length).fill("").map((_, i) => (*/}
+            {/*                  <span*/}
+            {/*                      key={i}*/}
+            {/*                      className={`block h-1 cursor-pointer rounded-2xl transition-all content-[''] ${*/}
+            {/*                          activeIndex === i ? "w-8 bg-black" : "w-4 bg-black/50"*/}
+            {/*                      }`}*/}
+            {/*                      onClick={() => setActiveIndex(i)}*/}
+            {/*                  />*/}
+            {/*              ))}*/}
+            {/*          </div>*/}
+            {/*      )}*/}
+            {/*>*/}
+            {/*    {*/}
+            {/*        eventList.map((event, index) => (*/}
+            {/*            <ItemEvent*/}
+            {/*                event={event}*/}
+            {/*                key={index}*/}
+            {/*                onClick={() => handleView(event)}*/}
+            {/*                noButton={true}*/}
+            {/*            />*/}
+            {/*        ))*/}
+            {/*    }*/}
+            {/*</Carousel>*/}
             <Dialog open={eventModalOpen} handler={() => setEventModalOpen(false)}>
                 <DialogHeader>Upcoming Events</DialogHeader>
                 <DialogBody className="max-h-[70vh] overflow-y-auto">
