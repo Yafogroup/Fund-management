@@ -3,7 +3,7 @@ import {
   Input,
   Checkbox,
   Button,
-  Typography,
+  Typography, CardBody,
 } from "@material-tailwind/react";
 import {Link, useNavigate} from "react-router-dom";
 import React, {useState} from "react";
@@ -49,118 +49,105 @@ export function SignIn() {
     }
   }
 
+  const doSignUp = async () => {
+    navigate("/auth/sign-up");
+  }
+
   return (
     <section className="relative min-h-screen">
       <img
           src="/img/bg.png"
           className="h-full w-full object-center absolute"
       />
-      <Card className="w-1/3 bg-sidebar mx-auto absolute left-[32%] top-[20%]">
-        <div className="text-center">
-          <Typography className="mt-20 text-white text-[32px]">Welcome to YAFO</Typography>
-        </div>
-        <form className="mt-8 mb-2 mx-auto max-w-screen-lg lg:w-2/3">
-          <div className="mb-1 flex flex-col gap-6">
-            <div className="bg-cBlue3 rounded-lg px-2">
-              <Input
-                  label="Email"
-                  className="border-none "
-                  size="lg"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div className="bg-cBlue3 rounded-lg px-2">
-              <Input
-                  label="Password"
-                  type="password"
-                  size="lg"
-                  className="border-none "
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      doLogin();
-                    }}
-                  }
-              />
-            </div>
-          </div>
-          <div className="flex items-center justify-between mt-6">
-            <Checkbox
-                label={
-                  <Typography
-                      variant="small"
-                      color="text-gray-600"
-                      className="flex items-center justify-start font-medium"
-                  >
-                    I agree the&nbsp;
-                    <a
-                        href="#"
-                        className="font-normal text-gray-600 transition-colors hover:text-gray-900 underline"
-                    >
-                      Terms and Conditions
+      <Card className="w-1/2 h-1/2 bg-sidebar mx-auto absolute left-[25%] top-[20%]">
+        <CardBody className="p-0">
+          <div className="h-full flex flex-row relative">
+            <img
+              src="/img/logo.png"
+              className="object-contain absolute top-10 left-10"
+            />
+            <img
+                src="/img/bg_login.jpg"
+                className="w-[49.5%] object-cover rounded-l-lg mb-10"
+            />
+            <div className="flex-1">
+              <div className="text-center mt-14">
+                <Typography className="text-gray-600 text-[25px]">Welcome to YAFO</Typography>
+              </div>
+              <form className="mt-8 mx-auto max-w-screen-lg lg:w-3/4">
+                <div className="mb-1 flex flex-col gap-6">
+                  <div className="bg-cBlue3 rounded-lg px-2">
+                    <Input
+                        label="Email"
+                        className="border-none "
+                        size="lg"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
+                  </div>
+                  <div className="bg-cBlue3 rounded-lg px-2">
+                    <Input
+                        label="Password"
+                        type="password"
+                        size="lg"
+                        className="border-none "
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            doLogin();
+                          }}
+                        }
+                    />
+                  </div>
+                </div>
+                <div className="flex items-center justify-between mt-6">
+                  <Checkbox
+                      label={
+                        <Typography
+                            variant="small"
+                            color="text-gray-600"
+                            className="flex items-center justify-start font-medium"
+                        >
+                          I agree the&nbsp;
+                          <a
+                              href="#"
+                              className="font-normal text-gray-600 transition-colors hover:text-gray-900 underline"
+                          >
+                            Terms and Conditions
+                          </a>
+                        </Typography>
+                      }
+                      containerProps={{ className: "-ml-2.5" }}
+                  />
+                  <Typography variant="small" className="font-medium text-lBLue1">
+                    <a href="#">
+                      Forgot Password
                     </a>
                   </Typography>
-                }
-                containerProps={{ className: "-ml-2.5" }}
-            />
-            <Typography variant="small" className="font-medium text-lBLue1">
-              <a href="#">
-                Forgot Password
-              </a>
-            </Typography>
-          </div>
-          <Button className="mt-6 bg-gradient-to-tr from-[#0023af] via-[#006ec1] to-[#00a0ce] text-[17px] font-normal" fullWidth onClick={doLogin}>
-            Sign In
-          </Button>
+                </div>
+                <Button className="mt-6 bg-gradient-to-tr from-[#0023af] via-[#006ec1] to-[#00a0ce] text-[15px] font-normal" fullWidth onClick={doLogin}>
+                  Sign In
+                </Button>
 
-          <div className="flex items-center justify-between gap-2 mt-6">
-            <Checkbox
-                label={
+                <div className="flex items-center justify-center w-full my-4">
+                  <div className="flex-grow border-t border-gray-700"></div>
                   <Typography
                       variant="small"
                       color="gray"
-                      className="flex items-center justify-start font-medium"
+                      className="mx-3 text-sm text-gray-400"
                   >
-                    Subscribe me to newsletter
+                    Not registered ?
                   </Typography>
-                }
-                containerProps={{ className: "-ml-2.5" }}
-            />
-            <Typography variant="small" className="font-medium text-gray-900">
-              <a href="#">
-                Forgot Password
-              </a>
-            </Typography>
+                  <div className="flex-grow border-t border-gray-700"></div>
+                </div>
+                <Button className="mt-6 bg-transparent border-[1px] border-gray-500 text-[15px] font-normal" fullWidth onClick={doSignUp}>
+                  Create Account
+                </Button>
+              </form>
+            </div>
           </div>
-          {/*<div className="space-y-4 mt-8">*/}
-          {/*  <Button size="lg" color="white" className="flex items-center gap-2 justify-center shadow-md" fullWidth>*/}
-          {/*    <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">*/}
-          {/*      <g clipPath="url(#clip0_1156_824)">*/}
-          {/*        <path d="M16.3442 8.18429C16.3442 7.64047 16.3001 7.09371 16.206 6.55872H8.66016V9.63937H12.9813C12.802 10.6329 12.2258 11.5119 11.3822 12.0704V14.0693H13.9602C15.4741 12.6759 16.3442 10.6182 16.3442 8.18429Z" fill="#4285F4" />*/}
-          {/*        <path d="M8.65974 16.0006C10.8174 16.0006 12.637 15.2922 13.9627 14.0693L11.3847 12.0704C10.6675 12.5584 9.7415 12.8347 8.66268 12.8347C6.5756 12.8347 4.80598 11.4266 4.17104 9.53357H1.51074V11.5942C2.86882 14.2956 5.63494 16.0006 8.65974 16.0006Z" fill="#34A853" />*/}
-          {/*        <path d="M4.16852 9.53356C3.83341 8.53999 3.83341 7.46411 4.16852 6.47054V4.40991H1.51116C0.376489 6.67043 0.376489 9.33367 1.51116 11.5942L4.16852 9.53356Z" fill="#FBBC04" />*/}
-          {/*        <path d="M8.65974 3.16644C9.80029 3.1488 10.9026 3.57798 11.7286 4.36578L14.0127 2.08174C12.5664 0.72367 10.6469 -0.0229773 8.65974 0.000539111C5.63494 0.000539111 2.86882 1.70548 1.51074 4.40987L4.1681 6.4705C4.8001 4.57449 6.57266 3.16644 8.65974 3.16644Z" fill="#EA4335" />*/}
-          {/*      </g>*/}
-          {/*      <defs>*/}
-          {/*        <clipPath id="clip0_1156_824">*/}
-          {/*          <rect width="16" height="16" fill="white" transform="translate(0.5)" />*/}
-          {/*        </clipPath>*/}
-          {/*      </defs>*/}
-          {/*    </svg>*/}
-          {/*    <span>Sign in With Google</span>*/}
-          {/*  </Button>*/}
-          {/*  <Button size="lg" color="white" className="flex items-center gap-2 justify-center shadow-md" fullWidth>*/}
-          {/*    <img src="/img/twitter-logo.svg" height={24} width={24} alt="" />*/}
-          {/*    <span>Sign in With Twitter</span>*/}
-          {/*  </Button>*/}
-          {/*</div>*/}
-          <Typography variant="paragraph" className="text-center text-blue-gray-500 font-medium mt-4">
-            Not registered?
-            <Link to="/auth/sign-up" className="text-gray-900 ml-1">Create account</Link>
-          </Typography>
-        </form>
+        </CardBody>
       </Card>
     </section>
   );
