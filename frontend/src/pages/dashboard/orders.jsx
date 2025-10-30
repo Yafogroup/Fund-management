@@ -297,12 +297,19 @@ const Orders = () => {
                     </div>
                     <div className="flex flex-col md:flex-row md:items-end gap-4 mb-6">
                         <div className="w-20">
-                            <Select label="Select Page Count" value={pageCount}
+                            <Select label="" value={pageCount}
                                     onChange={(e) => {
                                         setPage(1);
                                         setPageCount(e);
                                     }}
-                                    size="lg" className="text-lBLue text-sm"
+                                    size="lg"
+                                    labelProps={{
+                                        // kill the notch lines + white patch behind the label
+                                        className:
+                                            "before:!border-0 after:!border-0 " +    // no borders on the pseudo parts
+                                            "before:!bg-transparent after:!bg-transparent"
+                                    }}
+                                    className="text-white bg-cBlue3 focus:outline-none border-none !border-t-transparent focus:!border-t-transparent data-[open=true]:!border-t-transparent"
                             >
                                 <Option value="8">8</Option>
                                 <Option value="10">10</Option>
@@ -310,7 +317,7 @@ const Orders = () => {
                                 <Option value="20">30</Option>
                             </Select>
                         </div>
-                        <div className="w-full md:w-1/6 ml-32">
+                        <div className="w-full md:w-1/6 ml-32 bg-cBlue3 rounded-lg">
                             <Input
                                 label="Search"
                                 value={searchTerm}
@@ -327,7 +334,7 @@ const Orders = () => {
                                 value={startDate}
                                 onClick={(e) => e.currentTarget.showPicker()}
                                 onChange={(e) => setStartDate(e.target.value)}
-                                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-dark text-lBLue"
+                                className="w-full px-3 py-2 bg-cBlue3 rounded-md focus:outline-none text-sm text-gray-300"
                             />
                         </div>
 
@@ -338,7 +345,7 @@ const Orders = () => {
                                 value={endDate}
                                 onClick={(e) => e.currentTarget.showPicker()}
                                 onChange={(e) => setEndDate(e.target.value)}
-                                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-dark text-lBLue"
+                                className="w-full px-3 py-2 bg-cBlue3 rounded-md focus:outline-none text-sm text-gray-300"
                             />
                         </div>
                         <div className="w-60">
