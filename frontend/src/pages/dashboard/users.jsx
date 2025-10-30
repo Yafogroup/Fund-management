@@ -210,22 +210,22 @@ export function Users() {
                         return (
                             <tr key={idx}>
                               <td className={className}>
-                                <Typography className="font-semibold text-blue-gray-600">
+                                <Typography className="text-gray-400">
                                   {idx + 1}
                                 </Typography>
                               </td>
                               <td className={className}>
-                                <Typography className="font-semibold text-blue-gray-600">
+                                <Typography className="text-gray-400">
                                   {email}
                                 </Typography>
                               </td>
                               <td className={className}>
-                                <Typography className="font-semibold text-blue-gray-600">
+                                <Typography className="text-gray-400">
                                   {registered_on}
                                 </Typography>
                               </td>
                               <td className={className}>
-                                <Typography className="font-semibold text-blue-gray-600">
+                                <Typography className="text-gray-400">
                                   {last_logged_in}
                                 </Typography>
                               </td>
@@ -237,7 +237,7 @@ export function Users() {
                                 </Typography>
                               </td>
                               <td className={className}>
-                                <div className="flex gap-2 z-10">
+                                <div className="flex gap-2 z-10 float-right">
                                   <Tooltip content="Edit">
                                     <Button
                                         size="sm"

@@ -1,6 +1,6 @@
 import React from "react";
-import { Button, IconButton } from "@material-tailwind/react";
-import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
+import {Button, IconButton} from "@material-tailwind/react";
+import {ArrowRightIcon, ArrowLeftIcon} from "@heroicons/react/24/outline";
 import {any} from "prop-types";
 
 export function Pagination({page, active, onPageChange}) {
@@ -8,11 +8,11 @@ export function Pagination({page, active, onPageChange}) {
     const getItemProps = (index) =>
         ({
             variant: active === index ? "filled" : "text",
-            color: "blue",
+            color: active === index ? "bg-cBlue3" : 'white',
             onClick: () => {
                 onPageChange(index);
             },
-            className: "rounded-full",
+            className: "rounded-xl",
         });
 
     const next = () => {
@@ -35,12 +35,12 @@ export function Pagination({page, active, onPageChange}) {
                 onClick={prev}
                 disabled={active === 1}
             >
-                <ArrowLeftIcon strokeWidth={2} className="h-4 w-4" /> Previous
+                <ArrowLeftIcon strokeWidth={2} className="h-4 w-4"/>
             </Button>
             <div className="flex items-center gap-2">
                 {
                     [...Array(page)].map((x, i) =>
-                        <IconButton {...getItemProps(i+1)}>{i+1}</IconButton>
+                        <IconButton {...getItemProps(i + 1)}>{i + 1}</IconButton>
                     )
                 }
             </div>
@@ -50,8 +50,7 @@ export function Pagination({page, active, onPageChange}) {
                 onClick={next}
                 disabled={active === page}
             >
-                Next
-                <ArrowRightIcon strokeWidth={2} className="h-4 w-4" />
+                <ArrowRightIcon strokeWidth={2} className="h-4 w-4"/>
             </Button>
         </div>
     );

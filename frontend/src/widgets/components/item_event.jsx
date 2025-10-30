@@ -15,67 +15,58 @@ const ItemEvent = ({ event, onView, onEdit, onDelete, noButton, onClick }) => {
         <Card
             key={event.id}
             onClick={onClick}
-            className={`h-[120px] relative shadow-md hover:shadow-lg transition-shadow duration-300 ${
-                hasImage ? "flex flex-row" : "flex flex-col"
-            }`}
+            className={`h-[240px] relative border-gray-500 bg-transparent border-2`}
         >
-            {hasImage && (
-                <div className="w-1/3 min-w-[120px] max-w-[160px] h-[120px]">
-                    <img
-                        src={event.image}
-                        alt={event.title}
-                        className="h-full w-full object-cover rounded-l-md"
-                    />
+            <CardBody className="flex flex-col justify-center w-full">
+                <div className="flex flex-row w-full">
+                    <Typography variant="h5" className="text-white">
+                        {event.title}
+                    </Typography>
+                    {
+                        !noButton && (
+                            <div className="flex gap-2 z-10 flex-1">
+                                <div className="w-[32px] h-[32px] rounded-full bg-[#687992] ml-auto cursor-pointer" onClick={onView}>
+                                    <img
+                                        src="/img/zoom.png"
+                                        className="mt-2 ml-1.5"
+                                    />
+                                </div>
+                                <div className="w-[32px] h-[32px] rounded-full bg-[#687992] cursor-pointer" onClick={onEdit}>
+                                    <img
+                                        src="/img/memo_off.png"
+                                        className="mt-1.5 ml-1.5"
+                                    />
+                                </div>
+                                <div className="w-[32px] h-[32px] rounded-full bg-[#687992] cursor-pointer" onClick={onDelete}>
+                                    <img
+                                        src="/img/delete.png"
+                                        className="mt-1.5 ml-1.5"
+                                    />
+                                </div>
+                            </div>
+                        )
+                    }
                 </div>
-            )}
-
-            {/* Buttons in top-right */}
-            {
-                !noButton && (
-                    <div className="absolute top-2 right-2 flex gap-2 z-10">
-                        <Tooltip content="View">
-                            <IconButton
-                                size="sm"
-                                color="blue"
-                                onClick={onView}
-                            >
-                                <EyeIcon className="h-4 w-4" />
-                            </IconButton>
-                        </Tooltip>
-                        <Tooltip content="Edit">
-                            <IconButton
-                                size="sm"
-                                color="green"
-                                onClick={onEdit}
-                            >
-                                <PencilIcon className="h-4 w-4" />
-                            </IconButton>
-                        </Tooltip>
-                        <Tooltip content="Edit">
-                            <IconButton
-                                size="sm"
-                                color="red"
-                                onClick={onDelete}
-                            >
-                                <TrashIcon className="h-4 w-4" />
-                            </IconButton>
-                        </Tooltip>
-                    </div>
-                )
-            }
-
-            <CardBody className="flex flex-col justify-center w-full p-4">
-                <Typography variant="h6" className="mb-1 text-blue-gray-900">
-                    {event.title}
-                </Typography>
-                <Typography className="text-sm text-gray-700 line-clamp-3">
-                    {event.content.length > (noButton ? 400 : 120)
-                        ? event.content.slice(0, 120) + "..."
-                        : event.content}
-                </Typography>
-                <Typography className="text-sm text-gray-700 text-right absolute bottom-2 right-4">
+                <Typography className="text-sm text-gray-700">
                     {event.happen_time}
                 </Typography>
+                <div className="flex flex-row w-full mt-4">
+                    {hasImage && (
+                        <div className="w-1/3 min-w-[120px] max-w-[160px] h-[120px] mr-4">
+                            <img
+                                src={event.image}
+                                alt={event.title}
+                                className="h-full w-full object-cover rounded-2xl"
+                            />
+                        </div>
+                    )}
+                    <Typography className="text-sm text-white line-clamp-4 flex-1">
+                        {event.content.length > (noButton ? 400 : 120)
+                            ? event.content.slice(0, hasImage ? 250 : 400) + "..."
+                            : event.content}
+                    </Typography>
+                </div>
+
             </CardBody>
         </Card>
     );

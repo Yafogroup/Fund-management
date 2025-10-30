@@ -239,14 +239,17 @@ export function TokenType() {
                     }
                 </CardBody>
             </Card>
-            <Dialog open={deleteModalOpen} handler={() => setDeleteModalOpen(false)}>
-                <DialogHeader>Confirm Deletion</DialogHeader>
-                <DialogBody>
+            <Dialog open={deleteModalOpen} handler={() => setDeleteModalOpen(false)} size="sm"
+                    className="bg-opacity-60 bg-[#2c3040] text-white rounded-xl shadow-xl">
+                <DialogHeader
+                    className="text-sm font-semibold text-gray-200 border-b border-gray-700">Confirm Deletion
+                </DialogHeader>
+                <DialogBody className="text-white">
                     Are you sure you want to delete this toke type? This action cannot be undone.
                 </DialogBody>
                 <DialogFooter>
-                    <Button variant="text" onClick={() => setDeleteModalOpen(false)}>Cancel</Button>
-                    <Button color="red" onClick={() => handleDelete()}>Delete</Button>
+                    <Button className="text-gray-300 hover:text-white mr-4" onClick={() => setDeleteModalOpen(false)}>Cancel</Button>
+                    <Button className="bg-gradient-to-tr from-[#0023af] via-[#006ec1] to-[#00a0ce]" onClick={() => handleDelete()}>Delete</Button>
                 </DialogFooter>
             </Dialog>
             <Dialog
@@ -268,10 +271,12 @@ export function TokenType() {
                     </div>
                 </DialogBody>
                 <DialogFooter>
-                    <Button color="gray" onClick={() => setEditModalOpen(false)} className="text-gray-300 hover:text-white">
+                    <Button color="gray" onClick={() => setEditModalOpen(false)}
+                            className="text-gray-300 hover:text-white">
                         Cancel
                     </Button>
-                    <Button color="blue" onClick={handleSubmit} className="ml-2 bg-gradient-to-r from-[#0023af] via-[#006ec1] to-[#00a0ce] hover:opacity-90">
+                    <Button color="blue" onClick={handleSubmit}
+                            className="ml-2 bg-gradient-to-r from-[#0023af] via-[#006ec1] to-[#00a0ce] hover:opacity-90">
                         {selectedTokenType ? "Update" : "Create"}
                     </Button>
                 </DialogFooter>
