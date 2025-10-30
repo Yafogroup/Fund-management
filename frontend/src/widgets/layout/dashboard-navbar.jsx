@@ -71,7 +71,7 @@ export function DashboardNavbar({logout}) {
                     {/*  </Typography>*/}
                     {/*</Breadcrumbs>*/}
                     <Typography variant="h3" color="white">
-                        {page === "home" ? "Dashboard" : page}
+                        {page === "home" ? "Dashboard" : (page === "token_type" ? "Token Type" : page)}
                     </Typography>
                     <Typography variant="h5" color="white">
                         {page === "home" ? "Welcome Back Jacky!" : ""}
