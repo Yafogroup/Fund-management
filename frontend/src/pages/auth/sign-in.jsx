@@ -68,7 +68,7 @@ export function SignIn() {
             />
             <img
                 src="/img/bg_login.jpg"
-                className="w-[49.5%] object-cover rounded-l-lg mb-10"
+                className="w-[50%] object-cover rounded-l-lg mb-10"
             />
             <div className="flex-1">
               <div className="text-center mt-14">

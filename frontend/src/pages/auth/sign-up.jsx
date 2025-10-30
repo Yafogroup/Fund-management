@@ -68,7 +68,7 @@ export function SignUp() {
                         />
                         <img
                             src="/img/bg_login.jpg"
-                            className="w-[54.5%] object-cover rounded-l-lg mb-10"
+                            className="w-[55%] object-cover rounded-l-lg mb-10"
                         />
                         <div className="flex-1">
                             <div className="text-center mt-14">
