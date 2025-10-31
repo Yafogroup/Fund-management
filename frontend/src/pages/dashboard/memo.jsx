@@ -201,7 +201,7 @@ export function Memo() {
     }
 
     return (
-        <div className="p-6 bg-dark min-h-screen">
+        <Card className="p-6 bg-dark bg-sidebar mt-10">
             <div className="flex flex-col md:flex-row md:items-end gap-4 mb-6 ml-6">
                 <div className="md:mr-4 md:w-56 bg-cBlue3 rounded-lg">
                     <Input
@@ -411,7 +411,7 @@ export function Memo() {
                 onChange={handleFormChange}
                 className="ml-auto min-w-[40px]"
             />
-        </div>
+        </Card>
     );
 }
 
