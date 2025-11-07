@@ -6,3 +6,4 @@ from .UserToken import UserToken
 from .TokenType import TokenType
 from .Portfolio import Portfolio
 from .Event import Event
+from .PriceHistory import PriceHistory

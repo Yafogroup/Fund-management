@@ -3,8 +3,10 @@ from datetime import datetime, timedelta
 import time
 from service import CoinMarketCapAPI
 import threading
-from model import UserToken, Portfolio
+from model import Portfolio, PriceHistory
 from controller import db
+from io import StringIO
+import pandas as pd
 
 class PriceChangeTracker:
     def __init__(self):
@@ -50,11 +52,8 @@ class PriceChangeTracker:
             Portfolio.token_symbol
         ).distinct().all()
 
-        # ids = db.session.query(UserToken.token_uid).all()
-        # idStr = ','.join([str(i[0]) for i in ids])
-        # idList = idStr.split(',')
-
-        # assets = [token for token in self.token_all_list if str(token['id']) in idList]
+        symbols = [asset.token_symbol for asset in assets]
+        latest_prices = self.get_latest_price(symbols)
 
         new_assets = [item for item in assets if item not in self.assets]
 
@@ -65,12 +64,38 @@ class PriceChangeTracker:
         for token in new_assets:
             token_id = token['token_id']
             token_symbol = token['token_symbol']
-            historical_data = self.cmc.get_historical_prices(token_id, start_date, end_date)
-            self.historical_prices[token_symbol] = {
-                'id': token_id,
-                'data': historical_data
-            }
-            time.sleep(2)  # wait 2 seconds (30 requests/minute = 2s between calls)
+
+            # check if the history already exists in the database
+            db_history = db.session.query(PriceHistory).filter_by(token_id=token_id).first()
+
+            if db_history:
+                str_data = db_history.data
+                csv_buffer = StringIO(str_data)
+                historical_data = pd.read_csv(csv_buffer)
+                
+                if not end_date.strftime('%Y-%m-%d') in historical_data['date'].values:
+                    historical_data.append({
+                        'date': end_date.strftime('%Y-%m-%d'),
+                        'price': latest_prices[token_symbol]['price']
+                    })
+
+                self.historical_prices[token_symbol] = {
+                    'id': token_id,
+                    'data': historical_data
+                }
+            else:
+                historical_data = self.cmc.get_historical_prices(token_id, start_date, end_date)
+                self.historical_prices[token_symbol] = {
+                    'id': token_id,
+                    'data': historical_data
+                }
+                # save to database
+                history = PriceHistory(
+                    token_id=token_id,
+                    data=historical_data.to_csv(index=False)
+                )
+                db.session.add(history)
+                db.session.commit()
 
         self.assets = assets
         self.initiated = True
