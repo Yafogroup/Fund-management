@@ -97,6 +97,7 @@ class PriceChangeTracker:
                 )
                 db.session.add(history)
                 db.session.commit()
+                time.sleep(2)  # To avoid hitting API rate limits
 
         self.assets = assets
         self.initiated = True
