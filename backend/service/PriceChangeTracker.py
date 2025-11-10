@@ -74,10 +74,11 @@ class PriceChangeTracker:
                 historical_data = pd.read_csv(csv_buffer)
                 
                 if not end_date.strftime('%Y-%m-%d') in historical_data['date'].values:
-                    historical_data.append({
+
+                    historical_data.loc[len(historical_data)] = {
                         'date': end_date.strftime('%Y-%m-%d'),
                         'price': latest_prices[token_symbol]['price']
-                    })
+                    }
 
                 self.historical_prices[token_symbol] = {
                     'id': token_id,
