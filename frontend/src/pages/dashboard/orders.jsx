@@ -105,17 +105,17 @@ const Orders = () => {
         "No",
         "Open Date",
         "Closed Date",
-        "Name",
         "Type",
+        "Token",
+        "Status",
         "Position",
-        "Size",
-        "Order Value",
+        "Quantity",
+        "Value",
         "Avg. Open",
         "Oracle",
         "Est.P&L",
-        "Status",
         "Result",
-        "Action",
+        "",
     ]
 
     const fetchPortfolioList = async (reset = false) => {
@@ -281,117 +281,99 @@ const Orders = () => {
 
     useEffect(() => {
         fetchPortfolioList(true);
-    }, [page])
+    }, [page, pageCount])
 
     if (showLoading) {
         return <LoadingScreen />;
     }
 
     return (
-        <div className="p-4 overflow-x-auto scrollbar">
-            <Card className="bg-dark">
-                <CardBody className="px-0 pt-0">
-                    <div className="flex pb-2 text-right justify-end items-center">
-                        <Typography variant="small" className="text-[16px] font-medium text-lBLue">Total Order:</Typography>
-                        <Typography className="text-[20px] font-bold text-lBLue ml-2">{totalOrder.toLocaleString("en-US", {style:"currency", currency:"USD"})}</Typography>
-                    </div>
+        <div className="overflow-x-auto scrollbar">
+            <div className="flex pb-2 items-center">
+                <Typography variant="small" className="text-[16px] font-medium text-gray-300">Total Order:</Typography>
+                <Typography className="text-[20px] font-bold text-gray-300 ml-2">{totalOrder.toLocaleString("en-US", {style:"currency", currency:"USD"})}</Typography>
+            </div>
+            <Card className="bg-sidebar">
+                <CardBody className="p-6">
                     <div className="flex flex-col md:flex-row md:items-end gap-4 mb-6">
-                        <div className="w-20">
-                            <Select label="" value={pageCount}
-                                    onChange={(e) => {
-                                        setPage(1);
-                                        setPageCount(e);
-                                    }}
-                                    size="lg"
-                                    labelProps={{
-                                        // kill the notch lines + white patch behind the label
-                                        className:
-                                            "before:!border-0 after:!border-0 " +    // no borders on the pseudo parts
-                                            "before:!bg-transparent after:!bg-transparent"
-                                    }}
-                                    className="text-white bg-cBlue3 focus:outline-none border-none !border-t-transparent focus:!border-t-transparent data-[open=true]:!border-t-transparent"
-                            >
-                                <Option value="8">8</Option>
-                                <Option value="10">10</Option>
-                                <Option value="12">12</Option>
-                                <Option value="20">30</Option>
-                            </Select>
-                        </div>
-                        <div className="w-full md:w-1/6 ml-32 bg-cBlue3 rounded-lg">
+                        <div className="w-30 bg-cBlue3 rounded-lg">
                             <Input
-                                label="Search"
+                                placeholder="Search"
                                 value={searchTerm}
                                 icon={<MagnifyingGlassIcon className="h-5 w-5" />}
-                                className="text-lBLue"
+                                className="text-white bg-cBlue3 focus:outline-none border-none !border-t-transparent focus:!border-t-transparent data-[open=true]:!border-t-transparent"
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
                         </div>
 
-                        <div className="w-40">
-                            <label className="text-sm text-gray-700 mb-1 block">Start Date</label>
+                        <div className="w-120 flex">
+                            <label className="text-sm text-gray-700 mb-1 block mt-2">Date</label>
                             <input
                                 type="date"
                                 value={startDate}
                                 onClick={(e) => e.currentTarget.showPicker()}
                                 onChange={(e) => setStartDate(e.target.value)}
-                                className="w-full px-3 py-2 bg-cBlue3 rounded-md focus:outline-none text-sm text-gray-300"
+                                className="w-40 ml-2 px-3 py-2 bg-cBlue3 rounded-md focus:outline-none text-sm text-gray-300"
                             />
-                        </div>
-
-                        <div className="w-40">
-                            <label className="text-sm text-gray-700 mb-1 block">End Date</label>
                             <input
                                 type="date"
                                 value={endDate}
                                 onClick={(e) => e.currentTarget.showPicker()}
                                 onChange={(e) => setEndDate(e.target.value)}
-                                className="w-full px-3 py-2 bg-cBlue3 rounded-md focus:outline-none text-sm text-gray-300"
+                                className="w-40 ml-1 px-3 py-2 bg-cBlue3 rounded-md focus:outline-none text-sm text-gray-300"
                             />
                         </div>
-                        <div className="w-60">
-                            <Select label="Select Token Type" className="text-lBLue text-xs"
-                                    onChange={(value) => setTokenType(value)}
-                                    selected={(element) =>
-                                    {
-                                        if (element) {
-                                            const selectedValue = element.props.value;
-                                            // console.log('Selected Value:', selectedValue);
-                                            return element.props.name;
-                                        }
+                        <div className="w-120 flex">
+                            <label className="text-sm text-gray-700 mb-1 block mt-3">Token Type</label>
+                            <div className="w-60 ml-2">
+                                <Select placeholder="Select Token Type" className="text-white bg-cBlue3 focus:outline-none border-none !border-t-transparent focus:!border-t-transparent data-[open=true]:!border-t-transparent"
+                                        onChange={(value) => setTokenType(value)}
+                                        selected={(element) =>
+                                        {
+                                            if (element) {
+                                                const selectedValue = element.props.value;
+                                                // console.log('Selected Value:', selectedValue);
+                                                return element.props.name;
+                                            }
 
-                                    }
-                            }>
-                                {filterTypeList.map((option) => (
-                                    <Option   key={option.uid} value={option.uid} data-id={option.uid} name={option.name}>
-                                        {option.name}
-                                    </Option>
-                                ))}
-                            </Select>
+                                        }
+                                        }>
+                                    {filterTypeList.map((option) => (
+                                        <Option   key={option.uid} value={option.uid} data-id={option.uid} name={option.name}>
+                                            {option.name}
+                                        </Option>
+                                    ))}
+                                </Select>
+                            </div>
                         </div>
-                        <div className="w-40 ml-1">
-                            <Select label="Select Position type" className="text-lBLue"
-                                    value={filterPosition}
-                                    onChange={(value) => setFilterPosition(value)}>
-                                <Option value="-1">All</Option>
-                                <Option value="0">Spot</Option>
-                                <Option value="1">Margin</Option>
-                                <Option value="2">Long</Option>
-                                <Option value="3">Short</Option>
-                            </Select>
+                        <div className="w-80 flex">
+                            <label className="text-sm text-gray-700 mb-1 block mt-3">Position Type</label>
+                            <div className="w-40 ml-1">
+                                <Select className="text-white bg-cBlue3 focus:outline-none border-none !border-t-transparent focus:!border-t-transparent data-[open=true]:!border-t-transparent"
+                                        value={filterPosition}
+                                        onChange={(value) => setFilterPosition(value)}>
+                                    <Option value="-1">All</Option>
+                                    <Option value="0">Spot</Option>
+                                    <Option value="1">Margin</Option>
+                                    <Option value="2">Long</Option>
+                                    <Option value="3">Short</Option>
+                                </Select>
+                            </div>
                         </div>
                         <div className="w-60 ml-10">
                             <Tabs value={status.toString()}>
-                                <TabsHeader>
-                                    <Tab value="-1" onClick={() => setStatus(-1)}>
-                                        {/*<HomeIcon className="-mt-1 mr-2 inline-block h-5 w-5" />*/}
+                                <TabsHeader className="bg-cBlue3"
+                                            indicatorProps={{
+                                                className: "bg-black shadow-none",
+                                            }}
+                                >
+                                    <Tab value="-1" onClick={() => setStatus(-1)} className="text-gray-300">
                                         All
                                     </Tab>
-                                    <Tab value="0" onClick={() => setStatus(0)}>
-                                        {/*<BookOpenIcon className="-mt-0.5 mr-2 inline-block h-5 w-5" />*/}
+                                    <Tab value="0" onClick={() => setStatus(0)} className="text-gray-300">
                                         Open
                                     </Tab>
-                                    <Tab value="1" onClick={() => setStatus(1)}>
-                                        {/*<LockClosedIcon className="-mt-1 mr-2 inline-block h-5 w-5" />*/}
+                                    <Tab value="1" onClick={() => setStatus(1)} className="text-gray-300">
                                         Close
                                     </Tab>
                                 </TabsHeader>
@@ -401,6 +383,7 @@ const Orders = () => {
                             <Button
                                 variant="filled"
                                 color="blue"
+                                className="bg-gradient-to-tr from-[#0023af] via-[#006ec1] to-[#00a0ce]"
                                 onClick={() => handleApply()}
                             >
                                 Apply
@@ -409,7 +392,7 @@ const Orders = () => {
                         <div className="w-full text-right pr-1 flex-1">
                             <Button
                                 variant="outlined"
-                                color="blue"
+                                color="blue-gray"
                                 onClick={() => handleNew()}
                             >
                                 Add New
@@ -430,7 +413,7 @@ const Orders = () => {
                                 >
                                     <Typography
                                         variant="small"
-                                        className="text-[16px] font-medium text-lBLue flex"
+                                        className="text-[16px] font-medium text-gray-600 flex"
                                     >
                                         {el} {(index === 1 || index === 6 || index === 9 || index === 11) ? <ArrowsUpDownIcon className="h-5 w-5" /> : ""}
                                     </Typography>
@@ -452,9 +435,12 @@ const Orders = () => {
 
                             return (
                                 <tr key={index}>
-                                    <td className="p-4 text-lBLue">{index + 1 + (page - 1) * pageCount}</td>
-                                    <td className="p-4 text-lBLue">{order.date}</td>
-                                    <td className="p-4 text-lBLue">{order.closed_date === '' ? <span className="text-red-500 ml-4">---</span> : order.closed_date}</td>
+                                    <td className="p-4 text-gray-300">{index + 1 + (page - 1) * pageCount}</td>
+                                    <td className="p-4 text-gray-300">{order.date}</td>
+                                    <td className="p-4 text-gray-300">{order.closed_date === '' ? <span className="text-red-500 ml-4">---</span> : order.closed_date}</td>
+                                    <td className="p-4">
+                                        <Typography variant="small" className="text-[16px] text-gray-300 mb-1">{order.token_type_name}</Typography>
+                                    </td>
                                     <td className="p-4 flex items-center">
                                         <Avatar
                                             src={order.logo}
@@ -463,13 +449,18 @@ const Orders = () => {
                                             variant="circular"
                                             className={`cursor-pointer border-2 border-white mr-2`}
                                         />
-                                        <Typography variant="small" className="text-[18px] font-medium text-lBLue mt-1">{order.token_name.length > 8 ? order.token_symbol : order.token_name}</Typography>
+                                        <Typography variant="small" className="text-[16px] text-gray-300 mt-1">{order.token_name.length > 8 ? order.token_symbol : order.token_name}</Typography>
                                     </td>
                                     <td className="p-4">
-                                        <Typography variant="small" className="text-[18px] font-medium text-lGreen mb-1">{order.token_type_name}</Typography>
+                                        <Chip
+                                            variant="outlined"
+                                            size="sm"
+                                            value={order.status === 0 ? "Open" : "Close"}
+                                            color={order.status === 0 ? "blue" : "blue-gray"}
+                                        />
                                     </td>
                                     <td className="p-4">
-                                        <Typography variant="small" className={`text-[16px] font-medium mb-1 ${order.trade_type === 0 ? "text-lBLue" : "text-red-500"}`}>
+                                        <Typography variant="small" className={`text-[16px] mb-1 ${order.trade_type === 0 ? "text-lGreen" : "text-red-500"}`}>
                                             {
                                                 order.trade_type === 0
                                                     ? (order.position_type === 0 ? "Spot" : "Margin(" + order.leverage.toString() + "X Long)")
@@ -478,15 +469,15 @@ const Orders = () => {
                                         </Typography>
                                     </td>
                                     <td className="p-4">
-                                        <Typography variant="small" className="text-[16px] font-medium text-lBLue">{order.quantity.toString() + " " + order.token_symbol}</Typography>
+                                        <Typography variant="small" className="text-[16px] text-gray-300">{order.quantity.toString() + " " + order.token_symbol}</Typography>
                                     </td>
                                     <td className="p-4">
-                                        <Typography variant="small" className="text-[16px] font-medium text-lBLue">{order_value.toLocaleString("en-US", {style:"currency", currency:"USD", minimumFractionDigits: 4})}</Typography>
+                                        <Typography variant="small" className="text-[16px] text-gray-300">{order_value.toLocaleString("en-US", {style:"currency", currency:"USD", minimumFractionDigits: 4})}</Typography>
                                     </td>
                                     <td className="p-4">
                                         {
                                             order.entry_price >= 0.09 ?
-                                                <Typography variant="small" className="text-[16px] font-medium text-lBLue">{
+                                                <Typography variant="small" className="text-[16px] text-gray-300">{
                                                     order.entry_price.toLocaleString("en-US", {style:"currency", currency:"USD", minimumFractionDigits: 4})
                                                 }</Typography>
                                                 :
@@ -498,7 +489,7 @@ const Orders = () => {
                                     <td className="p-4">
                                         {
                                             order.oracle >= 0.09 ?
-                                                <Typography variant="small" className="text-[16px] font-medium text-lBLue">{
+                                                <Typography variant="small" className="text-[16px] text-gray-300">{
                                                     order.oracle.toLocaleString("en-US", {style:"currency", currency:"USD", minimumFractionDigits: 6})
                                                 }</Typography>
                                                 :
@@ -510,7 +501,7 @@ const Orders = () => {
                                     <td className="p-4">
                                         {
                                             order.status === 0 &&
-                                            <Typography variant="small" className={`text-[16px] font-medium ${est_val < 0 ? "text-red-500" : "text-lBLue"}`}>
+                                            <Typography variant="small" className={`text-[16px] font-medium ${est_val < 0 ? "text-red-500" : "text-lGreen"}`}>
                                                 {est_val.toLocaleString("en-US", {style:"currency", currency:"USD"})}
                                             </Typography>
                                         }
@@ -519,37 +510,37 @@ const Orders = () => {
                                             <span className="text-red-500 ml-4">---</span>
                                         }
                                     </td>
-                                    <td className="p-4">
-                                        <Chip
-                                            variant="filled"
-                                            size="sm"
-                                            value={order.status === 0 ? "Open" : "Close"}
-                                            color={order.status === 0 ? "green" : "red"}
-                                        />
-                                    </td>
+
                                     <td className="p-4">
                                         {real_result !== ""  ? (
-                                            <Typography variant="small" className={`text-[16px] font-medium ${order.real_result > 0 ? "text-lBLue" : "text-red-500"}`}>{real_result}</Typography>
+                                            <Typography variant="small" className={`text-[16px] font-medium ${order.real_result > 0 ? "text-lGreen" : "text-red-500"}`}>{real_result}</Typography>
                                         ) : (
                                             <span className="text-red-500 ml-4">---</span>
                                         )}
                                     </td>
                                     <td className="p-4">
                                         <div className="flex items-center gap-2">
-                                            <IconButton variant="filled" color="white" onClick={() => handleEdit(order)}>
-                                                <PencilIcon className="h-5 w-5" />
-                                            </IconButton>
-                                            <IconButton variant="filled" color="white" onClick={() => {
-                                                setSelectedPf(order);
-                                                setDeleteModalOpen(true)
-                                            }}>
-                                                <TrashIcon className="h-5 w-5" />
-                                            </IconButton>
+                                            <Button
+                                                size="sm"
+                                                color="green"
+                                                onClick={() => handleEdit(order)}>Edit</Button>
+                                            <Button
+                                                size="sm"
+                                                color="red"
+                                                onClick={() => {
+                                                    setSelectedPf(order);
+                                                    setDeleteModalOpen(true)
+                                                }}>Delete</Button>
+
                                             {
                                                 order.status === 0 && (
-                                                    <IconButton variant="filled" color="white" onClick={() => handleClose(order)}>
-                                                        <LockClosedIcon className="h-5 w-5" />
-                                                    </IconButton>
+                                                    <Button
+                                                        size="sm"
+                                                        color="blue-gray"
+                                                        onClick={() => {
+                                                            setSelectedPf(order);
+                                                            setCloseModalOpen(true)
+                                                        }}>Close</Button>
                                                 )
                                             }
                                         </div>
@@ -567,7 +558,7 @@ const Orders = () => {
                     }
                 </CardBody>
             </Card>
-            <div className="mt-8 flex justify-center">
+            <div className="mt-8 flex justify-end pr-10">
                 <Pagination
                     page={pageTotal}
                     active={page}
@@ -575,6 +566,26 @@ const Orders = () => {
                         setPage(p);
                     }}
                 />
+                <div className="w-40">
+                    <Select label="" value={pageCount}
+                            onChange={(e) => {
+                                setPage(1);
+                                setPageCount(e);
+                            }}
+                            labelProps={{
+                                // kill the notch lines + white patch behind the label
+                                className:
+                                    "before:!border-0 after:!border-0 " +    // no borders on the pseudo parts
+                                    "before:!bg-transparent after:!bg-transparent"
+                            }}
+                            className="text-white bg-cBlue3 focus:outline-none border-none !border-t-transparent focus:!border-t-transparent data-[open=true]:!border-t-transparent"
+                    >
+                        <Option value="8">8/Page</Option>
+                        <Option value="10">10/Page</Option>
+                        <Option value="12">12/Page</Option>
+                        <Option value="20">30/Page</Option>
+                    </Select>
+                </div>
             </div>
             <Dialog open={editModalOpen} handler={() => setEditModalOpen(false)} size="md">
                 <div className="flex justify-between items-center px-4 pt-4">
@@ -725,44 +736,43 @@ const Orders = () => {
                     </Button>
                 </DialogFooter>
             </Dialog>
-            <Dialog open={deleteModalOpen} handler={() => setDeleteModalOpen(false)}>
-                <DialogHeader>Confirm Deletion</DialogHeader>
-                <DialogBody>
+            <Dialog open={deleteModalOpen} handler={() => setDeleteModalOpen(false)} size="sm"
+                    className="bg-opacity-60 bg-[#2c3040] text-white rounded-xl shadow-xl">
+                <DialogHeader
+                    className="text-sm font-semibold text-gray-200 border-b border-gray-700">Confirm Deletion
+                </DialogHeader>
+                <DialogBody className="text-white">
                     Are you sure you want to delete this portfolio? This action cannot be undone.
                 </DialogBody>
                 <DialogFooter>
-                    <Button variant="text" onClick={() => setDeleteModalOpen(false)}>Cancel</Button>
-                    <Button color="red" onClick={() => handleDelete()}>Delete</Button>
+                    <Button className="text-gray-300 hover:text-white mr-4" onClick={() => setDeleteModalOpen(false)}>Cancel</Button>
+                    <Button className="bg-gradient-to-tr from-[#0023af] via-[#006ec1] to-[#00a0ce]" onClick={() => handleDelete()}>Delete</Button>
                 </DialogFooter>
             </Dialog>
-            <Dialog open={closeModalOpen} handler={() => setCloseModalOpen(false)} size="sm">
-                <div className="flex justify-between items-center px-4 pt-4">
-                    <DialogHeader>{"Are you sure to close this position?"}</DialogHeader>
-                    <IconButton variant="text" onClick={() => setCloseModalOpen(false)}>
-                        <XMarkIcon className="w-6 h-6" />
-                    </IconButton>
-                </div>
+            <Dialog open={closeModalOpen} handler={() => setCloseModalOpen(false)} size="sm"
+                    className="bg-opacity-60 bg-[#2c3040] text-white rounded-xl shadow-xl">
+                <DialogHeader
+                    className="text-[16px] text-gray-300 border-b border-gray-700">Are you sure to close this position?
+                </DialogHeader>
                 <DialogBody className="px-6 pb-4 space-y-4">
-                    <div className="flex items-center px-4 gap-6">
-                        <Typography variant="small" className="text-[16px] font-bold text-black">Profit or Loss:</Typography>
-                        <div className="w-80 ml-1">
+                    <div className="flex items-center px-4 bg-sidebar rounded-md">
+                        <Typography variant="small" className="text-[16px] text-lBLue">Profit</Typography>
+                        <Typography variant="small" className="ml-4 text-[16px]  text-gray-300">Loss:</Typography>
+                        <Typography variant="small" className=" ml-auto text-[16px] text-white">$</Typography>
+                        <div className="w-20 mr-4 bg-sidebar">
                             <Input
-                                label="Enter the profit or loss"
+                                placeholder="profit or loss"
                                 name="real_result"
                                 value={realResult}
-                                icon={<CurrencyDollarIcon className="h-5 w-5" />}
+                                className="border-none bg-sidebar text-gray-300"
                                 onChange={(e) => setRealResult(e.target.value)}
                             />
                         </div>
                     </div>
                 </DialogBody>
                 <DialogFooter>
-                    <Button variant="outlined" color="gray" onClick={() => setCloseModalOpen(false)}>
-                        Cancel
-                    </Button>
-                    <Button color="blue" onClick={handleCloseSubmit} className="ml-2">
-                        Yes, Close it
-                    </Button>
+                    <Button className="text-gray-300 hover:text-white mr-4" onClick={() => setCloseModalOpen(false)}>Cancel</Button>
+                    <Button className="bg-gradient-to-tr from-[#0023af] via-[#006ec1] to-[#00a0ce]" onClick={handleCloseSubmit}>Yes, Close it</Button>
                 </DialogFooter>
             </Dialog>
         </div>

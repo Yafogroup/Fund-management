@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+    label.select-none.pointer-events-none {
+        display: none !important;
+    }
+}

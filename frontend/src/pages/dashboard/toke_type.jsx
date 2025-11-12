@@ -147,7 +147,7 @@ export function TokenType() {
                     <div className="flex items-center gap-5">
                         <div className="md:mr-4 md:w-56 bg-cBlue3 rounded-lg">
                             <Input
-                                label="Search..."
+                                placeholder="Search..."
                                 className="border-none "
                                 icon={<MagnifyingGlassIcon className="h-5 w-5"/>}
                                 value={search}

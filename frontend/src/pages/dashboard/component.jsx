@@ -232,6 +232,11 @@ export default function Dashboard() {
                 strokeDashArray: 5,
                 xaxis: {
                     lines: {
+                        show: false,
+                    },
+                },
+                yaxis: {
+                    lines: {
                         show: true,
                     },
                 },
