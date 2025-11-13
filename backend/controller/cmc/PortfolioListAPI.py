@@ -83,8 +83,8 @@ class PortfolioListAPI(MethodResource):
 
         temp = [{
             "uid": portfolio[0],
-            "date": portfolio[1].strftime("%m/%d/%Y"),
-            "closed_date": '' if portfolio[15] == None else portfolio[15].strftime("%m/%d/%Y"),
+            "date": portfolio[1].strftime("%m.%d.%Y"),
+            "closed_date": '' if portfolio[15] == None else portfolio[15].strftime("%m.%d.%Y"),
             "token_id": portfolio[2],
             "position_type": portfolio[3],
             "token_type": portfolio[4],

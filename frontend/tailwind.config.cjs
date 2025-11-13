@@ -22,8 +22,7 @@ export default withMT({
       },
     },
     fontFamily: {
-      sans: ['Poppins', ...defaultTheme.fontFamily.sans],
-      helvetica: ['Helvetica', 'Arial', 'sans-serif'], // optional custom key
+      sans: ['Inter', 'sans-serif'], // optional custom key
     },
   },
   plugins: [

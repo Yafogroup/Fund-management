@@ -400,7 +400,7 @@ const Orders = () => {
                         </div>
                     </div>
                     <table className="w-full min-w-max table-auto text-left">
-                        <thead>
+                        <thead className="border-b-2 border-gray-500">
                         <tr>
                             {headers.map((el, index) => (
                                 <th
@@ -413,7 +413,7 @@ const Orders = () => {
                                 >
                                     <Typography
                                         variant="small"
-                                        className="text-[16px] font-medium text-gray-600 flex"
+                                        className="text-[16px] font-medium text-gray-500 flex"
                                     >
                                         {el} {(index === 1 || index === 6 || index === 9 || index === 11) ? <ArrowsUpDownIcon className="h-5 w-5" /> : ""}
                                     </Typography>
