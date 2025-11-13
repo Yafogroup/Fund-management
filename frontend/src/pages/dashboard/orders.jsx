@@ -587,38 +587,50 @@ const Orders = () => {
                     </Select>
                 </div>
             </div>
-            <Dialog open={editModalOpen} handler={() => setEditModalOpen(false)} size="md">
-                <div className="flex justify-between items-center px-4 pt-4">
-                    <DialogHeader>{selectedPf ? "Edit Portfolio" : "Create Portfolio"}</DialogHeader>
-                    <IconButton variant="text" onClick={() => setEditModalOpen(false)}>
-                        <XMarkIcon className="w-6 h-6" />
-                    </IconButton>
+            <Dialog open={editModalOpen} handler={() => setEditModalOpen(false)} size="xs"
+                    className="bg-opacity-80 bg-[#4b5461] text-white rounded-xl shadow-xl">
+                <div className="flex justify-between items-center px-4 pt-4 border-b-2">
+                    <DialogHeader className="text-gray-300 font-normal">{selectedPf ? "Edit Portfolio" : "Create Portfolio"}</DialogHeader>
                 </div>
                 <DialogBody className="px-6 pb-4 space-y-4">
-                    <div className="flex items-center px-4 pt-4 gap-6">
-                        <div className="w-80" hidden={form.position_type === "0"}>
+                    <div className="flex pt-4 gap-3">
+                        <div className="w-[40%] text-end pr-10">
+                            <Typography
+                                variant="small"
+                                className="text-[16px] text-gray-400"
+                            >
+                                USD Balance
+                            </Typography>
+                            <Typography
+                                className="text-[22px] font-medium text-white"
+                            >
+                                {(form.entry_price * form.quantity).toLocaleString("en-US", {style:"currency", currency:"USD"})}
+                            </Typography>
+                        </div>
+                        <div className="w-60" hidden={form.position_type === "0"}>
                             <Tabs value={String(form.trade_type)}>
-                                <TabsHeader>
-                                    <Tab value="0" onClick={() => setForm(prev => ({...prev, ['trade_type']: 0}))}>
+                                <TabsHeader className="bg-cBlue3"
+                                            indicatorProps={{
+                                                className: "bg-lGreen shadow-none",
+                                            }}
+                                >
+                                    <Tab value="0" onClick={() => setForm(prev => ({...prev, ['trade_type']: 0}))} className="text-gray-300">
                                         Buy
                                     </Tab>
-                                    <Tab value="1" onClick={() => setForm(prev => ({...prev, ['trade_type']: 1}))}>
+                                    <Tab value="1" onClick={() => setForm(prev => ({...prev, ['trade_type']: 1}))} className="text-gray-300">
                                         Sell
                                     </Tab>
                                 </TabsHeader>
                             </Tabs>
                         </div>
-                        <Typography
-                            variant="small"
-                            className="text-[16px] font-bold text-red"
-                        >
-                            USD Balance: {(form.entry_price * form.quantity).toLocaleString("en-US", {style:"currency", currency:"USD"})}
-                        </Typography>
+
                     </div>
-                    <div className="flex items-center px-4 pt-4 gap-3">
-                        <Typography variant="small" className="text-[15px] font-bold text-black">Currency:</Typography>
-                        <div className="w-40 ml-8 relative">
-                            <Select label="Select Currency" className="text-white"
+                    <div className="flex items-center gap-3">
+                        <div className="w-[40%] text-end pr-10">
+                            <Typography className="text-[18px] text-gray-400">Currency</Typography>
+                        </div>
+                        <div className="w-60 relative">
+                            <Select label="Select Currency" className="text-transparent bg-cBlue3 focus:outline-none border-none !border-t-transparent focus:!border-t-transparent data-[open=true]:!border-t-transparent"
                                     value={form.token_id}
                                     onChange={(value) =>
                                         setForm(prev => ({...prev,
@@ -653,12 +665,43 @@ const Orders = () => {
                                         className={`cursor-pointer border-2 border-white mr-2`}
                                     />
                                 }
-                                <Typography variant="small" className="text-[13px] font-medium text-black mt-0.5">{form.token_name.length > 8 ? form.token_symbol : form.token_name}</Typography>
+                                <Typography variant="small" className="text-[15px] font-medium text-white ">{form.token_name.length > 8 ? form.token_symbol : form.token_name}</Typography>
                             </div>
                         </div>
-                        <Typography variant="small" className="text-[15px] font-bold text-black ml-24">Token Type:</Typography>
-                        <div className="w-40 relative">
-                            <Select label="Select Token Type" className="text-white"
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <div className="w-[40%] text-end pr-10">
+                            <Typography className="text-[18px] text-gray-400">Position Type</Typography>
+                        </div>
+                        <div className="w-60 ml-1">
+                            <Select label="Select Position type" className="text-white bg-cBlue3 focus:outline-none border-none !border-t-transparent focus:!border-t-transparent data-[open=true]:!border-t-transparent"
+                                    value={form.position_type}
+                                    onChange={(value) => setForm(prev => ({...prev, ['position_type']: value}))}>
+                                <Option value="0">Spot</Option>
+                                <Option value="1">Margin</Option>
+                            </Select>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <div className="w-[40%] text-end pr-10">
+                            <Typography className="text-[18px] text-gray-400">Entry Price</Typography>
+                        </div>
+                        <div className="w-60 bg-cBlue3 rounded-md">
+                            <Input
+                                label="Entry Price"
+                                name="entry_price"
+                                value={form.entry_price}
+                                onChange={handleFormChange}
+                                className="text-white focus:outline-none border-none !border-t-transparent focus:!border-t-transparent data-[open=true]:!border-t-transparent"
+                            />
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <div className="w-[40%] text-end pr-10">
+                            <Typography className="text-[18px] text-gray-400">Token Type</Typography>
+                        </div>
+                        <div className="w-60 relative">
+                            <Select label="Select Token Type" className="text-transparent bg-cBlue3 focus:outline-none border-none !border-t-transparent focus:!border-t-transparent data-[open=true]:!border-t-transparent"
                                     value={form.token_type}
                                     onChange={(value) =>
                                         setForm(prev => ({...prev,
@@ -672,71 +715,54 @@ const Orders = () => {
                                     </Option>
                                 ))}
                             </Select>
-                            <Typography variant="small" className="text-[13px] font-medium text-black absolute top-3 left-4">{form.token_type_name}</Typography>
+                            <Typography variant="small" className="text-[15px] text-gray-300 absolute top-2 left-3">{form.token_type_name}</Typography>
                         </div>
                     </div>
-                    <div className="flex items-center px-4 pt-2 gap-2">
-                        <Typography className="text-[15px] font-bold text-black">Position Type:</Typography>
-                        <div className="w-40 ml-1">
-                            <Select label="Select Position type" className="text-black"
-                                    value={form.position_type}
-                                    onChange={(value) => setForm(prev => ({...prev, ['position_type']: value}))}>
-                                <Option value="0">Spot</Option>
-                                <Option value="1">Margin</Option>
-                            </Select>
-                        </div>
-                        {
-                            form.position_type === "1" &&
-                            <div className="flex items-center px-4 gap-6 ml-20">
-                                <Typography variant="small" className="text-[16px] font-bold text-black">Leverage:</Typography>
-                                <div className="w-40 ml-1">
-                                    <Input
-                                        label="Leverage"
-                                        name="leverage"
-                                        value={form.leverage}
-                                        onChange={handleFormChange}
-                                    />
-                                </div>
+
+                    {
+                        form.position_type === "1" &&
+                        <div className="flex items-center gap-2">
+                            <div className="w-[40%] text-end pr-10">
+                                <Typography className="text-[18px] text-gray-400">Leverage</Typography>
                             </div>
-                        }
-                    </div>
-                    <div className="flex items-center px-4 pt-2">
-                        <div className="flex items-center gap-6">
-                            <Typography variant="small" className="text-[16px] font-bold text-black">Entry Price:</Typography>
-                            <div className="w-40">
+                            <div className="w-60 ml-1 bg-cBlue3 rounded-md">
                                 <Input
-                                    label="Entry Price"
-                                    name="entry_price"
-                                    value={form.entry_price}
-                                    icon={<CurrencyDollarIcon className="h-5 w-5" />}
+                                    label="Leverage"
+                                    name="leverage"
+                                    value={form.leverage}
                                     onChange={handleFormChange}
+                                    className="text-white focus:outline-none border-none !border-t-transparent focus:!border-t-transparent data-[open=true]:!border-t-transparent"
                                 />
                             </div>
                         </div>
-                        <div className="flex items-center gap-6 ml-28">
-                            <Typography variant="small" className="text-[16px] font-bold text-black">Quantity:</Typography>
-                            <div className="w-40">
-                                <Input
-                                    label={form.token_symbol}
-                                    name="quantity"
-                                    value={form.quantity}
-                                    onChange={handleFormChange}
-                                />
-                            </div>
+                    }
+
+                    <div className="flex items-center gap-3">
+                        <div className="w-[40%] text-end pr-10">
+                            <Typography className="text-[18px] text-gray-400">Quantity</Typography>
+                        </div>
+                        <div className="w-60 bg-cBlue3 rounded-md">
+                            <Input
+                                label={form.token_symbol}
+                                name="quantity"
+                                value={form.quantity}
+                                onChange={handleFormChange}
+                                className="text-white focus:outline-none border-none !border-t-transparent focus:!border-t-transparent data-[open=true]:!border-t-transparent"
+                            />
                         </div>
                     </div>
 
                 </DialogBody>
                 <DialogFooter>
-                    <Button variant="outlined" color="gray" onClick={() => setEditModalOpen(false)}>
+                    <Button variant="text" color="white" onClick={() => setEditModalOpen(false)}>
                         Cancel
                     </Button>
-                    <Button color="blue" onClick={handleSubmit} className="ml-2">
+                    <Button color="blue" onClick={handleSubmit} className="ml-2 bg-gradient-to-tr from-[#0023af] via-[#006ec1] to-[#00a0ce]">
                         {selectedPf ? "Update" : "Create"}
                     </Button>
                 </DialogFooter>
             </Dialog>
-            <Dialog open={deleteModalOpen} handler={() => setDeleteModalOpen(false)} size="sm"
+            <Dialog open={deleteModalOpen} handler={() => setDeleteModalOpen(false)} size="xs"
                     className="bg-opacity-60 bg-[#2c3040] text-white rounded-xl shadow-xl">
                 <DialogHeader
                     className="text-sm font-semibold text-gray-200 border-b border-gray-700">Confirm Deletion
@@ -749,7 +775,7 @@ const Orders = () => {
                     <Button className="bg-gradient-to-tr from-[#0023af] via-[#006ec1] to-[#00a0ce]" onClick={() => handleDelete()}>Delete</Button>
                 </DialogFooter>
             </Dialog>
-            <Dialog open={closeModalOpen} handler={() => setCloseModalOpen(false)} size="sm"
+            <Dialog open={closeModalOpen} handler={() => setCloseModalOpen(false)} size="xs"
                     className="bg-opacity-60 bg-[#2c3040] text-white rounded-xl shadow-xl">
                 <DialogHeader
                     className="text-[16px] text-gray-300 border-b border-gray-700">Are you sure to close this position?
