@@ -439,7 +439,7 @@ const Orders = () => {
                                     <td className="p-4 text-gray-300">{order.date}</td>
                                     <td className="p-4 text-gray-300">{order.closed_date === '' ? <span className="text-red-500 ml-4">---</span> : order.closed_date}</td>
                                     <td className="p-4">
-                                        <Typography variant="small" className="text-[16px] text-gray-300 mb-1">{order.token_type_name}</Typography>
+                                        <Typography className="font-sans text-[16px] text-gray-300 mb-1">{order.token_type_name}</Typography>
                                     </td>
                                     <td className="p-4 flex items-center">
                                         <Avatar

@@ -22,7 +22,7 @@ export default withMT({
       },
     },
     fontFamily: {
-      sans: ['Inter', 'sans-serif'], // optional custom key
+      sans: ['Segoe UI', 'Arial', 'sans-serif'],
     },
   },
   plugins: [
