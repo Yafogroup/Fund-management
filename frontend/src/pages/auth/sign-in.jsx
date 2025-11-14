@@ -72,14 +72,14 @@ export function SignIn() {
             />
             <div className="flex-1">
               <div className="text-center mt-14">
-                <Typography className="text-gray-600 text-[25px]">Welcome to YAFO</Typography>
+                <Typography className="text-gray-300 text-[25px]">Welcome to YAFO</Typography>
               </div>
               <form className="mt-8 mx-auto max-w-screen-lg lg:w-3/4">
                 <div className="mb-1 flex flex-col gap-6">
                   <div className="bg-cBlue3 rounded-lg px-2">
                     <Input
-                        label="Email"
-                        className="border-none "
+                        placeholder="Email"
+                        className="border-none text-gray-300 text-[16px]"
                         size="lg"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
@@ -87,10 +87,10 @@ export function SignIn() {
                   </div>
                   <div className="bg-cBlue3 rounded-lg px-2">
                     <Input
-                        label="Password"
+                        placeholder="Password"
                         type="password"
                         size="lg"
-                        className="border-none "
+                        className="border-none text-gray-300 text-[16px]"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         onKeyDown={(e) => {

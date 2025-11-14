@@ -1,5 +1,5 @@
 import {
-    Accordion, AccordionBody, AccordionHeader,
+    Accordion, AccordionBody, AccordionHeader, Alert,
     Button,
     Card,
     CardBody, Carousel, Checkbox, Dialog, DialogBody, DialogFooter, DialogHeader, IconButton,
@@ -75,6 +75,8 @@ export default function Dashboard() {
     const [evList, setEvList] = useState([]);
     const [open, setOpen] = React.useState(0);
     const handleOpen = (value) => setOpen(open === value ? -1 : value);
+
+    const [eventShow, setEventShow] = useState(null);
 
     const showSetting = localStorage.getItem('show_setting');
     let va = true;
@@ -315,6 +317,11 @@ export default function Dashboard() {
                 strokeDashArray: 5,
                 xaxis: {
                     lines: {
+                        show: false,
+                    },
+                },
+                yaxis: {
+                    lines: {
                         show: true,
                     },
                 },
@@ -348,6 +355,9 @@ export default function Dashboard() {
         setTodayInfo(result.data.data.today_info);
         setEventList(result.data.data.event_list);
         setEvList(result.data.data.upcoming_event);
+        if (result.data.data.upcoming_event.length > 0) {
+            setEventShow(result.data.data.upcoming_event[result.data.data.upcoming_event.length - 1]);
+        }
 
         makePieData(result.data.data.pie_chart_info);
         setPieTitle(-1, "All");
@@ -980,7 +990,7 @@ export default function Dashboard() {
                             </div>
                         </CardBody>
                     </Card>
-                    <Card className="bg-sidebar backdrop-blur-sm shadow-lg rounded-xl scrollbar">
+                    <Card className="bg-sidebar backdrop-blur-sm shadow-lg rounded-xl scrollbar relative">
                         <CardBody>
                             <div className="flex items-center justify-between mb-8">
                                 <div>
@@ -1002,187 +1012,135 @@ export default function Dashboard() {
                             {yearData.map((item, index) => (
                                 <div
                                     key={index}
-                                    className="grid grid-cols-3 items-center text-[17px] py-1 text-white"
+                                    className="grid grid-cols-3 items-center text-[17px] py-1 text-gray-300"
                                 >
                                     <span>{item.month}</span>
                                     <div className="flex items-center gap-1">
                                         <span>{item.percent}%</span>
-                                        {item.is_positive ? (
-                                            <CheckCircleIcon className="w-4 h-4 text-green-500" />
-                                        ) : (
-                                            <ExclamationCircleIcon className="w-4 h-4 text-red-500" />
-                                        )}
+                                        {/*{item.is_positive ? (*/}
+                                        {/*    <CheckCircleIcon className="w-4 h-4 text-green-500" />*/}
+                                        {/*) : (*/}
+                                        {/*    <ExclamationCircleIcon className="w-4 h-4 text-red-500" />*/}
+                                        {/*)}*/}
                                     </div>
                                     <span className="text-right">{item.profit.toLocaleString("en-US", {style:"currency", currency:"USD"})}</span>
                                 </div>
                             ))}
                         </CardBody>
-                    </Card>
-                    <Dialog open={viewModalOpen} handler={() => setViewModalOpen(false)} size="lg">
-                        <div className="flex justify-between items-center px-4 pt-4">
-                            <DialogHeader>{selectedEvent?.title}</DialogHeader>
-                            <IconButton variant="text" onClick={() => setViewModalOpen(false)}>
-                                <XMarkIcon className="w-6 h-6" />
-                            </IconButton>
-                        </div>
-                        <DialogBody className="px-6 pb-4 space-y-4">
-                            <div className="max-h-[80vh] overflow-y-auto px-4">
-                                {selectedEvent?.image && (
-                                    <img
-                                        src={selectedEvent.image}
-                                        alt="Memo"
-                                        className="max-w-full rounded-lg"
-                                    />
-                                )}
-                                <p className="text-gray-800 whitespace-pre-wrap">
-                                    {selectedEvent?.content}
-                                </p>
+                        {
+                            eventShow !== null &&
+                            <div className="absolute right-0 bottom-0 w-2/3 h-[150px] bg-[#1169f3] rounded-xl px-4 py-2">
+                                <div className="flex justify-between">
+                                    <span className="text-gray-400 text-[16px] mt-2">{eventShow.happen_time}</span>
+                                    <IconButton variant="text" onClick={() => setEventShow(null)}>
+                                        <div className="w-[32px] h-[32px] rounded-full text-white p-1">
+                                            <XMarkIcon className=""/>
+                                        </div>
+                                    </IconButton>
+                                </div>
+                                <Typography
+                                    color="white"
+                                    className="mb-1 text-[20px]"
+                                >
+                                    {
+                                        eventShow.content.length > 400
+                                            ? eventShow.content.slice(0, 120) + "..."
+                                            : eventShow.content
+                                    }
+                                </Typography>
                             </div>
-                        </DialogBody>
-                    </Dialog>
+                        }
+                    </Card>
+                    {/*<Dialog open={viewModalOpen} handler={() => setViewModalOpen(false)} size="lg">*/}
+                    {/*    <div className="flex justify-between items-center px-4 pt-4">*/}
+                    {/*        <DialogHeader>{selectedEvent?.title}</DialogHeader>*/}
+                    {/*        <IconButton variant="text" onClick={() => setViewModalOpen(false)}>*/}
+                    {/*            <XMarkIcon className="w-6 h-6" />*/}
+                    {/*        </IconButton>*/}
+                    {/*    </div>*/}
+                    {/*    <DialogBody className="px-6 pb-4 space-y-4">*/}
+                    {/*        <div className="max-h-[80vh] overflow-y-auto px-4">*/}
+                    {/*            {selectedEvent?.image && (*/}
+                    {/*                <img*/}
+                    {/*                    src={selectedEvent.image}*/}
+                    {/*                    alt="Memo"*/}
+                    {/*                    className="max-w-full rounded-lg"*/}
+                    {/*                />*/}
+                    {/*            )}*/}
+                    {/*            <p className="text-gray-800 whitespace-pre-wrap">*/}
+                    {/*                {selectedEvent?.content}*/}
+                    {/*            </p>*/}
+                    {/*        </div>*/}
+                    {/*    </DialogBody>*/}
+                    {/*</Dialog>*/}
                 </div>
             </div>
-            {/*<Carousel className="rounded-xl mt-4"*/}
-            {/*      autoplay={true}*/}
-            {/*      loop={true}*/}
-            {/*      prevArrow={({ handlePrev }) => (*/}
-            {/*          <IconButton*/}
-            {/*              variant="text"*/}
-            {/*              color="light-blue"*/}
-            {/*              size="lg"*/}
-            {/*              onClick={handlePrev}*/}
-            {/*              className="!absolute top-2/4 left-4 -translate-y-2/4"*/}
-            {/*          >*/}
-            {/*              <svg*/}
-            {/*                  xmlns="http://www.w3.org/2000/svg"*/}
-            {/*                  fill="none"*/}
-            {/*                  viewBox="0 0 24 24"*/}
-            {/*                  strokeWidth={2}*/}
-            {/*                  stroke="currentColor"*/}
-            {/*                  className="h-6 w-6"*/}
-            {/*              >*/}
-            {/*                  <path*/}
-            {/*                      strokeLinecap="round"*/}
-            {/*                      strokeLinejoin="round"*/}
-            {/*                      d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"*/}
-            {/*                  />*/}
-            {/*              </svg>*/}
-            {/*          </IconButton>*/}
-            {/*      )}*/}
-            {/*      nextArrow={({ handleNext }) => (*/}
-            {/*          <IconButton*/}
-            {/*              variant="text"*/}
-            {/*              color="light-blue"*/}
-            {/*              size="lg"*/}
-            {/*              onClick={handleNext}*/}
-            {/*              className="!absolute top-2/4 !right-4 -translate-y-2/4"*/}
-            {/*          >*/}
-            {/*              <svg*/}
-            {/*                  xmlns="http://www.w3.org/2000/svg"*/}
-            {/*                  fill="none"*/}
-            {/*                  viewBox="0 0 24 24"*/}
-            {/*                  strokeWidth={2}*/}
-            {/*                  stroke="currentColor"*/}
-            {/*                  className="h-6 w-6"*/}
-            {/*              >*/}
-            {/*                  <path*/}
-            {/*                      strokeLinecap="round"*/}
-            {/*                      strokeLinejoin="round"*/}
-            {/*                      d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"*/}
-            {/*                  />*/}
-            {/*              </svg>*/}
-            {/*          </IconButton>*/}
-            {/*      )}*/}
-            {/*      navigation={({ setActiveIndex, activeIndex, length }) => (*/}
-            {/*          <div className="absolute bottom-4 left-2/4 z-50 flex -translate-x-2/4 gap-2">*/}
-            {/*              {new Array(length).fill("").map((_, i) => (*/}
-            {/*                  <span*/}
-            {/*                      key={i}*/}
-            {/*                      className={`block h-1 cursor-pointer rounded-2xl transition-all content-[''] ${*/}
-            {/*                          activeIndex === i ? "w-8 bg-black" : "w-4 bg-black/50"*/}
-            {/*                      }`}*/}
-            {/*                      onClick={() => setActiveIndex(i)}*/}
-            {/*                  />*/}
-            {/*              ))}*/}
-            {/*          </div>*/}
-            {/*      )}*/}
-            {/*>*/}
+
+            {/*<Dialog open={eventModalOpen} handler={() => setEventModalOpen(false)}>*/}
+            {/*    <DialogHeader>Upcoming Events</DialogHeader>*/}
+            {/*    <DialogBody className="max-h-[70vh] overflow-y-auto">*/}
             {/*    {*/}
-            {/*        eventList.map((event, index) => (*/}
-            {/*            <ItemEvent*/}
-            {/*                event={event}*/}
-            {/*                key={index}*/}
-            {/*                onClick={() => handleView(event)}*/}
-            {/*                noButton={true}*/}
-            {/*            />*/}
+            {/*        evList.map((event, index) => (*/}
+            {/*            <Accordion open={open === index} className="mb-2 rounded-lg border border-blue-gray-100 px-4">*/}
+            {/*                <AccordionHeader*/}
+            {/*                    onClick={() => handleOpen(index)}*/}
+            {/*                    className={`border-b-0 transition-colors ${*/}
+            {/*                        open === index ? "text-blue-500 hover:!text-blue-700" : ""*/}
+            {/*                    }`}*/}
+            {/*                >*/}
+            {/*                    {event.title}*/}
+            {/*                </AccordionHeader>*/}
+            {/*                <AccordionBody className="pt-0 text-base font-normal">*/}
+            {/*                    <div className="max-h-[80vh] overflow-y-auto px-4">*/}
+            {/*                        {event?.image && (*/}
+            {/*                            <img*/}
+            {/*                                src={event.image}*/}
+            {/*                                alt="Memo"*/}
+            {/*                                className="max-w-full rounded-lg"*/}
+            {/*                            />*/}
+            {/*                        )}*/}
+            {/*                        <p className="text-gray-800 whitespace-pre-wrap">*/}
+            {/*                            {event?.content}*/}
+            {/*                        </p>*/}
+            {/*                    </div>*/}
+            {/*                </AccordionBody>*/}
+            {/*            </Accordion>*/}
             {/*        ))*/}
             {/*    }*/}
-            {/*</Carousel>*/}
-            <Dialog open={eventModalOpen} handler={() => setEventModalOpen(false)}>
-                <DialogHeader>Upcoming Events</DialogHeader>
-                <DialogBody className="max-h-[70vh] overflow-y-auto">
-                {
-                    evList.map((event, index) => (
-                        <Accordion open={open === index} className="mb-2 rounded-lg border border-blue-gray-100 px-4">
-                            <AccordionHeader
-                                onClick={() => handleOpen(index)}
-                                className={`border-b-0 transition-colors ${
-                                    open === index ? "text-blue-500 hover:!text-blue-700" : ""
-                                }`}
-                            >
-                                {event.title}
-                            </AccordionHeader>
-                            <AccordionBody className="pt-0 text-base font-normal">
-                                <div className="max-h-[80vh] overflow-y-auto px-4">
-                                    {event?.image && (
-                                        <img
-                                            src={event.image}
-                                            alt="Memo"
-                                            className="max-w-full rounded-lg"
-                                        />
-                                    )}
-                                    <p className="text-gray-800 whitespace-pre-wrap">
-                                        {event?.content}
-                                    </p>
-                                </div>
-                            </AccordionBody>
-                        </Accordion>
-                    ))
-                }
-                    {
-                        evList.length === 0 &&
-                        <Typography
-                            variant="h4"
-                            color="gray"
-                            className="flex items-center justify-start font-medium"
-                        >
-                            There are no events yet within 3 days.
-                        </Typography>
-                    }
-                </DialogBody>
-                <DialogFooter>
-                    <Checkbox
-                        label={
-                            <Typography
-                                variant="small"
-                                color="gray"
-                                className="flex items-center justify-start font-medium"
-                            >
-                                Don't show this again today.
-                            </Typography>
-                        }
-                        value={showAgain}
-                        onChange={(e) => setShowAgain(e.currentTarget.checked)}
-                        containerProps={{ className: "-ml-2.5" }}
-                    />
-                    <Button className="ml-auto" variant="filled" onClick={() => {
-                        if (showAgain) {
-                            localStorage.setItem("show_setting", "1#" + format(new Date(), 'yyyy-MM-dd'))
-                        }
-                        setEventModalOpen(false)
-                    }}>Close</Button>
-                </DialogFooter>
-            </Dialog>
+            {/*        {*/}
+            {/*            evList.length === 0 &&*/}
+            {/*            <Typography*/}
+            {/*                variant="h4"*/}
+            {/*                color="gray"*/}
+            {/*                className="flex items-center justify-start font-medium"*/}
+            {/*            >*/}
+            {/*                There are no events yet within 3 days.*/}
+            {/*            </Typography>*/}
+            {/*        }*/}
+            {/*    </DialogBody>*/}
+            {/*    <DialogFooter>*/}
+            {/*        <Checkbox*/}
+            {/*            label={*/}
+            {/*                <Typography*/}
+            {/*                    variant="small"*/}
+            {/*                    color="gray"*/}
+            {/*                    className="flex items-center justify-start font-medium"*/}
+            {/*                >*/}
+            {/*                    Don't show this again today.*/}
+            {/*                </Typography>*/}
+            {/*            }*/}
+            {/*            value={showAgain}*/}
+            {/*            onChange={(e) => setShowAgain(e.currentTarget.checked)}*/}
+            {/*            containerProps={{ className: "-ml-2.5" }}*/}
+            {/*        />*/}
+            {/*        <Button className="ml-auto" variant="filled" onClick={() => {*/}
+            {/*            if (showAgain) {*/}
+            {/*                localStorage.setItem("show_setting", "1#" + format(new Date(), 'yyyy-MM-dd'))*/}
+            {/*            }*/}
+            {/*            setEventModalOpen(false)*/}
+            {/*        }}>Close</Button>*/}
+            {/*    </DialogFooter>*/}
+            {/*</Dialog>*/}
         </div>
     );
 }

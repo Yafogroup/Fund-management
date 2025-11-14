@@ -8,9 +8,9 @@ function CompactPrice({ price }) {
     const remaining = decimal.slice(leadingZeros.length);
 
     return (
-        <span className="text-[18px] font-medium text-blue-gray-600"> ${integer}.0
-            <span className="text-xs align-sub text-blue-gray-600">{leadingZeros.length}</span>
-            <span className="text-[18px] font-medium text-blue-gray-600">
+        <span className="text-[18px]  text-gray-300"> ${integer}.0
+            <span className="text-xs align-sub text-gray-300">{leadingZeros.length}</span>
+            <span className="text-[18px]  text-gray-300">
                 {remaining}</span>
     </span>
     );

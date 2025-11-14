@@ -216,7 +216,7 @@ export function Memo() {
             <div className="flex flex-col md:flex-row md:items-end gap-4 mb-6 ml-6">
                 <div className="md:mr-4 md:w-56 bg-cBlue3 rounded-lg">
                     <Input
-                        label="Search..."
+                        placeholder="Search..."
                         className="border-none "
                         icon={<MagnifyingGlassIcon className="h-5 w-5"/>}
                         value={search}
@@ -373,11 +373,11 @@ export function Memo() {
                         />
                     </div>
                     <div className="flex flex-row">
-                        <div className="w-72">
+                        <div className="w-50 bg-cBlue3 rounded-md ">
                             <DatePicker
                                 selected={selectedDate}
                                 onChange={(date) => setSelectedDate(date)}
-                                className="w-full px-3 py-2 bg-cBlue3 rounded-md focus:outline-none text-sm text-gray-300"
+                                className="w-full px-3 py-2 bg-cBlue3 rounded-md focus:outline-none text-sm text-gray-300 border-none"
                                 showTimeSelect
                                 timeFormat="HH:mm"
                                 timeIntervals={15}

@@ -15,12 +15,12 @@ const ItemEvent = ({ event, onView, onEdit, onDelete, noButton, onClick }) => {
         <Card
             key={event.id}
             onClick={onClick}
-            className={`h-[240px] relative border-gray-500 bg-transparent border-2`}
+            className={`h-[250px] relative border-gray-500 bg-transparent border-2`}
         >
             <CardBody className="flex flex-col justify-center w-full">
                 <div className="flex flex-row w-full">
                     <Typography variant="h5" className="text-white">
-                        {event.title}
+                        {event.title.length > 50 ? event.title.slice(0, 50 ) + "..." : event.title}
                     </Typography>
                     {
                         !noButton && (
@@ -47,7 +47,7 @@ const ItemEvent = ({ event, onView, onEdit, onDelete, noButton, onClick }) => {
                         )
                     }
                 </div>
-                <Typography className="text-sm text-gray-700">
+                <Typography className="text-sm text-gray-400">
                     {event.happen_time}
                 </Typography>
                 <div className="flex flex-row w-full mt-4">

@@ -53,51 +53,13 @@ class PriceChangeTracker:
         ).distinct().all()
 
         symbols = [asset.token_symbol for asset in assets]
-        latest_prices = self.get_latest_price(symbols)
-
-        new_assets = [item for item in assets if item not in self.assets]
+        ids = [asset.token_id for asset in assets]
 
         today = datetime.now()
         start_date = datetime(2024, 12, 31)
         end_date = datetime(today.year, today.month, today.day)
-
-        for token in new_assets:
-            token_id = token['token_id']
-            token_symbol = token['token_symbol']
-
-            # check if the history already exists in the database
-            db_history = db.session.query(PriceHistory).filter_by(token_id=token_id).first()
-
-            if db_history:
-                str_data = db_history.data
-                csv_buffer = StringIO(str_data)
-                historical_data = pd.read_csv(csv_buffer)
-                
-                if not end_date.strftime('%Y-%m-%d') in historical_data['date'].values:
-
-                    historical_data.loc[len(historical_data)] = {
-                        'date': end_date.strftime('%Y-%m-%d'),
-                        'price': latest_prices[token_symbol]['price']
-                    }
-
-                self.historical_prices[token_symbol] = {
-                    'id': token_id,
-                    'data': historical_data
-                }
-            else:
-                historical_data = self.cmc.get_historical_prices(token_id, start_date, end_date)
-                self.historical_prices[token_symbol] = {
-                    'id': token_id,
-                    'data': historical_data
-                }
-                # save to database
-                history = PriceHistory(
-                    token_id=token_id,
-                    data=historical_data.to_csv(index=False)
-                )
-                db.session.add(history)
-                db.session.commit()
-                time.sleep(2)  # To avoid hitting API rate limits
+        
+        self.historical_prices = self.cmc.get_historical_prices(symbols, ids, start_date, end_date)
 
         self.assets = assets
         self.initiated = True
@@ -128,7 +90,7 @@ class PriceChangeTracker:
                         'percent_change_24h': data['percent_change_24h'],
                         'percent_change_7d': data['percent_change_7d'],
                         'percent_change_30d': data['percent_change_30d'],
-                        'timestamp': timestamp.strftime("%m/%d/%Y, %H:%M:%S"),
+                        'timestamp': timestamp.strftime("%Y-%m-%d, %H:%M:%S"),
                         'logo': f"https://s2.coinmarketcap.com/static/img/coins/64x64/{data['id']}.png"
                     })
                 
@@ -143,7 +105,7 @@ class PriceChangeTracker:
                         'percent_change_24h': data['percent_change_24h'],
                         'percent_change_7d': data['percent_change_7d'],
                         'percent_change_30d': data['percent_change_30d'],
-                        'timestamp': timestamp.strftime("%m/%d/%Y, %H:%M:%S"),
+                        'timestamp': timestamp.strftime("%Y-%m-%d, %H:%M:%S"),
                         'logo': f"https://s2.coinmarketcap.com/static/img/coins/64x64/{data['id']}.png"
                     })
         else:
@@ -157,7 +119,7 @@ class PriceChangeTracker:
                         'percent_change_24h': data['percent_change_24h'],
                         'percent_change_7d': data['percent_change_7d'],
                         'percent_change_30d': data['percent_change_30d'],
-                        'timestamp': timestamp.strftime("%m/%d/%Y, %H:%M:%S"),
+                        'timestamp': timestamp.strftime("%Y-%m-%d, %H:%M:%S"),
                         'logo': f"https://s2.coinmarketcap.com/static/img/coins/64x64/{data['id']}.png"
                     })
         self.last_prices = current_prices

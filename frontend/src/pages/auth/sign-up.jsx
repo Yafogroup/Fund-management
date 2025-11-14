@@ -78,8 +78,8 @@ export function SignUp() {
                                 <div className="mb-1 flex flex-col gap-6">
                                     <div className="bg-cBlue3 rounded-lg px-2">
                                         <Input
-                                            label="Email"
-                                            className="border-none "
+                                            placeholder="Email"
+                                            className="border-none text-gray-300 text-[16px]"
                                             size="lg"
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
@@ -87,20 +87,20 @@ export function SignUp() {
                                     </div>
                                     <div className="bg-cBlue3 rounded-lg px-2">
                                         <Input
-                                            label="Password"
+                                            placeholder="Password"
                                             type="password"
                                             size="lg"
-                                            className="border-none "
+                                            className="border-none text-gray-300 text-[16px]"
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
                                         />
                                     </div>
                                     <div className="bg-cBlue3 rounded-lg px-2">
                                         <Input
-                                            label="Password confirm"
+                                            placeholder="Password confirm"
                                             type="password"
                                             size="lg"
-                                            className="border-none "
+                                            className="border-none text-gray-300 text-[16px]"
                                             value={passwordConfirm}
                                             onChange={(e) => setPasswordConfirm(e.target.value)}
                                         />

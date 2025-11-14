@@ -142,7 +142,7 @@ export function Tokens() {
           <div className="flex items-center gap-5 mt-6">
             <div className="md:mr-4 md:w-56 bg-cBlue3 rounded-lg">
               <Input
-                  label="Search..."
+                  placeholder="Search..."
                   className="border-none "
                   icon={<MagnifyingGlassIcon className="h-5 w-5" />}
                   value={searchTerm}
@@ -155,7 +155,7 @@ export function Tokens() {
             <div className="w-70">
               <Select label="" value={intervalTime}
                       onChange={(e) => setIntervalTime(e)}
-                      size="md" className="text-lBLue bg-cBlue3 border-none !border-t-transparent focus:!border-t-transparent data-[open=true]:!border-t-transparent"
+                      size="md" className="text-white bg-cBlue3 border-none !border-t-transparent focus:!border-t-transparent data-[open=true]:!border-t-transparent"
                       labelProps={{
                         // kill the notch lines + white patch behind the label
                         className:
@@ -185,7 +185,7 @@ export function Tokens() {
                   placeholder="Min %"
                   value={min}
                   onChange={(e) => setMin(e.target.value)}
-                  className="pr-8 !border-t-blue-gray-200 focus:!border-t-gray-900 text-lBLue border-none !border-t-transparent focus:!border-t-transparent data-[open=true]:!border-t-transparent"
+                  className="pr-8 !border-t-blue-gray-200 focus:!border-t-gray-900 text-white border-none !border-t-transparent focus:!border-t-transparent data-[open=true]:!border-t-transparent"
                   labelProps={{
                     className: "before:content-none after:content-none" + "before:!border-0 after:!border-0 " +    // no borders on the pseudo parts
                         "before:!bg-transparent after:!bg-transparent",
@@ -202,7 +202,7 @@ export function Tokens() {
                   placeholder="Min %"
                   value={max}
                   onChange={(e) => setMax(e.target.value)}
-                  className="pr-8 !border-t-blue-gray-200 focus:!border-t-gray-900 text-lBLue border-none !border-t-transparent focus:!border-t-transparent data-[open=true]:!border-t-transparent"
+                  className="pr-8 !border-t-blue-gray-200 focus:!border-t-gray-900 text-white border-none !border-t-transparent focus:!border-t-transparent data-[open=true]:!border-t-transparent"
                   labelProps={{
                     className: "before:content-none after:content-none",
                   }}
@@ -227,7 +227,7 @@ export function Tokens() {
                   >
                     <Typography
                         variant="small"
-                        className="text-[18px] font-medium text-lBLue"
+                        className="text-[18px] text-gray-400"
                     >
                       {el}
                     </Typography>
@@ -248,7 +248,7 @@ export function Tokens() {
                       return (
                           <tr key={idx}>
                             <td className={className}>
-                              <Typography className="font-semibold text-blue-gray-600">
+                              <Typography className="font-semibold text-gray-300">
                                 {idx + 1}
                               </Typography>
                             </td>
@@ -260,16 +260,16 @@ export function Tokens() {
                                     variant="rounded"
                                     size="sm"
                                 />
-                                <Typography className="text-blue-gray-600 font-sans mt-1 ml-6 text-[16px]">
+                                <Typography className="text-gray-300 font-sans mt-1 ml-6 text-[16px]">
                                   {token.name}({token.symbol})
                                 </Typography>
                               </div>
                             </td>
                             <td className={className}>
-                              <Typography className="font-bold text-blue-gray-600 text-[18px]">
+                              <Typography className="text-gray-300 text-[18px]">
                                 {
                                   token.price >= 0.09 ?
-                                      <Typography variant="small" className="text-[18px] font-medium text-blue-gray-600">{
+                                      <Typography variant="small" className="text-[18px] text-gray-300">{
                                         token.price.toLocaleString("en-US", {style:"currency", currency:"USD"})
                                       }</Typography>
                                       :
@@ -280,10 +280,10 @@ export function Tokens() {
                               </Typography>
                             </td>
                             <td className={className}>
-                              <Typography className="font-bold text-blue-gray-600 text-[18px]">
+                              <Typography className="text-gray-300 text-[18px]">
                                 {
                                   token.old_price >= 0.09 ?
-                                      <Typography variant="small" className="text-[18px] font-medium text-blue-gray-600">{
+                                      <Typography variant="small" className="text-[18px]  text-gray-300">{
                                         token.old_price.toLocaleString("en-US", {style:"currency", currency:"USD", minimumFractionDigits: 4 })
                                       }</Typography>
                                       :
@@ -297,7 +297,7 @@ export function Tokens() {
                               <Typography
                                   variant="gradient"
                                   color={token.percent_change > 0 ? "green" : "red"}
-                                  className="py-0.5 px-2 text-[14px] font-bold w-fit">
+                                  className="py-0.5 px-2 text-[16px] w-fit">
                                 {Math.abs(token.percent_change).toFixed(2) + " %"}
                               </Typography>
                             </td>
@@ -305,7 +305,7 @@ export function Tokens() {
                               <Typography
                                   variant="gradient"
                                   color={token.percent_change_24h > 0 ? "green" : "red"}
-                                  className="py-0.5 px-2 text-[14px] font-bold w-fit">
+                                  className="py-0.5 px-2 text-[16px] w-fit">
                                 {Math.abs(token.percent_change_24h).toFixed(2) + " %"}
                               </Typography>
                             </td>
@@ -313,7 +313,7 @@ export function Tokens() {
                               <Typography
                                   variant="gradient"
                                   color={token.percent_change_7d > 0 ? "green" : "red"}
-                                  className="py-0.5 px-2 text-[14px] font-bold w-fit">
+                                  className="py-0.5 px-2 text-[16px] w-fit">
                                 {Math.abs(token.percent_change_7d).toFixed(2) + " %"}
                               </Typography>
                             </td>
@@ -321,12 +321,12 @@ export function Tokens() {
                               <Typography
                                   variant="gradient"
                                   color={token.percent_change_30d > 0 ? "green" : "red"}
-                                  className="py-0.5 px-2 text-[14px] font-bold w-fit">
+                                  className="py-0.5 px-2 text-[16px] w-fit">
                                 {Math.abs(token.percent_change_30d).toFixed(2) + " %"}
                               </Typography>
                             </td>
                             <td className={className}>
-                              <Typography className="font-semibold text-blue-gray-600">
+                              <Typography className="text-gray-300">
                                 {token.timestamp}
                               </Typography>
                             </td>

@@ -14,12 +14,12 @@ const ItemMemo = ({ memo, onView, onEdit, onDelete }) => {
     return (
         <Card
             key={memo.id}
-            className={`h-[240px] relative border-gray-500 bg-transparent border-2`}
+            className={`h-[250px] relative border-gray-500 bg-transparent border-2`}
         >
             <CardBody className="flex flex-col justify-center w-full">
                 <div className="flex flex-row w-full">
                     <Typography variant="h5" className="text-white">
-                        {memo.title}
+                        {memo.title.length > 50 ? memo.title.slice(0, 50 ) + "..." : memo.title}
                     </Typography>
                     <div className="flex gap-2 z-10 flex-1">
                         <div className="w-[32px] h-[32px] rounded-full bg-[#687992] ml-auto cursor-pointer" onClick={onView}>
@@ -42,7 +42,7 @@ const ItemMemo = ({ memo, onView, onEdit, onDelete }) => {
                         </div>
                     </div>
                 </div>
-                <Typography className="text-sm text-gray-700">
+                <Typography className="text-sm text-gray-400">
                     {memo.created_at}
                 </Typography>
                 <div className="flex flex-row w-full mt-4">
