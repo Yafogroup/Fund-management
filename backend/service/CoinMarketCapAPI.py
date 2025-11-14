@@ -112,11 +112,11 @@ class CoinMarketCapAPI:
             print(f"Error fetching prices: {e}")
             return {}
         
-    def get_historical_prices(self, coin_id, start_date, end_date):
+    def get_historical_prices(self, symbols, ids, start_date, end_date):
         url = f'{self.base_url}/cryptocurrency/quotes/historical'
-
+        
         params = {
-            'id': str(coin_id),
+            'symbol': ','.join(symbols),
             'time_start': start_date.strftime('%Y-%m-%d'),
             'time_end': end_date.strftime('%Y-%m-%d'),
             'interval': 'daily',
@@ -126,16 +126,21 @@ class CoinMarketCapAPI:
         self.set_api_key(False)
         
         response = self.session.get(url, params=params)
-        data = response.json()
+        data = response.json()['data']
 
-        print(f"\nFetching historical prices for {coin_id} from {start_date} to {end_date} is {data}")
+        print(f"\nFetching historical prices from {start_date} to {end_date} is {data}")
         
-        # Process the data into a DataFrame
-        prices = []
-        for item in data['data']['quotes']:
-            prices.append({
-                'date': item['timestamp'][:10],
-                'price': item['quote']['USD']['price']
-            })
-        
-        return pd.DataFrame(prices)
+        historical_prices = {}
+
+        for idx in range(0, len(symbols)):
+            symbol = symbols[idx]
+            token_id = ids[idx]
+            quotes = data[symbol]['quotes']
+            prices = [{'date': item['timestamp'][:10],'price': item['quote']['USD']['price']} for item in quotes]
+
+            historical_prices[symbol] = {
+                    'id': token_id,
+                    'data': pd.DataFrame(prices)
+                }
+
+        return historical_prices

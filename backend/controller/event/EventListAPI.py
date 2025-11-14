@@ -33,6 +33,8 @@ class EventListAPI(MethodResource):
         if end_date:
             query = query.filter(Event.happen_time <= end_date)
 
+        query = query.order_by(Event.happen_time.desc())
+
         total_count = query.count()
 
         events = query.order_by(Event.happen_time.desc()).offset(offset).limit(limit).all()

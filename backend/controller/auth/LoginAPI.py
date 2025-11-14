@@ -38,7 +38,7 @@ class LoginAPI(MethodResource):
                         role = "user"
 
                     user_token = UserToken.query.filter_by(user_uid=str(user.uid)).first()
-                    event_list = Event.query.filter(Event.happen_time >= datetime.now()).filter(Event.happen_time <= (datetime.now() + timedelta(days=3))).all()
+                    event_list = Event.query.filter(Event.happen_time >= datetime.now()).filter(Event.happen_time <= (datetime.now() + timedelta(days=3))).order_by(Event.happen_time.asc()).all()
 
                     data = {
                         'auth_token': auth_token,

@@ -107,7 +107,7 @@ class DashboardDataAPI(MethodResource):
         }
 
         event_list = Event.query.order_by(Event.happen_time.desc()).limit(5).all()
-        ev_list = Event.query.filter(Event.happen_time >= datetime.now()).filter(Event.happen_time <= (datetime.now() + timedelta(days=3))).all()
+        ev_list = Event.query.filter(Event.happen_time >= datetime.now()).filter(Event.happen_time <= (datetime.now() + timedelta(days=3))).order_by(Event.happen_time.desc()).all()
 
 
         response_data = {

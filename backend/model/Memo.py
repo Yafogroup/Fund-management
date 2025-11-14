@@ -30,6 +30,6 @@ class Memo(db.Model):
             "title": self.title,
             "content": self.content,
             "image": url_for('static', filename=f'uploads/{self.image}', _external=True) if self.image else None,
-            "created_at": self.created_at.strftime("%m/%d/%Y, %H:%M:%S"),
+            "created_at": self.created_at.strftime("%Y-%m-%d, %H:%M:%S"),
             "user_uid": self.user_uid,
         }
