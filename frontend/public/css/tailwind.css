@@ -6,4 +6,9 @@
     label.select-none.pointer-events-none {
         display: none !important;
     }
+
+    input.relative.transition-all {
+        background-color: #18263c;
+        color: #fff;
+    }
 }

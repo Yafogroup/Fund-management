@@ -59,7 +59,7 @@ export function SignUp() {
                 src="/img/bg.png"
                 className="h-full w-full object-center absolute"
             />
-            <Card className="w-1/2 h-[55%] bg-sidebar mx-auto absolute left-[25%] top-[20%]">
+            <Card className="w-[50%] h-[55%] bg-sidebar mx-auto absolute left-[25%] top-[20%]">
                 <CardBody className="p-0">
                     <div className="h-full flex flex-row relative">
                         <img
@@ -71,10 +71,10 @@ export function SignUp() {
                             className="w-[55%] object-cover rounded-l-lg mb-10"
                         />
                         <div className="flex-1">
-                            <div className="text-center mt-14">
-                                <Typography className="text-gray-600 text-[25px]">Welcome to YAFO</Typography>
+                            <div className="text-center mt-6">
+                                <Typography className="text-gray-300 text-[25px]">Welcome to YAFO</Typography>
                             </div>
-                            <form className="mt-8 mx-auto max-w-screen-lg lg:w-3/4">
+                            <form className="mt-6 mx-auto max-w-screen-lg lg:w-3/4">
                                 <div className="mb-1 flex flex-col gap-6">
                                     <div className="bg-cBlue3 rounded-lg px-2">
                                         <Input

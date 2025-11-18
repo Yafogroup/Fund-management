@@ -34,13 +34,19 @@ import {PencilIcon, TrashIcon} from "@heroicons/react/24/solid";
 import * as sea from "node:sea";
 import CompactPrice from "@/widgets/components/compact_price.jsx";
 import {Pagination} from "@/widgets/components/pagination.jsx";
+import {format} from "date-fns";
+import Datepicker from "react-tailwindcss-datepicker";
 
 const Orders = () => {
 
     const { showNotification } = useNotification();
     const [searchTerm, setSearchTerm] = useState("");
-    const [startDate, setStartDate] = useState("");
-    const [endDate, setEndDate] = useState("");
+
+    const [dateRange, setDateRange] = useState({
+        startDate: "",
+        endDate: ""
+    });
+
     const [portfolioList, setPortfolioList] = useState([]);
     const [offset, setOffset] = useState(0);
     const limit = 100;
@@ -125,8 +131,8 @@ const Orders = () => {
                 offset: (page - 1) * pageCount,
                 limit: pageCount,
                 search: searchTerm,
-                start_date: startDate,
-                end_date: endDate,
+                start_date: dateRange.startDate,
+                end_date: dateRange.endDate,
                 toke_type: Number(tokenType),
                 status: status,
                 position_type: Number(filterPosition),
@@ -288,13 +294,13 @@ const Orders = () => {
     }
 
     return (
-        <div className="overflow-x-auto scrollbar">
+        <div className="overflow-x-auto">
             <div className="flex pb-2 items-center">
                 <Typography variant="small" className="text-[16px] font-medium text-gray-300">Total Order:</Typography>
                 <Typography className="text-[20px] font-bold text-gray-300 ml-2">{totalOrder.toLocaleString("en-US", {style:"currency", currency:"USD"})}</Typography>
             </div>
             <Card className="bg-sidebar">
-                <CardBody className="p-6">
+                <CardBody className="p-6 scrollbar">
                     <div className="flex flex-col md:flex-row md:items-end gap-4 mb-6">
                         <div className="w-30 bg-cBlue3 rounded-lg">
                             <Input
@@ -305,60 +311,44 @@ const Orders = () => {
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
                         </div>
-
-                        <div className="w-120 flex">
-                            <label className="text-sm text-gray-700 mb-1 block mt-2">Date</label>
-                            <input
-                                type="date"
-                                value={startDate}
-                                onClick={(e) => e.currentTarget.showPicker()}
-                                onChange={(e) => setStartDate(e.target.value)}
-                                className="w-40 ml-2 px-3 py-2 bg-cBlue3 rounded-md focus:outline-none text-sm text-gray-300"
-                            />
-                            <input
-                                type="date"
-                                value={endDate}
-                                onClick={(e) => e.currentTarget.showPicker()}
-                                onChange={(e) => setEndDate(e.target.value)}
-                                className="w-40 ml-1 px-3 py-2 bg-cBlue3 rounded-md focus:outline-none text-sm text-gray-300"
-                            />
+                        <Typography className="text-sm text-gray-500 mb-2 block">Date</Typography>
+                        <div className="w-[20%] flex">
+                            <Datepicker
+                                value={dateRange} onChange={newValue => setDateRange(newValue)} />
                         </div>
-                        <div className="w-120 flex">
-                            <label className="text-sm text-gray-700 mb-1 block mt-3">Token Type</label>
-                            <div className="w-60 ml-2">
-                                <Select placeholder="Select Token Type" className="text-white bg-cBlue3 focus:outline-none border-none !border-t-transparent focus:!border-t-transparent data-[open=true]:!border-t-transparent"
-                                        onChange={(value) => setTokenType(value)}
-                                        selected={(element) =>
-                                        {
-                                            if (element) {
-                                                const selectedValue = element.props.value;
-                                                // console.log('Selected Value:', selectedValue);
-                                                return element.props.name;
-                                            }
-
+                        <Typography className="text-sm text-gray-700 mb-2 block w-[2%]">Token</Typography>
+                        <div className="w-40 ml-2">
+                            <Select placeholder="Select Token Type" className="text-white bg-cBlue3 focus:outline-none border-none !border-t-transparent focus:!border-t-transparent data-[open=true]:!border-t-transparent"
+                                    onChange={(value) => setTokenType(value)}
+                                    value={tokenType}
+                                    selected={(element) =>
+                                    {
+                                        if (element) {
+                                            const selectedValue = element.props.value;
+                                            // console.log('Selected Value:', selectedValue);
+                                            return element.props.name;
                                         }
-                                        }>
-                                    {filterTypeList.map((option) => (
-                                        <Option   key={option.uid} value={option.uid} data-id={option.uid} name={option.name}>
-                                            {option.name}
-                                        </Option>
-                                    ))}
-                                </Select>
-                            </div>
+
+                                    }
+                                    }>
+                                {filterTypeList.map((option) => (
+                                    <Option   key={option.uid} value={option.uid} data-id={option.uid} name={option.name}>
+                                        {option.name}
+                                    </Option>
+                                ))}
+                            </Select>
                         </div>
-                        <div className="w-80 flex">
-                            <label className="text-sm text-gray-700 mb-1 block mt-3">Position Type</label>
-                            <div className="w-40 ml-1">
-                                <Select className="text-white bg-cBlue3 focus:outline-none border-none !border-t-transparent focus:!border-t-transparent data-[open=true]:!border-t-transparent"
-                                        value={filterPosition}
-                                        onChange={(value) => setFilterPosition(value)}>
-                                    <Option value="-1">All</Option>
-                                    <Option value="0">Spot</Option>
-                                    <Option value="1">Margin</Option>
-                                    <Option value="2">Long</Option>
-                                    <Option value="3">Short</Option>
-                                </Select>
-                            </div>
+                        <Typography className="text-sm text-gray-700 mb-2 block w-[2%] ml-10">Position</Typography>
+                        <div className="w-40 ml-1">
+                            <Select className="text-white bg-cBlue3 focus:outline-none border-none !border-t-transparent focus:!border-t-transparent data-[open=true]:!border-t-transparent"
+                                    value={filterPosition}
+                                    onChange={(value) => setFilterPosition(value)}>
+                                <Option value="-1">All</Option>
+                                <Option value="0">Spot</Option>
+                                <Option value="1">Margin</Option>
+                                <Option value="2">Long</Option>
+                                <Option value="3">Short</Option>
+                            </Select>
                         </div>
                         <div className="w-60 ml-10">
                             <Tabs value={status.toString()}>

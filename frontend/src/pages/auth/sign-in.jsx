@@ -71,10 +71,10 @@ export function SignIn() {
                 className="w-[50%] object-cover rounded-l-lg mb-10"
             />
             <div className="flex-1">
-              <div className="text-center mt-14">
+              <div className="text-center mt-10">
                 <Typography className="text-gray-300 text-[25px]">Welcome to YAFO</Typography>
               </div>
-              <form className="mt-8 mx-auto max-w-screen-lg lg:w-3/4">
+              <form className="mt-4 mx-auto max-w-screen-lg lg:w-3/4">
                 <div className="mb-1 flex flex-col gap-6">
                   <div className="bg-cBlue3 rounded-lg px-2">
                     <Input

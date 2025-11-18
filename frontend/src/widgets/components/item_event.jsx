@@ -24,7 +24,7 @@ const ItemEvent = ({ event, onView, onEdit, onDelete, noButton, onClick }) => {
                     </Typography>
                     {
                         !noButton && (
-                            <div className="flex gap-2 z-10 flex-1">
+                            <div className="flex gap-2 flex-1">
                                 <div className="w-[32px] h-[32px] rounded-full bg-[#687992] ml-auto cursor-pointer" onClick={onView}>
                                     <img
                                         src="/img/zoom.png"

@@ -25,6 +25,7 @@ import messages from "@/const/msg.jsx";
 import {MagnifyingGlassIcon} from "@heroicons/react/24/outline/index.js";
 import {Pagination} from "@/widgets/components/pagination.jsx";
 import DatePicker from "react-datepicker";
+import Datepicker from "react-tailwindcss-datepicker";
 
 export function Memo() {
 
@@ -32,8 +33,11 @@ export function Memo() {
     const [memoList, setMemoList] = useState([]);
 
     const [search, setSearch] = useState("");
-    const [startDate, setStartDate] = useState("");
-    const [endDate, setEndDate] = useState("");
+
+    const [dateRange, setDateRange] = useState({
+        startDate: "",
+        endDate: ""
+    });
 
     const [pageCount, setPageCount] = useState("8");
     const [pageTotal, setPageTotal] = useState(1);
@@ -62,8 +66,8 @@ export function Memo() {
                 offset: (page - 1) * pageCount,
                 limit: pageCount,
                 search,
-                start_date: startDate,
-                end_date: endDate,
+                start_date: dateRange.startDate,
+                end_date: dateRange.endDate,
             };
 
             const response = await memoService.getMemoList(params);
@@ -79,7 +83,7 @@ export function Memo() {
 
     useEffect(() => {
         fetchMemos();
-    }, [search, startDate, endDate, page, pageCount]);
+    }, [search, dateRange, page, pageCount]);
 
     useEffect(() => {
         handleImport();
@@ -212,26 +216,9 @@ export function Memo() {
                         onChange={(e) => setSearch(e.target.value)}
                     />
                 </div>
-                <div className="w-full md:w-1/6">
-                    <label className="text-sm text-gray-700 mb-1 block">Start Date</label>
-                    <input
-                        type="date"
-                        value={startDate}
-                        onClick={(e) => e.currentTarget.showPicker()}
-                        onChange={(e) => setStartDate(e.target.value)}
-                        className="w-full px-3 py-2 bg-cBlue3 rounded-md focus:outline-none text-sm text-gray-300"
-                    />
-                </div>
-
-                <div className="w-full md:w-1/6">
-                    <label className="text-sm text-gray-700 mb-1 block">End Date</label>
-                    <input
-                        type="date"
-                        value={endDate}
-                        onClick={(e) => e.currentTarget.showPicker()}
-                        onChange={(e) => setEndDate(e.target.value)}
-                        className="w-full px-3 py-2 bg-cBlue3 rounded-md focus:outline-none text-sm text-gray-300"
-                    />
+                <div className="w-[20%] flex">
+                    <Datepicker
+                        value={dateRange} onChange={newValue => setDateRange(newValue)} />
                 </div>
 
                 <div className="w-full md:w-1/4 text-right flex-1 mr-7">

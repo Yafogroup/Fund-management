@@ -14,14 +14,14 @@ const ItemMemo = ({ memo, onView, onEdit, onDelete }) => {
     return (
         <Card
             key={memo.id}
-            className={`h-[250px] relative border-gray-500 bg-transparent border-2`}
+            className={`h-[250px] border-gray-500 bg-transparent border-2`}
         >
             <CardBody className="flex flex-col justify-center w-full">
                 <div className="flex flex-row w-full">
                     <Typography variant="h5" className="text-white">
                         {memo.title.length > 50 ? memo.title.slice(0, 50 ) + "..." : memo.title}
                     </Typography>
-                    <div className="flex gap-2 z-10 flex-1">
+                    <div className="flex gap-2 flex-1">
                         <div className="w-[32px] h-[32px] rounded-full bg-[#687992] ml-auto cursor-pointer" onClick={onView}>
                             <img
                                 src="/img/zoom.png"

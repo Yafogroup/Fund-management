@@ -30,9 +30,14 @@ import { CheckCircleIcon, ClockIcon } from "@heroicons/react/24/solid";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Input } from "@material-tailwind/react";
+import Datepicker from "react-tailwindcss-datepicker";
 
 export function Home() {
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [value, setValue] = useState({
+    startDate: null,
+    endDate: null
+  });
   return (
     <div className="mt-12">
       <div className="w-72">
@@ -47,6 +52,10 @@ export function Home() {
             customInput={<Input label="Date Time" />}
             showMonthYearDropdown={false}/>
       </div>
+      <Datepicker
+          value={value}
+          onChange={newValue => setValue(newValue)}
+      />
       <div className="mb-12 grid gap-y-10 gap-x-6 md:grid-cols-2 xl:grid-cols-4">
         {statisticsCardsData.map(({ icon, title, footer, ...rest }) => (
           <StatisticsCard

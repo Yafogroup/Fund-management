@@ -14,13 +14,15 @@
     "apexcharts": "3.44.0",
     "axios": "^1.9.0",
     "date-fns": "^4.1.0",
+    "dayjs": "^1.11.12",
     "lodash": "^4.17.21",
     "prop-types": "15.8.1",
     "react": "18.2.0",
     "react-apexcharts": "1.4.1",
     "react-datepicker": "^8.4.0",
     "react-dom": "18.2.0",
-    "react-router-dom": "6.17.0"
+    "react-router-dom": "6.17.0",
+    "react-tailwindcss-datepicker": "^1.7.3"
   },
   "devDependencies": {
     "@types/react": "18.2.31",

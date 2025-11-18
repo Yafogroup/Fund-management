@@ -27,10 +27,14 @@ class DashboardDataAPI(MethodResource):
         if current_app.tracker.initiated is False:
             current_app.tracker.get_multiple_historical_prices()
 
-        start = datetime.strptime(start_date, '%Y-%m-%d') + timedelta(days=-1)
-        end = datetime.strptime(end_date, '%Y-%m-%d')
-        today = datetime.now()
+        if (len(start_date) > 10):
+            start = datetime.strptime(start_date, '%Y-%m-%dT%H:%M:%S.%fZ') + timedelta(days=-1)
+            end = datetime.strptime(end_date, '%Y-%m-%dT%H:%M:%S.%fZ')
+        else:
+            start = datetime.strptime(start_date, '%Y-%m-%d') + timedelta(days=-1)
+            end = datetime.strptime(end_date, '%Y-%m-%d')
 
+        today = datetime.now()
 
         if period_type == "0":
             start = datetime(today.year, 6, 1) + timedelta(days=-1)
