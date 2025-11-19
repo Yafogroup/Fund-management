@@ -55,8 +55,8 @@ const ItemMemo = ({ memo, onView, onEdit, onDelete }) => {
                             />
                         </div>
                     )}
-                    <Typography className="text-sm text-white line-clamp-4 flex-1">
-                        {memo.content.slice(0, hasImage ? 250 : 400) + "..."}
+                    <Typography className="text-white line-clamp-4 flex-1">
+                        {memo.content.slice(0, hasImage ? 180 : 300) + "..."}
                     </Typography>
                 </div>
 

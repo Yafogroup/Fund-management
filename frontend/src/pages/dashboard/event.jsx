@@ -125,7 +125,7 @@ export function Memo() {
             image: null,
         });
         if (event !== null) {
-            setSelectedDate(parse(event.happen_time, 'MM/dd/yyyy, hh:mm:ss', new Date()))
+            setSelectedDate(parse(event.happen_time, 'yyyy-MM-dd, hh:mm:ss', new Date()))
         }
         setEditModalOpen(true);
     };
@@ -316,7 +316,7 @@ export function Memo() {
                 <Typography className="text-sm text-gray-700 ml-8">
                     {selectedEvent?.happen_time}
                 </Typography>
-                <DialogBody className="px-6 pb-4 space-y-4">
+                <DialogBody className="px-6 pb-6 space-y-4">
                     <div className="overflow-y-auto px-2 flex-row flex">
                         {selectedEvent?.image && (
                             <img
@@ -392,13 +392,18 @@ export function Memo() {
                 </DialogFooter>
             </Dialog>
 
-            <Dialog open={deleteModalOpen} handler={() => setDeleteModalOpen(false)} size="sm"
+            <Dialog open={deleteModalOpen} handler={() => setDeleteModalOpen(false)} size="xs"
                     className="bg-opacity-60 bg-[#2c3040] text-white rounded-xl shadow-xl">
                 <DialogHeader
                     className="text-sm font-semibold text-gray-200 border-b border-gray-700">Confirm Deletion
                 </DialogHeader>
                 <DialogBody className="text-white">
-                    Are you sure you want to delete this toke type? This action cannot be undone.
+                    <div>
+                        Are you sure you want to delete this toke type?
+                    </div>
+                    <div>
+                        This action cannot be undone.
+                    </div>
                 </DialogBody>
                 <DialogFooter>
                     <Button className="text-gray-300 hover:text-white mr-4"

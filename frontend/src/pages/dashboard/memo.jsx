@@ -301,7 +301,10 @@ export function Memo() {
                         </div>
                     </IconButton>
                 </div>
-                <DialogBody className="px-6 pb-4 space-y-4">
+                <Typography className="text-sm text-gray-600 pl-8">
+                    {selectedMemo?.created_at}
+                </Typography>
+                <DialogBody className="px-6 pb-6 space-y-4">
                     <div className="overflow-y-auto px-2 flex-row flex">
                         {selectedMemo?.image && (
                             <img
@@ -310,14 +313,14 @@ export function Memo() {
                                 className="object-cover rounded-lg w-1/3 mr-10"
                             />
                         )}
-                        <p className="text-gray-800 flex-1">
+                        <p className="text-black flex-1">
                             {selectedMemo?.content}
                         </p>
                     </div>
                 </DialogBody>
             </Dialog>
 
-            <Dialog open={editModalOpen} handler={() => setEditModalOpen(false)} size="md"
+            <Dialog open={editModalOpen} handler={() => setEditModalOpen(false)} size="sm"
                     className="bg-opacity-80 bg-[#4b5461] text-white rounded-xl shadow-xl">
                 <div className="flex justify-between items-center px-4 pt-4">
                     <DialogHeader className="text-white">{selectedMemo ? "Edit Memo" : "Create Memo"}</DialogHeader>
@@ -339,24 +342,22 @@ export function Memo() {
                         <Textarea
                             name="content"
                             placeholder="Content"
-                            className="w-full p-2 border-none rounded-md resize-none text-white"
+                            className="w-full p-2 border-none rounded-md resize-none text-white h-full"
                             value={form.content}
                             onChange={handleFormChange}
                         />
                     </div>
-                    <div className="flex flex-row">
-                        <Button
-                            variant="outlined"
-                            color="white"
-                            onClick={handleImageSelect}
-                            className="flex items-center gap-2 text-gray-200 border-2 border-gray-500 rounded-lg h-[40px] ml-auto"
-                        >
-                            <span className="text-lg">+</span> Choose image
-                        </Button>
-                    </div>
                 </DialogBody>
                 <DialogFooter>
-                    <Button variant="outlined" color="gray" onClick={() => setEditModalOpen(false)}>
+                    <Button
+                        variant="outlined"
+                        color="white"
+                        onClick={handleImageSelect}
+                        className="flex items-center gap-2 text-gray-200 border-2 border-gray-500 rounded-lg h-[40px] ml-2"
+                    >
+                        <span className="text-lg">+</span> Choose image
+                    </Button>
+                    <Button className="ml-auto" variant="text" color="white" onClick={() => setEditModalOpen(false)}>
                         Cancel
                     </Button>
                     <Button onClick={handleSubmit}
@@ -366,13 +367,18 @@ export function Memo() {
                 </DialogFooter>
             </Dialog>
 
-            <Dialog open={deleteModalOpen} handler={() => setDeleteModalOpen(false)} size="sm"
-                    className="bg-opacity-60 bg-[#2c3040] text-white rounded-xl shadow-xl">
+            <Dialog open={deleteModalOpen} handler={() => setDeleteModalOpen(false)} size="xs"
+                    className="bg-opacity-70 bg-[#2c3140] text-white rounded-xl shadow-xl">
                 <DialogHeader
                     className="text-sm font-semibold text-gray-200 border-b border-gray-700">Confirm Deletion
                 </DialogHeader>
                 <DialogBody className="text-white">
-                    Are you sure you want to delete this toke type? This action cannot be undone.
+                    <div>
+                        Are you sure you want to delete this toke type?
+                    </div>
+                    <div>
+                        This action cannot be undone.
+                    </div>
                 </DialogBody>
                 <DialogFooter>
                     <Button className="text-gray-300 hover:text-white mr-4"

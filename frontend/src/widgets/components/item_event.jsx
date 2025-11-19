@@ -60,9 +60,9 @@ const ItemEvent = ({ event, onView, onEdit, onDelete, noButton, onClick }) => {
                             />
                         </div>
                     )}
-                    <Typography className="text-sm text-white line-clamp-4 flex-1">
+                    <Typography className="text-md text-white line-clamp-4 flex-1">
                         {event.content.length > (noButton ? 400 : 120)
-                            ? event.content.slice(0, hasImage ? 250 : 400) + "..."
+                            ? event.content.slice(0, hasImage ? 180 : 300) + "..."
                             : event.content}
                     </Typography>
                 </div>

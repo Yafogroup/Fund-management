@@ -59,22 +59,20 @@ export function SignIn() {
           src="/img/bg.png"
           className="h-full w-full object-center absolute"
       />
-      <Card className="w-1/2 h-1/2 bg-sidebar mx-auto absolute left-[25%] top-[20%]">
+      <Card className="w-1/2 h-max bg-sidebar mx-auto absolute left-[25%] top-[20%]">
         <CardBody className="p-0">
-          <div className="h-full flex flex-row relative">
+          <div className="flex flex-row relative">
             <img
               src="/img/logo.png"
               className="object-contain absolute top-10 left-10"
             />
             <img
                 src="/img/bg_login.jpg"
-                className="w-[50%] object-cover rounded-l-lg mb-10"
+                className="w-[50%] object-cover rounded-l-lg"
             />
-            <div className="flex-1">
-              <div className="text-center mt-10">
-                <Typography className="text-gray-300 text-[25px]">Welcome to YAFO</Typography>
-              </div>
-              <form className="mt-4 mx-auto max-w-screen-lg lg:w-3/4">
+            <div className="w-1/2">
+              <Typography className="text-center text-gray-300 text-[25px] mt-[10%]">Welcome to YAFO</Typography>
+              <form className="mt-4 mx-auto w-3/4">
                 <div className="mb-1 flex flex-col gap-6">
                   <div className="bg-cBlue3 rounded-lg px-2">
                     <Input
