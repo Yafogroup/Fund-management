@@ -325,7 +325,7 @@ export function Memo() {
                                 className="object-cover rounded-lg w-1/3 mr-10"
                             />
                         )}
-                        <p className="text-gray-800 flex-1">
+                        <p className="text-black flex-1 font-medium text-[20px]">
                             {selectedEvent?.content}
                         </p>
                     </div>

@@ -31,16 +31,34 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Input } from "@material-tailwind/react";
 import Datepicker from "react-tailwindcss-datepicker";
+import Select from "react-tailwindcss-select";
 
 export function Home() {
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [animal, setAnimal] = useState("fox");
   const [value, setValue] = useState({
     startDate: null,
     endDate: null
   });
+  const options = [
+    { value: "fox", label: "🦊 Fox" },
+    { value: "Butterfly", label: "🦋 Butterfly" },
+    { value: "Honeybee", label: "🐝 Honeybee" }
+  ];
+
+  const handleChange = (value) => {
+    setAnimal(value);
+  }
   return (
     <div className="mt-12">
       <div className="w-72">
+        <Select
+            value={animal}
+            onChange={handleChange}
+            options={options}
+            primaryColor={"indigo"}
+            isSearchable={true}
+        />
         <label className="text-sm text-blue-gray-600 mb-1 block">Select Date & Time</label>
         <DatePicker
             selected={selectedDate}

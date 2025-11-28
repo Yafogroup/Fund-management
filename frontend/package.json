@@ -22,7 +22,8 @@
     "react-datepicker": "^8.4.0",
     "react-dom": "18.2.0",
     "react-router-dom": "6.17.0",
-    "react-tailwindcss-datepicker": "^1.7.3"
+    "react-tailwindcss-datepicker": "^1.7.3",
+    "react-tailwindcss-select": "^1.8.5"
   },
   "devDependencies": {
     "@types/react": "18.2.31",

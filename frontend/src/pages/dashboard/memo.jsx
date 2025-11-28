@@ -310,10 +310,10 @@ export function Memo() {
                             <img
                                 src={selectedMemo.image}
                                 alt="Memo"
-                                className="object-cover rounded-lg w-1/3 mr-10"
+                                className="object-contain rounded-lg w-1/3 mr-10"
                             />
                         )}
-                        <p className="text-black flex-1">
+                        <p className="text-black flex-1 font-medium text-[20px]">
                             {selectedMemo?.content}
                         </p>
                     </div>

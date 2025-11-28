@@ -91,15 +91,15 @@ export const routes = [
         path: "/token_type",
         element: <Toke_type />,
       },
-      // {
-      //   icon: [
-      //     <img src={"/img/dash_on.png"} alt="icon" />,
-      //     <img src={"/img/dash_off.png"} alt="icon" />,
-      //   ],
-      //   name: "profile",
-      //   path: "/profile",
-      //   element: <Home />,
-      // },
+      {
+        icon: [
+          <img src={"/img/dash_on.png"} alt="icon" />,
+          <img src={"/img/dash_off.png"} alt="icon" />,
+        ],
+        name: "profile",
+        path: "/profile",
+        element: <Home />,
+      },
     ],
   },
   {

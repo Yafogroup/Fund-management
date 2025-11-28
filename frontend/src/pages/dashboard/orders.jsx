@@ -7,7 +7,6 @@ import {
     TabPanel,
     Card,
     Input,
-    Select,
     Option,
     Chip,
     IconButton,
@@ -36,6 +35,7 @@ import CompactPrice from "@/widgets/components/compact_price.jsx";
 import {Pagination} from "@/widgets/components/pagination.jsx";
 import {format} from "date-fns";
 import Datepicker from "react-tailwindcss-datepicker";
+import Select from "react-tailwindcss-select";
 
 const Orders = () => {
 
@@ -82,6 +82,37 @@ const Orders = () => {
     const [saving, setSaving] = useState(false);
     const [totalOrder, setTotalOrder] = useState(0);
 
+    const [tokenOption, setTokenOption] = useState({ value: "0", label: "ALL" });
+    const [tokenOptions, setTokenOptions] = useState([]);
+
+
+    const [pageOption, setPageOption] = useState({ value: "8", label: "8" });
+    const pageOptions = [
+        { value: "8", label: "8" },
+        { value: "10", label: "10" },
+        { value: "12", label: "12" },
+        { value: "20", label: "20" }
+    ];
+
+    const [posOption, setPosOption] = useState({ value: "-1", label: "ALL" });
+    const posOptions = [
+        { value: "-1", label: "ALL" },
+        { value: "0", label: "Spot" },
+        { value: "1", label: "Margin" },
+        { value: "2", label: "Long" },
+        { value: "3", label: "Short" }
+    ];
+
+    const [posTypeOption, setPosTypeOption] = useState({ value: "0", label: "Spot" });
+    const posTypeOptions = [
+        { value: "0", label: "Spot" },
+        { value: "1", label: "Margin" },
+    ];
+
+    const [tokenTypeOption, setTokenTypeOption] = useState();
+
+    const [tokenSelectOption, setTokenSelectOption] = useState(null);
+    const [tokenSelectOptions, setTokenSelectOptions] = useState([]);
 
     const [form, setForm] = useState({
         token_id: 0,
@@ -161,12 +192,25 @@ const Orders = () => {
             setTypeList(fetched);
             let tt = [{"uid": 0, name: "ALL"}].concat(fetched);
             setFilterTypeList(tt);
+            setTokenOptions(tt.map(tt => {
+                return {'value': tt.uid, 'label': tt.name}
+            }));
+
+            setTokenTypeOption({'value': tt[1].uid, 'label': tt[1].name})
 
             response = await tokenService.getCurrentTokenList();
             let temp = response.data.data.data;
             setAllTokenList(temp);
+
+            // setTokenSelectOption({value: temp[0].id, label: temp[0].name, token: temp[0]});
+            setTokenSelectOptions(temp.map((item) => {
+                return {value: item.id, label: item.name, token: item};
+            }))
+
+
             temp = temp.filter(item => selectedTokenIds.includes(item.id.toString()));
             setTokenList(temp);
+
 
         } catch (err) {
             showNotification("Sever error...", 'red');
@@ -187,10 +231,12 @@ const Orders = () => {
             oracle: 0,
             token_name: "",
             token_symbol: "",
-            token_logo: "",
+            token_logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkm6glZUpnKKrLGjvHT9BcqmH-ABH6SgaQaLFegXNbqA3P54-wEvufelybwLnhlGLz8K0&usqp=CAU",
             token_type_name: "",
         });
-
+        setTokenSelectOption(null);
+        setPosTypeOption({ value: "0", label: "Spot" });
+        setTokenTypeOption(null);
         setEditModalOpen(true);
     }
 
@@ -206,10 +252,13 @@ const Orders = () => {
             trade_type: pf.trade_type,
             status: pf.status,
             token_name: pf.token_name,
-            token_symbol: tokenList.filter(t => t.id === pf.token_id)[0].symbol,
-            token_logo: tokenList.filter(t => t.id === pf.token_id)[0].logo,
+            token_symbol: allTokenList.filter(t => t.id === pf.token_id)[0].symbol,
+            token_logo: allTokenList.filter(t => t.id === pf.token_id)[0].logo,
             token_type_name: typeList.filter(t => t.uid === pf.token_type)[0].name,
         });
+        setTokenSelectOption(tokenSelectOptions.filter(tt => tt.value === pf.token_id)[0]);
+        setPosTypeOption(posTypeOptions.filter(tt => tt.value === pf.position_type.toString())[0]);
+        setTokenTypeOption(tokenOptions.filter(tt => tt.value === pf.token_type)[0]);
         setEditModalOpen(true);
     }
 
@@ -287,11 +336,24 @@ const Orders = () => {
 
     useEffect(() => {
         fetchPortfolioList(true);
-    }, [page, pageCount])
+    }, [page, pageCount, sortColumn, sortDirection])
 
     if (showLoading) {
         return <LoadingScreen />;
     }
+
+    const formatOptionLabel = (data) => (
+        <div className="flex flex-row pt-4">
+            <Avatar
+                src={data.token.logo}
+                alt={data.token.name}
+                size="xs"
+                variant="circular"
+                className={`cursor-pointer border-2 border-white mr-2`}
+            />
+            {data.token.name.length > 8 ? data.token.symbol : data.token.name}
+        </div>
+    );
 
     return (
         <div className="overflow-x-auto">
@@ -299,8 +361,8 @@ const Orders = () => {
                 <Typography variant="small" className="text-[16px] font-medium text-gray-300">Total Order:</Typography>
                 <Typography className="text-[20px] font-bold text-gray-300 ml-2">{totalOrder.toLocaleString("en-US", {style:"currency", currency:"USD"})}</Typography>
             </div>
-            <Card className="bg-sidebar">
-                <CardBody className="p-6 scrollbar">
+            <Card className="bg-sidebar scrollbar">
+                <CardBody className="p-6">
                     <div className="flex flex-col md:flex-row md:items-end gap-4 mb-6">
                         <div className="w-30 bg-cBlue3 rounded-lg">
                             <Input
@@ -318,37 +380,41 @@ const Orders = () => {
                         </div>
                         <Typography className="text-sm text-gray-700 mb-2 block w-[2%]">Token</Typography>
                         <div className="w-40 ml-2">
-                            <Select placeholder="Select Token Type" className="text-white bg-cBlue3 focus:outline-none border-none !border-t-transparent focus:!border-t-transparent data-[open=true]:!border-t-transparent"
-                                    onChange={(value) => setTokenType(value)}
-                                    value={tokenType}
-                                    selected={(element) =>
-                                    {
-                                        if (element) {
-                                            const selectedValue = element.props.value;
-                                            // console.log('Selected Value:', selectedValue);
-                                            return element.props.name;
-                                        }
-
-                                    }
-                                    }>
-                                {filterTypeList.map((option) => (
-                                    <Option   key={option.uid} value={option.uid} data-id={option.uid} name={option.name}>
-                                        {option.name}
-                                    </Option>
-                                ))}
-                            </Select>
+                            <Select
+                                value={tokenOption}
+                                onChange={(e) => {
+                                    setTokenOption(e);
+                                    setTokenType(e.value);
+                                }}
+                                options={tokenOptions}
+                                classNames={{
+                                    menuButton: ({ isDisabled }) =>
+                                        `flex text-sm text-white rounded shadow-sm transition-all duration-300 focus:outline-none ${
+                                            isDisabled
+                                                ? "bg-gray-100"
+                                                : "bg-cBlue3"
+                                        }`,
+                                }}
+                            />
                         </div>
                         <Typography className="text-sm text-gray-700 mb-2 block w-[2%] ml-10">Position</Typography>
                         <div className="w-40 ml-1">
-                            <Select className="text-white bg-cBlue3 focus:outline-none border-none !border-t-transparent focus:!border-t-transparent data-[open=true]:!border-t-transparent"
-                                    value={filterPosition}
-                                    onChange={(value) => setFilterPosition(value)}>
-                                <Option value="-1">All</Option>
-                                <Option value="0">Spot</Option>
-                                <Option value="1">Margin</Option>
-                                <Option value="2">Long</Option>
-                                <Option value="3">Short</Option>
-                            </Select>
+                            <Select
+                                value={posOption}
+                                onChange={(e) => {
+                                    setPosOption(e);
+                                    setFilterPosition(e.value);
+                                }}
+                                options={posOptions}
+                                classNames={{
+                                    menuButton: ({ isDisabled }) =>
+                                        `flex text-sm text-white rounded shadow-sm transition-all duration-300 focus:outline-none ${
+                                            isDisabled
+                                                ? "bg-gray-100"
+                                                : "bg-cBlue3"
+                                        }`,
+                                }}
+                            />
                         </div>
                         <div className="w-60 ml-10">
                             <Tabs value={status.toString()}>
@@ -547,36 +613,35 @@ const Orders = () => {
                         </Typography>
                     }
                 </CardBody>
-            </Card>
-            <div className="mt-8 flex justify-end pr-10">
-                <Pagination
-                    page={pageTotal}
-                    active={page}
-                    onPageChange={(p) => {
-                        setPage(p);
-                    }}
-                />
-                <div className="w-40">
-                    <Select label="" value={pageCount}
+                <div className="mt-8 flex justify-end pr-10 pb-10">
+                    <Pagination
+                        page={pageTotal}
+                        active={page}
+                        onPageChange={(p) => {
+                            setPage(p);
+                        }}
+                    />
+                    <div className="w-40">
+                        <Select
+                            value={pageOption}
                             onChange={(e) => {
-                                setPage(1);
-                                setPageCount(e);
+                                setPageOption(e);
+                                setPageCount(e.value);
                             }}
-                            labelProps={{
-                                // kill the notch lines + white patch behind the label
-                                className:
-                                    "before:!border-0 after:!border-0 " +    // no borders on the pseudo parts
-                                    "before:!bg-transparent after:!bg-transparent"
+                            options={pageOptions}
+                            classNames={{
+                                menuButton: ({ isDisabled }) =>
+                                    `flex text-sm text-white rounded shadow-sm transition-all duration-300 focus:outline-none ${
+                                        isDisabled
+                                            ? "bg-gray-100"
+                                            : "bg-cBlue3"
+                                    }`,
                             }}
-                            className="text-white bg-cBlue3 focus:outline-none border-none !border-t-transparent focus:!border-t-transparent data-[open=true]:!border-t-transparent"
-                    >
-                        <Option value="8">8/Page</Option>
-                        <Option value="10">10/Page</Option>
-                        <Option value="12">12/Page</Option>
-                        <Option value="20">30/Page</Option>
-                    </Select>
+                        />
+                    </div>
                 </div>
-            </div>
+            </Card>
+
             <Dialog open={editModalOpen} handler={() => setEditModalOpen(false)} size="xs"
                     className="bg-opacity-80 bg-[#4b5461] text-white rounded-xl shadow-xl">
                 <div className="flex justify-between items-center px-4 pt-4 border-b-2">
@@ -619,32 +684,33 @@ const Orders = () => {
                         <div className="w-[40%] text-end pr-10">
                             <Typography className="text-[18px] text-gray-400">Currency</Typography>
                         </div>
-                        <div className="w-60 relative">
-                            <Select label="Select Currency" className="text-transparent bg-cBlue3 focus:outline-none border-none !border-t-transparent focus:!border-t-transparent data-[open=true]:!border-t-transparent"
-                                    value={form.token_id}
-                                    onChange={(value) =>
-                                        setForm(prev => ({...prev,
-                                            ['token_id']: value,
-                                            ['token_name']: tokenList.filter(t => t.id === value)[0].name,
-                                            ['token_symbol']: tokenList.filter(t => t.id === value)[0].symbol,
-                                            ['oracle']: tokenList.filter(t => t.id === value)[0].price,
-                                            ['token_logo']: tokenList.filter(t => t.id === value)[0].logo,
-                                        }))}
-                            >
-                                {tokenList.map((token, idx) => (
-                                    <Option key={token.id} value={token.id} data-id={token.id} name={token.name}>
-                                        <Avatar
-                                            src={token.logo}
-                                            alt={token.name}
-                                            size="xs"
-                                            variant="circular"
-                                            className={`cursor-pointer border-2 border-white mr-2`}
-                                        />
-                                        {token.name.length > 8 ? token.symbol : token.name}
-                                    </Option>
-                                ))}
-                            </Select>
-                            <div className="absolute top-2.5 left-3 flex">
+                        <div className="w-60 relative custom-select">
+                            <Select
+                                value={tokenSelectOption}
+                                onChange={(e) =>{
+                                    setTokenSelectOption(e);
+                                    setForm(prev => ({...prev,
+                                        ['token_id']: e.token.id,
+                                        ['token_name']: allTokenList.filter(t => t.id === e.token.id)[0].name,
+                                        ['token_symbol']: allTokenList.filter(t => t.id === e.token.id)[0].symbol,
+                                        ['oracle']: allTokenList.filter(t => t.id === e.token.id)[0].price,
+                                        ['token_logo']: allTokenList.filter(t => t.id === e.token.id)[0].logo,
+                                    }));
+                                }}
+                                options={tokenSelectOptions}
+                                classNames={{
+                                    menuButton: ({ isDisabled }) =>
+                                        `flex text-sm text-white rounded shadow-sm transition-all duration-300 focus:outline-none ${
+                                            isDisabled
+                                                ? "bg-gray-100"
+                                                : "bg-cBlue3"
+                                        }`,
+                                }}
+                                formatOptionLabel={formatOptionLabel}
+                                isSearchable={true}
+                                placeholder={"Select the token..."}
+                            />
+                            <div className="absolute top-1.5 left-3 flex">
                                 {
                                     form.token_logo !== "" &&
                                     <Avatar
@@ -655,7 +721,6 @@ const Orders = () => {
                                         className={`cursor-pointer border-2 border-white mr-2`}
                                     />
                                 }
-                                <Typography variant="small" className="text-[15px] font-medium text-white ">{form.token_name.length > 8 ? form.token_symbol : form.token_name}</Typography>
                             </div>
                         </div>
                     </div>
@@ -664,12 +729,22 @@ const Orders = () => {
                             <Typography className="text-[18px] text-gray-400">Position Type</Typography>
                         </div>
                         <div className="w-60 ml-1">
-                            <Select label="Select Position type" className="text-white bg-cBlue3 focus:outline-none border-none !border-t-transparent focus:!border-t-transparent data-[open=true]:!border-t-transparent"
-                                    value={form.position_type}
-                                    onChange={(value) => setForm(prev => ({...prev, ['position_type']: value}))}>
-                                <Option value="0">Spot</Option>
-                                <Option value="1">Margin</Option>
-                            </Select>
+                            <Select
+                                value={posTypeOption}
+                                onChange={(e) => {
+                                    setPosTypeOption(e);
+                                    setForm(prev => ({...prev, ['position_type']: e.value}));
+                                }}
+                                options={posTypeOptions}
+                                classNames={{
+                                    menuButton: ({ isDisabled }) =>
+                                        `flex text-sm text-white rounded shadow-sm transition-all duration-300 focus:outline-none ${
+                                            isDisabled
+                                                ? "bg-gray-100"
+                                                : "bg-cBlue3"
+                                        }`,
+                                }}
+                            />
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
@@ -691,21 +766,25 @@ const Orders = () => {
                             <Typography className="text-[18px] text-gray-400">Token Type</Typography>
                         </div>
                         <div className="w-60 relative">
-                            <Select label="Select Token Type" className="text-transparent bg-cBlue3 focus:outline-none border-none !border-t-transparent focus:!border-t-transparent data-[open=true]:!border-t-transparent"
-                                    value={form.token_type}
-                                    onChange={(value) =>
-                                        setForm(prev => ({...prev,
-                                            ['token_type']: value,
-                                            ['token_type_name']: typeList.filter(t => t.uid === value)[0].name,
-                                        }))}
-                            >
-                                {typeList.map((option) => (
-                                    <Option   key={option.uid} value={option.uid} data-id={option.uid} name={option.name}>
-                                        {option.name}
-                                    </Option>
-                                ))}
-                            </Select>
-                            <Typography variant="small" className="text-[15px] text-gray-300 absolute top-2 left-3">{form.token_type_name}</Typography>
+                            <Select
+                                value={tokenTypeOption}
+                                onChange={(e) => {
+                                    setTokenTypeOption(e);
+                                    setForm(prev => ({...prev,
+                                        ['token_type']: e.value,
+                                        ['token_type_name']: typeList.filter(t => t.uid === e.value)[0].name,
+                                    }));
+                                }}
+                                options={tokenOptions.slice(1)}
+                                classNames={{
+                                    menuButton: ({ isDisabled }) =>
+                                        `flex text-sm text-white rounded shadow-sm transition-all duration-300 focus:outline-none ${
+                                            isDisabled
+                                                ? "bg-gray-100"
+                                                : "bg-cBlue3"
+                                        }`,
+                                }}
+                            />
                         </div>
                     </div>
 
